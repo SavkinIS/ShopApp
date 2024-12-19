@@ -1,0 +1,41 @@
+@page "/Profile"
+@using ShopApp.Models
+@using ShopApp.Services
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h3>My Profile</h3>
+
+@if (User == null)
+{
+    <p>You are not logged in.</p>
+    <button class="btn btn-primary" @onclick="GoToLogin">Go to Login</button>
+}
+else
+{
+    <p><strong>Username:</strong> @User.UserName</p>
+    <p><strong>Email:</strong> @User.Email</p>
+    <button class="btn btn-danger" @onclick="Logout">Logout</button>
+}
+
+@code {
+    private AuthenticatedUser? User;
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await AuthService.GetCurrentUserAsync();
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        User = null;
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void GoToLogin()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+}
+

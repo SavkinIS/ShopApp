@@ -1,0 +1,36 @@
+@page "/Login"
+@using ShopApp.Services
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+@inject AuthService AuthService
+
+<h3>Login</h3>
+<EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value="loginModel.Email" placeholder="Email" />
+    <InputText @bind-Value="loginModel.Password" placeholder="Password" type="password" />
+    <InputCheckbox @bind-Value="loginModel.RememberMe" /> Remember me
+
+    <button type="submit">Login</button>
+</EditForm>
+
+@code {
+    private LoginModel loginModel = new();
+
+    private async Task HandleLogin()
+    {
+        if (await AuthService.Login(loginModel.Email, loginModel.Password, loginModel.RememberMe))
+        {
+            NavigationManager.NavigateTo("/Profile");
+        }
+    }
+
+    private class LoginModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public bool RememberMe { get; set; }
+    }
+}

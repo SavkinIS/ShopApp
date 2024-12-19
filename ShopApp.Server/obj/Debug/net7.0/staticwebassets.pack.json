@@ -1,0 +1,33 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/.DS_Store",
+      "PackagePath": "staticwebassets/.DS_Store"
+    },
+    {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/empty_part.png",
+      "PackagePath": "staticwebassets/images/empty_part.png"
+    },
+    {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/i.webp",
+      "PackagePath": "staticwebassets/images/i.webp"
+    },
+    {
+      "Id": "obj/Debug/net7.0/staticwebassets/msbuild.ShopApp.Server.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net7.0/staticwebassets/msbuild.build.ShopApp.Server.props",
+      "PackagePath": "build\\ShopApp.Server.props"
+    },
+    {
+      "Id": "obj/Debug/net7.0/staticwebassets/msbuild.buildMultiTargeting.ShopApp.Server.props",
+      "PackagePath": "buildMultiTargeting\\ShopApp.Server.props"
+    },
+    {
+      "Id": "obj/Debug/net7.0/staticwebassets/msbuild.buildTransitive.ShopApp.Server.props",
+      "PackagePath": "buildTransitive\\ShopApp.Server.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

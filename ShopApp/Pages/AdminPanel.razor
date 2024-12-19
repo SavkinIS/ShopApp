@@ -1,0 +1,292 @@
+@page "/AdminPanel"
+@using System.Diagnostics
+@using ShopApp.Models
+@inject ProductService ProductService
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<div class="container mt-5">
+    <h2 class="text-center">Admin Panel</h2>
+    <hr />
+
+    @if (IsAdmin)
+    {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Manage Products</h3>
+            <div>
+                <button class="btn btn-primary me-2" @onclick="AddProduct">
+                    <i class="bi bi-plus-circle"></i> Add Product
+                </button>
+                <InputFile OnChange="HandleExcelUpload" style="display:none" id="excelUpload" />
+                <label class="btn btn-secondary me-2" for="excelUpload">
+                    <i class="bi bi-upload"></i> Upload Excel
+                </label>
+                <button class="btn btn-success" @onclick="DownloadExcel">
+                    <i class="bi bi-download"></i> Download Excel
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Count</th>
+                        <th>Brand</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Products)
+                    {
+                        <tr>
+                            <td class="text-center">@product.Id</td>
+                            <td>@product.Name</td>
+                            <td>@product.Category</td>
+                            <td>@product.Price.ToString("C")</td>
+                            <td class="text-center">@product.Count</td>
+                            <td>@product.Brand</td>
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="Product Image" class="img-thumbnail" style="max-width: 100px;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No Image</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-warning btn-sm me-1" @onclick="() => EditProduct(product)">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(product.Id)">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (IsLoading)
+    {
+        <div class="text-center mt-4">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger mt-4 text-center" role="alert">
+            Access denied. Only administrators can view this page.
+        </div>
+    }
+
+    @if (ShowAddProductModal)
+    {
+        <div class="modal fade show d-block" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@((EditMode ? "Edit Product" : "Add Product"))</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control" @bind="ProductModel.Name" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Category</label>
+                                    <input type="text" class="form-control" @bind="ProductModel.Category" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Brand</label>
+                                    <input type="text" class="form-control" @bind="ProductModel.Brand" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Country</label>
+                                    <input type="text" class="form-control" @bind="ProductModel.Country" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Price</label>
+                                    <input type="number" class="form-control" step="0.01" @bind="ProductModel.Price" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Count</label>
+                                    <input type="number" class="form-control" @bind="ProductModel.Count" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Weight</label>
+                                    <input type="text" class="form-control" @bind="ProductModel.Weight" />
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" rows="3" @bind="ProductModel.Description"></textarea>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Image</label>
+                                    <InputFile class="form-control" OnChange="HandleImageUpload" />
+                                    @if (!string.IsNullOrEmpty(ProductModel.ImageUrl))
+                                    {
+                                        <img src="@ProductModel.ImageUrl" alt="Product Image" class="img-thumbnail mt-2" style="max-width: 200px;" />
+                                    }
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @onclick="SaveProduct">
+                            <i class="bi bi-save"></i> Save
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">
+                            <i class="bi bi-x-circle"></i> Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool IsAdmin = false;
+    private bool IsLoading = true;
+    private bool ShowAddProductModal = false;
+    private bool EditMode = false;
+    private Product ProductModel = new Product();
+    private List<Product> Products = new List<Product>();
+    private string UploadErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+
+        IsAdmin = await AuthService.IsAdmin();
+
+        if (!IsAdmin)
+        {
+            NavigationManager.NavigateTo("/access-denied");
+            return;
+        }
+
+        Products = (await ProductService.GetProductsAsync()).ToList();
+        IsLoading = false;
+    }
+
+    private void AddProduct()
+    {
+        ProductModel = new Product();
+        EditMode = false;
+        ShowAddProductModal = true;
+    }
+
+    private void EditProduct(Product product)
+    {
+        ProductModel = new Product
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Category = product.Category,
+            Price = product.Price,
+            Count = product.Count,
+            Brand = product.Brand,
+            Country = product.Country,
+            Description = product.Description,
+            Weight = product.Weight,
+            ImageUrl = product.ImageUrl
+        };
+        EditMode = true;
+        ShowAddProductModal = true;
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null && file.ContentType.StartsWith("image/"))
+        {
+            try
+            {
+                ProductModel.ImageUrl = await ProductService.UploadImageAsync(file);
+            }
+            catch
+            {
+                UploadErrorMessage = "Failed to upload image.";
+            }
+        }
+        else
+        {
+            UploadErrorMessage = "Please upload a valid image file.";
+        }
+    }
+
+    private async Task SaveProduct()
+    {
+        if (EditMode)
+        {
+            await ProductService.UpdateProductAsync(ProductModel);
+        }
+        else
+        {
+            await ProductService.AddProductAsync(ProductModel);
+        }
+
+        Products = (await ProductService.GetProductsAsync()).ToList();
+        CloseModal();
+    }
+
+    private async Task DeleteProduct(int productId)
+    {
+        await ProductService.DeleteProductAsync(productId);
+        Products = (await ProductService.GetProductsAsync()).ToList();
+    }
+
+    private async Task HandleExcelUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null && file.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            try
+            {
+                using var stream = file.OpenReadStream();
+                var result = await ProductService.UploadExcelFileAsync(stream, file.Name);
+
+                if (result.IsSuccess)
+                {
+                    Products = (await ProductService.GetProductsAsync()).ToList();
+                }
+                else
+                {
+                    UploadErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch
+            {
+                UploadErrorMessage = "Failed to process Excel file.";
+            }
+        }
+    }
+
+
+    private async Task DownloadExcel()
+    {
+        
+        await ProductService.DownloadExcelFile();
+    }
+
+    private void CloseModal()
+    {
+        ShowAddProductModal = false;
+    }
+}

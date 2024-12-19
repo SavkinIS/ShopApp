@@ -1,0 +1,19 @@
+@page "/Cart"
+@using ShopApp.Services
+@inject CartService CartService
+
+<h3>Your Cart</h3>
+@if (!CartService.GetItems().Any())
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in CartService.GetItems())
+        {
+            <li>@item.Product.Name x @item.Quantity (@item.Product.Price.ToString("C"))</li>
+        }
+    </ul>
+    <p>Total: @CartService.GetTotalPrice().ToString("C")</p>
+}
