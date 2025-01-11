@@ -1,19 +1,139 @@
 @page "/Cart"
+@using ShopApp.Models
 @using ShopApp.Services
 @inject CartService CartService
+@inject NavigationManager NavigationManager
+@inject OrderService OrderService
+@inject UserService UserService
 
-<h3>Your Cart</h3>
-@if (!CartService.GetItems().Any())
+<div class="container mt-5">
+    <h3 class="mb-4">Your Cart</h3>
+
+    @if (!isCartLoaded)
 {
-    <p>Your cart is empty.</p>
+    <div class="text-center">
+        <p>Loading your cart...</p>
+    </div>
+}
+else if (!cartItems.Any())
+{
+    <div class="alert alert-info text-center" role="alert">
+        Your cart is empty.
+    </div>
 }
 else
 {
-    <ul>
-        @foreach (var item in CartService.GetItems())
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Product</th>
+                <th scope="col" class="text-center">Quantity</th>
+                <th scope="col" class="text-end">Price</th>
+                <th scope="col" class="text-end">Total</th>
+                <th scope="col" class="text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in cartItems)
+            {
+                <tr>
+                    <td class="text-center">
+                        <img src="@item.ProductImageUrl" alt="@item.ProductName" class="img-thumbnail" style="max-width: 75px;">
+                    </td>
+                    <td>@item.ProductName</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-secondary me-2" @onclick="() => UpdateQuantity(item.ProductId, -1)">-</button>
+                        @item.Quantity
+                        <button class="btn btn-sm btn-outline-secondary ms-2" @onclick="() => UpdateQuantity(item.ProductId, 1)">+</button>
+                    </td>
+                    <td class="text-end">@item.Price.ToString("C")</td>
+                    <td class="text-end">@(@item.Quantity * @item.Price).ToString("C")</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-danger" @onclick="() => RemoveItem(item.ProductId)">Remove</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Order Summary</h5>
+            <p class="card-text">
+                <strong>Total:</strong> @CartService.GetTotalPriceString()
+            </p>
+            <textarea class="form-control mb-3" @bind="@orderComment" placeholder="Add a comment to your order..."></textarea>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-warning" @onclick="ClearCart">Clear Cart</button>
+                <button class="btn btn-success" @onclick="Checkout">Checkout</button>
+            </div>
+        </div>
+    </div>
+}
+</div>
+
+@code {
+    private List<OrderItem> cartItems = new();
+    private string orderComment = "";
+    private bool isCartLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CartService.InitializeSessionAsync();
+        await CartService.LoadCartAsync();
+        cartItems = await CartService.GetItems();
+        isCartLoaded = true;
+    }
+
+    private async Task UpdateQuantity(int productId, int delta)
+    {
+        await CartService.UpdateQuantity(productId, delta);
+        cartItems = await CartService.GetItems();
+        StateHasChanged();
+    }
+
+    private async Task RemoveItem(int productId)
+    {
+        await CartService.RemoveFromCart(productId);
+        cartItems = await CartService.GetItems();
+        StateHasChanged();
+    }
+
+    private async Task ClearCart()
+    {
+        await CartService.ClearCart();
+        cartItems.Clear();
+        StateHasChanged();
+    }
+
+    private async Task Checkout()
+    {
+        if (!cartItems.Any())
         {
-            <li>@item.Product.Name x @item.Quantity (@item.Product.Price.ToString("C"))</li>
+            return;
         }
-    </ul>
-    <p>Total: @CartService.GetTotalPrice().ToString("C")</p>
+
+        if (UserService.CurrentUser == null)
+        {
+            NavigationManager.NavigateTo("/Order?fromCart=true");
+            return;
+        }
+
+        var order = new Order
+        {
+            ClientId = UserService.CurrentUser.Id,
+            Items = cartItems,
+            Total = CartService.GetTotalPrice(),
+            Comment = orderComment,
+            Status = "Pending",
+            CreatedDate = DateTime.Now
+        };
+
+        await OrderService.SaveOrder(order);
+        NavigationManager.NavigateTo("/OrderSuccess");
+    }
+
 }

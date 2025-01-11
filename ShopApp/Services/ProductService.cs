@@ -189,7 +189,4 @@ public class ProductService
             return new Result<List<Product>> { IsSuccess = false, ErrorMessage = ex.Message };
         }
     }
-
-    
-    
 }

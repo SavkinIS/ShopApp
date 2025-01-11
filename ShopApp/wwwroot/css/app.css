@@ -99,3 +99,56 @@ a, .btn-link {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+.cart-container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart-table th, .cart-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.cart-summary {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.order-comment {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.cart-actions button {
+    margin-right: 10px;
+}
+
+.btn-decrease, .btn-increase, .btn-remove {
+    padding: 5px 10px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.btn-clear {
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-checkout {
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}

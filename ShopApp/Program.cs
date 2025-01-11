@@ -20,6 +20,8 @@ builder.Services.AddSingleton<CartService>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<CartService>();
 builder.Services.AddBlazoredLocalStorage();
 //builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 //builder.Services.AddAuthorizationCore();
