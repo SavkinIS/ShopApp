@@ -83,7 +83,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SelectedImage = CurrentItem.ImageUrl;
+       
         PageControlService.IsMainBannerVisible = false;
         
         //Id = await ProductService.GetProductID();
@@ -102,6 +102,7 @@
         // Check cart for quantity (mock or service call)
         CartQuantity = CartService.GetProductsCount(CurrentItem);
         Debug.WriteLine($"Cart coumt {CartQuantity}");
+        SelectedImage = CurrentItem.ImageUrl;
         await GetTotalPrice();
     }
 
