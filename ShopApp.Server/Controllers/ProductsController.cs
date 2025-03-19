@@ -180,6 +180,7 @@ public class ProductsController : ControllerBase
                 if (existingProduct != null)
                 {
                     // Обновляем существующий продукт
+                    existingProduct.Name = name;
                     existingProduct.Category = category;
                     existingProduct.Description = description;
                     existingProduct.Price = price.Value;

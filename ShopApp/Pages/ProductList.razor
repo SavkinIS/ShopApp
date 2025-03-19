@@ -3,6 +3,7 @@
 @using ShopApp.Services
 @inject CartService CartService
 @inject ProductService ProductService
+@inject NavigationManager NavigationManager
 
 <div class="container mt-4">
     <h3 class="text-center mb-4">Our Products</h3>
@@ -65,25 +66,43 @@
     </div>
 
     <!-- Список продуктов -->
-    <div class="row">
+    <section class="production-holder">
+        
         @if (FilteredProducts().Any())
         {
             @foreach (var product in FilteredProducts())
             {
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;" />
-                        <div class="card-body d-flex flex-column">
+                <div class="production-item">
+                   
+                <div class="card">
+                    <a href="@($"/Product-item/{product.Id}")" target="_blank" style="display: block; width: 100%; height: 100%; color: inherit; text-decoration: none;">
+                        <img src="@product.ImageUrl" class="card-img" alt="@product.Name" style="height: 200px; object-fit: cover;"/>
+                        <div class="card-body">
                             <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text text-muted">@product.Description</p>
+                            <p class="card-text-desc">@product.Description</p>
                             <p class="card-text"><strong>Category:</strong> @product.Category</p>
                             <p class="card-text"><strong>Brand:</strong> @product.Brand</p>
                             <p class="card-text"><strong>Country:</strong> @product.Country</p>
                             <p class="card-text"><strong>Weight:</strong> @product.Weight</p>
-                            <p class="card-text fw-bold">@product.Price.ToString("C")</p>
-                            <button class="btn btn-primary mt-auto" @onclick="() => AddToCart(product)">Add to Cart</button>
+                            <p class="card-text-price">@product.Price.ToString("C")</p>
+
                         </div>
+                    </a>
+                    <div class="production-item-inCart">
+                        @if (ItemsInCart(product) > 0)
+                        {
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" @onclick="() =>RemoveFromCart(product)">-</button>
+                            <span class="quantity">@ItemsInCart(product)</span>
+                            <button class="quantity-btn plus" @onclick="() => AddToCart(product)">+</button>
+                        </div>
+                        }
+                        else
+                        {
+                        <button class="add-to-cart" @onclick="() => AddToCart(product)">Add to Cart</button>
+                        }
                     </div>
+                </div>
                 </div>
             }
         }
@@ -91,7 +110,7 @@
         {
             <p class="text-center">No products found.</p>
         }
-    </div>
+    </section>
 </div>
 
 @code {
@@ -133,9 +152,9 @@
     }
     
 
-    private void AddToCart(Product product)
+    private async Task AddToCart(Product product)
     {
-        CartService.AddToCart(product);
+        await CartService.AddToCart(product);
     }
 
     private void ToggleBrandSelection(ChangeEventArgs e, string brand)
@@ -153,4 +172,22 @@
         else
             SelectedCountries.Remove(country);
     }
+
+    private int ItemsInCart(Product product)
+    {
+       return CartService.GetProductsCount(product);
+    }
+
+    private async Task RemoveFromCart(Product product)
+    {
+        await CartService.UpdateQuantity(product.Id, -1);
+    }
+    
+    private void MoveTo(int itemProductId)
+    {
+        NavigationManager.NavigateTo($"/Product-item/{itemProductId}");
+        ProductService.SetProductID(itemProductId); 
+        //@onclick="() => MoveTo(product.Id)" 
+}
+
 }

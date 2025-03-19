@@ -239,7 +239,7 @@ namespace ShopApp.Server.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("SessionId")
+                    b.Property<string>("UserEmail")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -35,6 +36,7 @@ public class ProductService
         return await _httpClient.GetFromJsonAsync<IEnumerable<Product>>("api/products");
     }
 
+    
     public async Task AddProductAsync(Product product)
     {
         await AddAuthorizationHeader();
@@ -188,5 +190,22 @@ public class ProductService
         {
             return new Result<List<Product>> { IsSuccess = false, ErrorMessage = ex.Message };
         }
+    }
+
+    public async Task SetProductID(int id)
+    {
+         await _localStorage.SetItemAsync<string>("productID",id.ToString());
+    }
+    
+    public async Task<int> GetProductID()
+    {
+        var res = await  _localStorage.GetItemAsync<string>("productID");
+        Debug.WriteLine($"ERORR ID ERORR ID  {res}");
+        if (!string.IsNullOrEmpty(res))
+        {
+            return int.Parse(res);
+        }
+
+        return -999;
     }
 }

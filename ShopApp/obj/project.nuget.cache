@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "N+40bPasYqk=",
+  "dgSpecHash": "GWzF6pPxrnQ=",
   "success": true,
   "projectFilePath": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/ShopApp.csproj",
   "expectedPackageFiles": [
@@ -41,6 +41,9 @@
     "/Users/Ivan/.nuget/packages/microsoft.io.recyclablememorystream/3.0.1/microsoft.io.recyclablememorystream.3.0.1.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/microsoft.jsinterop/7.0.20/microsoft.jsinterop.7.0.20.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/microsoft.jsinterop.webassembly/7.0.20/microsoft.jsinterop.webassembly.7.0.20.nupkg.sha512",
+    "/Users/Ivan/.nuget/packages/microsoft.net.illink.analyzers/7.0.100-1.23401.1/microsoft.net.illink.analyzers.7.0.100-1.23401.1.nupkg.sha512",
+    "/Users/Ivan/.nuget/packages/microsoft.net.illink.tasks/7.0.100-1.23401.1/microsoft.net.illink.tasks.7.0.100-1.23401.1.nupkg.sha512",
+    "/Users/Ivan/.nuget/packages/microsoft.net.sdk.webassembly.pack/8.0.14/microsoft.net.sdk.webassembly.pack.8.0.14.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/microsoft.win32.systemevents/8.0.0/microsoft.win32.systemevents.8.0.0.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/system.componentmodel.annotations/5.0.0/system.componentmodel.annotations.5.0.0.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/system.drawing.common/8.0.4/system.drawing.common.8.0.4.nupkg.sha512",

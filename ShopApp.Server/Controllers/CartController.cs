@@ -14,11 +14,11 @@ public class CartController : ControllerBase
         _context = context;
     }
 
-    [HttpGet("{sessionId}")]
-    public async Task<IActionResult> GetCart(string sessionId)
+    [HttpGet("{userEmail}")]
+    public async Task<IActionResult> GetCart(string userEmail)
     {
         var items = await _context.CartItems
-            .Where(c => c.SessionId == sessionId)
+            .Where(c => c.UserEmail == userEmail)
             .ToListAsync();
         return Ok(items);
     }
@@ -27,7 +27,7 @@ public class CartController : ControllerBase
     public async Task<IActionResult> AddOrUpdateItem([FromBody] CartItem item)
     {
         var existingItem = await _context.CartItems
-            .FirstOrDefaultAsync(c => c.SessionId == item.SessionId && c.ProductId == item.ProductId);
+            .FirstOrDefaultAsync(c => c.UserEmail == item.UserEmail && c.ProductId == item.ProductId);
 
         if (existingItem != null)
         {
@@ -50,10 +50,10 @@ public class CartController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("{sessionId}")]
-    public async Task<IActionResult> ClearCart(string sessionId)
+    [HttpDelete("{userEmail}")]
+    public async Task<IActionResult> ClearCart(string userEmail)
     {
-        var items = _context.CartItems.Where(c => c.SessionId == sessionId);
+        var items = _context.CartItems.Where(c => c.UserEmail == userEmail);
         _context.CartItems.RemoveRange(items);
         await _context.SaveChangesAsync();
         return Ok();

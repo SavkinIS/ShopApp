@@ -1,0 +1,177 @@
+@page "/Product-item/{Id:int}"
+@using System.Diagnostics
+@using ShopApp.Models
+@using ShopApp.Services
+@inject ProductService ProductService
+@inject CartService CartService
+@inject PageControlService PageControlService
+
+@if (CurrentItem != null)
+{
+     <section class="product-page">
+        <div class="product-container">
+            <div class="product-image">
+                <img src="@SelectedImage" alt="Product Image">
+                <div class="small-images">
+                    <img src="Knut1.png" alt="Small Image 1" onclick="@ChangeSelectedImage("Knut1.png")">
+                    <img src="Knut2.png" alt="Small Image 2" onclick="@ChangeSelectedImage("Knut2.png")">
+                    <img src="products.png" alt="Small Image 3" onclick="@ChangeSelectedImage("products.png")">
+                    <img src="Clothers.png" alt="Small Image 4" onclick="@ChangeSelectedImage("Clothers.png")">
+                </div>
+            </div>
+            <div class="product-details">
+                <h1>@CurrentItem.Name</h1>
+                <p class="price"> @CurrentItem.Price.ToString("C") ₽</p>
+                <div class="specs">
+                    <p><strong>Состав:</strong> 100% шерсть</p>
+                    <p><strong>Вес:</strong> 100 г</p>
+                    <p><strong>Длина:</strong> 200 м</p>
+                </div>
+                @if (CartQuantity > 0)
+                {
+                    <div class="quantity-control">
+                        <button class="quantity-btn minus" @onclick="DecreaseQuantity">-</button>
+                        <span class="quantity">@CartQuantity</span>
+                        <button class="quantity-btn plus" @onclick="IncreaseQuantity">+</button>
+                    </div>
+                    <div style="margin-top: 10px">
+                        <p><strong>Цена:</strong>@ItemsPrice</p>
+                    </div>
+                }
+                else
+                {
+                    <button class="add-to-cart" @onclick="AddToCart">Add to Cart</button>
+                }
+            </div>
+        </div>
+
+        <!-- Блок с цветами -->
+        <div class="color-options">
+            <div class="color-option" style="background-color: #ff8b4b;"></div>
+            <div class="color-option" style="background-color: #e59f71;"></div>
+            <div class="color-option" style="background-color: #d6895f;"></div>
+            <div class="color-option" style="background-color: #c5734d;"></div>
+            <div class="color-option" style="background-color: #b35d3b;"></div>
+            <div class="color-option" style="background-color: #a14729;"></div>
+            <div class="color-option" style="background-color: #8f3117;"></div>
+            <div class="color-option" style="background-color: #7d1b05;"></div>
+            <div class="color-option" style="background-color: #6b0500;"></div>
+            <div class="color-option" style="background-color: #590000;"></div>
+        </div>
+
+        <!-- Блок с описанием -->
+        <div class="description-block">
+            <p>
+                @CurrentItem.Description
+                @* Этот мягкий и пушистый клубочек идеально подходит для создания теплых и уютных вещей.  *@
+                @* Изготовлен из 100% натуральной шерсти, он обеспечивает комфорт и долговечность.  *@
+                @* Цвет: теплый оранжевый с оттенками коричневого. *@
+            </p>
+        </div>
+    </section>
+    
+}
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product CurrentItem;
+    private string SelectedImage { get; set; }
+    private int CartQuantity { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SelectedImage = CurrentItem.ImageUrl;
+        PageControlService.IsMainBannerVisible = false;
+        
+        //Id = await ProductService.GetProductID();
+        if (Id <= 0)
+            return;
+        Console.WriteLine($"ERORR ID ERORR ID  {Id}");
+        // Fetch product details by ID (mock or service call)
+        var products = (await ProductService.GetProductsAsync()).ToList();
+        Product item = products.First(p => p.Id == Id);
+        if (item != null)
+            CurrentItem = item;
+        else
+            return;
+        //SelectedImage = CurrentItem.Images.FirstOrDefault();
+
+        // Check cart for quantity (mock or service call)
+        CartQuantity = CartService.GetProductsCount(CurrentItem);
+        Debug.WriteLine($"Cart coumt {CartQuantity}");
+        await GetTotalPrice();
+    }
+
+    private async Task GetTotalPrice()
+    {
+        if (CartQuantity > 0)
+        {
+            var cartItems = await CartService.GetItems();
+            if (cartItems != null)
+            {
+                for (int i = 0; i < cartItems.Count; i++)
+                {
+                    if (cartItems[i].ProductId == Id)
+                    {
+                        ItemsPrice = cartItems[i].TotalPrice;
+                        return;
+                    }
+                }
+            }
+          
+        }
+    }
+
+    public string ItemsPrice { get; set; }
+
+    public void Dispose()
+    {
+        PageControlService.IsMainBannerVisible = true;
+    }
+
+    private async Task AddToCart()
+    {
+        CartService.AddToCart(CurrentItem, 1);
+        CartQuantity++;
+        await GetTotalPrice();
+    }
+
+    private async Task IncreaseQuantity()
+    {
+        await CartService.UpdateQuantity(CurrentItem.Id, 1);
+        CartQuantity =  CartService.GetProductsCount(CurrentItem);
+        await GetTotalPrice();
+    }
+
+    private async Task DecreaseQuantity()
+    {
+        if (CartQuantity > 0)
+        {
+            await CartService.UpdateQuantity(CurrentItem.Id, -1);
+            CartQuantity =  CartService.GetProductsCount(CurrentItem);
+            await GetTotalPrice();
+        }
+        else
+        {
+            ItemsPrice = "";
+        }
+    }
+
+    
+    private int ItemsInCart()
+    {
+        CartQuantity =  CartService.GetProductsCount(CurrentItem);
+        return CartQuantity;
+    }
+
+    private string ChangeSelectedImage(string imagSrc)
+    {
+        string previuosImg = SelectedImage;
+        SelectedImage = imagSrc;
+        return previuosImg;
+    }
+
+}

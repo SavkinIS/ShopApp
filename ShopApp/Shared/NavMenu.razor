@@ -1,62 +1,101 @@
 ﻿@using ShopApp.Services
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">ShopApp</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
+@inject PageControlService PageControl 
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Cart">
-                <span class="oi oi-plus" aria-hidden="true"></span> Cart
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/ProductList">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> ProductList
-            </NavLink>
-        </div>
-        @if (UserService.CurrentUser == null)
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="/Login">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Login
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="/Register">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Register
-                </NavLink>
-            </div>
-        }
-        else
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="/Profile">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Profile
-                </NavLink>
-            </div>
-        }
-    </nav>
+<header>
+<div class="logo">Knitting Store</div>
+<button class="menu-button" onclick="toggleMenu()">Menu</button>
+<nav>
+    <NavLink class="nav-link" href="/Cart">
+        <span class="oi oi-plus" aria-hidden="true"></span> Cart
+    </NavLink>
+    <NavLink class="nav-link" href="/ProductList">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> ProductList
+    </NavLink>
+    @if (UserService.CurrentUser == null)
+    {
+        <NavLink class="nav-link" href="/Login">
+            <span class="oi oi-account-login" aria-hidden="true"></span> Login
+        </NavLink>
+        <NavLink class="nav-link" href="/Register">
+            <span class="oi oi-person" aria-hidden="true"></span> Register
+        </NavLink>
+    }
+    else
+    {
+        <NavLink class="nav-link" href="/Profile">
+            <span class="oi oi-person" aria-hidden="true"></span> Profile
+        </NavLink>
+    }
+</nav>
+<div class="mobile-nav">
+    <NavLink class="nav-link" href="/Cart">
+        <span class="oi oi-plus" aria-hidden="true"></span> Cart
+    </NavLink>
+    <NavLink class="nav-link" href="/ProductList">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> ProductList
+    </NavLink>
+    @if (UserService.CurrentUser == null)
+    {
+    <NavLink class="nav-link" href="/Login">
+        <span class="oi oi-account-login" aria-hidden="true"></span> Login
+    </NavLink>
+    <NavLink class="nav-link" href="/Register">
+        <span class="oi oi-person" aria-hidden="true"></span> Register
+    </NavLink>
+    }
+    else
+    {
+    <NavLink class="nav-link" href="/Profile">
+        <span class="oi oi-person" aria-hidden="true"></span> Profile
+    </NavLink>
+    }
 </div>
+</header>
+
+@if (PageControl.IsMainBannerVisible)
+{
+    <section class="main-banner">
+
+    </section>
+}
+
+<section class="shopName">
+    <h1>Клубочки Первна @PageControl.IsMainBannerVisible </h1>
+    <p>Your go-to place for all your knitting and crafting needs!</p>
+
+</section>
+
+<section class="gallery">
+    <NavLink class="gallery-item" style="background-image: url('./Clothers.png');" href="/ProductList">
+    </NavLink>
+    <NavLink class="gallery-item" style="background-image: url('./products.png');" href="/ProductList">
+    </NavLink>
+    <NavLink class="gallery-item" style="background-image: url('./Knut2.png');" href="/ProductList">
+    </NavLink>
+    <NavLink class="gallery-item" style="background-image: url('./Knut1.png');" href="/ProductList">
+    </NavLink>
+</section>
 
 @code {
-    private bool collapseNavMenu = true;
+private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-
+private void ToggleNavMenu()
+{
+collapseNavMenu = !collapseNavMenu;
 }
+
+protected override void OnInitialized()
+{
+    PageControl.OnChange += StateHasChanged;
+}
+
+public void Dispose()
+{
+    PageControl.OnChange -= StateHasChanged;
+}
+}
+
+<style>
+   
+</style>

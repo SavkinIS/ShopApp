@@ -31,5 +31,7 @@ namespace ShopApp.Models
         public int Quantity { get; set; } // Количество
         public decimal Price { get; set; } // Цена за единицу
         public string ProductImageUrl { get; set; }
+        
+        public string TotalPrice => (Quantity * Price).ToString("C");
     }
 }

@@ -1,4 +1,8 @@
 is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
 build_property.TargetFramework = net7.0
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = 
@@ -10,6 +14,8 @@ build_property._SupportedPlatformList = browser
 build_property.RootNamespace = ShopApp
 build_property.RootNamespace = ShopApp
 build_property.ProjectDir = /Users/Ivan/RiderProjects/ShopApp/ShopApp/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
@@ -34,6 +40,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/ProductList.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdExpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/ProductView.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdFZpZXcucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Profile.razor]

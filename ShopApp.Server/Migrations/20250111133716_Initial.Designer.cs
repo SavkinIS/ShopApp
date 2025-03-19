@@ -11,8 +11,8 @@ using ShopApp.Server.Data;
 namespace ShopApp.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250106185419_Add cart")]
-    partial class Addcart
+    [Migration("20250111133716_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,7 +242,7 @@ namespace ShopApp.Server.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("SessionId")
+                    b.Property<string>("UserEmail")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

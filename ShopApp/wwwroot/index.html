@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+<head>    
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>ShopApp</title>
@@ -10,9 +10,17 @@
     <link href="css/app.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="ShopApp.styles.css" rel="stylesheet" />
+    
 </head>
+<script>
+    function toggleMenu() {
+        const mobileNav = document.querySelector('.mobile-nav');
+        mobileNav.style.display = mobileNav.style.display === 'flex' ? 'none' : 'flex';        
+    }
+</script>
 
 <body>
+ <h1>dasdad</h1>
     <div id="app">
         <svg class="loading-progress">
             <circle r="40%" cx="50%" cy="50%" />

@@ -1,8 +1,16 @@
 {
   "Files": [
     {
-      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/.DS_Store",
-      "PackagePath": "staticwebassets/.DS_Store"
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/Clothers.png",
+      "PackagePath": "staticwebassets/images/Clothers.png"
+    },
+    {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/Knut1.png",
+      "PackagePath": "staticwebassets/images/Knut1.png"
+    },
+    {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/Knut2.png",
+      "PackagePath": "staticwebassets/images/Knut2.png"
     },
     {
       "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/empty_part.png",
@@ -11,6 +19,10 @@
     {
       "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/i.webp",
       "PackagePath": "staticwebassets/images/i.webp"
+    },
+    {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/products.png",
+      "PackagePath": "staticwebassets/images/products.png"
     },
     {
       "Id": "obj/Debug/net7.0/staticwebassets/msbuild.ShopApp.Server.Microsoft.AspNetCore.StaticWebAssets.props",
