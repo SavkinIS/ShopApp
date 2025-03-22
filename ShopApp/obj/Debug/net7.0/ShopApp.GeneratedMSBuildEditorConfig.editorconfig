@@ -30,8 +30,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQWRtaW5QYW5lbC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Cart.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ2FydC5yYXpvcg==
+[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Login.razor]
@@ -42,16 +42,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdExpc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/ProductView.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdFZpZXcucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Profile.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZmlsZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Register.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUmVnaXN0ZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Test.razor]
@@ -65,6 +57,18 @@ build_metadata.AdditionalFiles.CssScope =
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Cart.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ2FydC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-hz0hu878f8
+
+[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/ProductView.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdFZpZXcucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-q9hbb3eopk
+
+[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUmVnaXN0ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-48kk4kw2tr
 
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/Shared/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXQucmF6b3I=

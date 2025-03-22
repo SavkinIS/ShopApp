@@ -7,141 +7,124 @@
 @inject UserService UserService
 @inject ProductService ProductService
 
+
 <div class="container mt-5">
-    <h3 class="mb-4">Your Cart</h3>
+    <h3 class="mb-4">Ваша корзина</h3>
 
     @if (!isCartLoaded)
-{
+    {
     <div class="text-center">
-        <p>Loading your cart...</p>
+        <p>Загрузка корзины...</p>
     </div>
-}
-else if (!cartItems.Any())
-{
+    }
+    else if (!cartItems.Any())
+    {
     <div class="alert alert-info text-center" role="alert">
-        Your cart is empty.
+        Ваша корзина пуста.
     </div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead class="table-dark">
-            <tr>
-                <th scope="col">Image</th>
-                <th scope="col">Product</th>
-                <th scope="col" class="text-center">Quantity</th>
-                <th scope="col" class="text-end">Price</th>
-                <th scope="col" class="text-end">Total</th>
-                <th scope="col" class="text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var item in cartItems)
-            {
-                <tr>
-                    <td class="text-center">
-                        <img src="@item.ProductImageUrl" alt="@item.ProductName" class="img-thumbnail" style="max-width: 75px;" @onclick="() => MoveTo(item.ProductId)">
-                    </td>
-                    <td>@item.ProductName</td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-outline-secondary me-2" @onclick="() => UpdateQuantity(item.ProductId, -1)">-</button>
-                        @item.Quantity
-                        <button class="btn btn-sm btn-outline-secondary ms-2" @onclick="() => UpdateQuantity(item.ProductId, 1)">+</button>
-                    </td>
-                    <td class="text-end">@item.Price.ToString("C")</td>
-                    <td class="text-end">@item.TotalPrice</td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-danger" @onclick="() => RemoveItem(item.ProductId)">Remove</button>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+    }
+    else
+    {
+    <div class="cart-items">
+        @foreach (var item in cartItems)
+        {
+        <div class="cart-card">
+            <img src="@item.ProductImageUrl" alt="@item.ProductName" class="cart-img" @onclick="() => MoveTo(item.ProductId)" />
+            <div class="cart-details">
+                <h5>@item.ProductName</h5>
+                <p>Цена: @item.Price.ToString("C")</p>
+                <div class="quantity-control">
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => UpdateQuantity(item.ProductId, -1)">-</button>
+                    <span>@item.Quantity</span>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => UpdateQuantity(item.ProductId, 1)">+</button>
+                </div>
+                <p>Итого: @item.TotalPrice</p>
+                <button class="btn btn-sm btn-danger" @onclick="() => RemoveItem(item.ProductId)">Удалить</button>
+            </div>
+        </div>
+        }
     </div>
 
     <div class="card mt-4">
         <div class="card-body">
-            <h5 class="card-title">Order Summary</h5>
+            <h5 class="card-title">Итог заказа</h5>
             <p class="card-text">
-                <strong>Total:</strong> @CartService.GetTotalPriceString()
+                <strong>Всего:</strong> @CartService.GetTotalPriceString()
             </p>
-            <textarea class="form-control mb-3" @bind="@orderComment" placeholder="Add a comment to your order..."></textarea>
+            <textarea class="form-control mb-3" @bind="@orderComment" placeholder="Добавьте комментарий к заказу..."></textarea>
             <div class="d-flex justify-content-between">
-                <button class="btn btn-warning" @onclick="ClearCart">Clear Cart</button>
-                <button class="btn btn-success" @onclick="Checkout">Checkout</button>
+                <button class="btn btn-warning" @onclick="ClearCart">Очистить корзину</button>
+                <button class="btn btn-success" @onclick="Checkout">Оформить заказ</button>
             </div>
         </div>
     </div>
-}
+    }
 </div>
 
 @code {
-    private List<OrderItem> cartItems = new();
-    private string orderComment = "";
-    private bool isCartLoaded = false;
+private List<OrderItem> cartItems = new();
+private string orderComment = "";
+private bool isCartLoaded = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        
-        await CartService.LoadUser();
-        await CartService.LoadCartAsync();
-        cartItems = await CartService.GetItems();
-        isCartLoaded = true;
-    }
+protected override async Task OnInitializedAsync()
+{
+await CartService.LoadUser();
+await CartService.LoadCartAsync();
+cartItems = await CartService.GetItems();
+isCartLoaded = true;
+}
 
-    private async Task UpdateQuantity(int productId, int delta)
-    {
-        await CartService.UpdateQuantity(productId, delta);
-        cartItems = await CartService.GetItems();
-        StateHasChanged();
-    }
+private async Task UpdateQuantity(int productId, int delta)
+{
+await CartService.UpdateQuantity(productId, delta);
+cartItems = await CartService.GetItems();
+StateHasChanged();
+}
 
-    private async Task RemoveItem(int productId)
-    {
-        await CartService.RemoveFromCart(productId);
-        cartItems = await CartService.GetItems();
-        StateHasChanged();
-    }
+private async Task RemoveItem(int productId)
+{
+await CartService.RemoveFromCart(productId);
+cartItems = await CartService.GetItems();
+StateHasChanged();
+}
 
-    private async Task ClearCart()
-    {
-        await CartService.ClearCart();
-        cartItems.Clear();
-        StateHasChanged();
-    }
+private async Task ClearCart()
+{
+await CartService.ClearCart();
+cartItems.Clear();
+StateHasChanged();
+}
 
-    private async Task Checkout()
-    {
-        if (!cartItems.Any())
-        {
-            return;
-        }
+private async Task Checkout()
+{
+if (!cartItems.Any())
+{
+return;
+}
 
-        if (UserService.CurrentUser == null)
-        {
-            NavigationManager.NavigateTo("/Order?fromCart=true");
-            return;
-        }
+if (UserService.CurrentUser == null)
+{
+NavigationManager.NavigateTo("/Order?fromCart=true");
+return;
+}
 
-        var order = new Order
-        {
-            ClientId = UserService.CurrentUser.Id,
-            Items = cartItems,
-            Total = CartService.GetTotalPrice(),
-            Comment = orderComment,
-            Status = "Pending",
-            CreatedDate = DateTime.Now
-        };
+var order = new Order
+{
+ClientId = UserService.CurrentUser.Id,
+Items = cartItems,
+Total = CartService.GetTotalPrice(),
+Comment = orderComment,
+Status = "Pending",
+CreatedDate = DateTime.Now
+};
 
-        await OrderService.SaveOrder(order);
-        NavigationManager.NavigateTo("/OrderSuccess");
-    }
+await OrderService.SaveOrder(order);
+NavigationManager.NavigateTo("/OrderSuccess");
+}
 
-    private void MoveTo(int itemProductId)
-    {
-        NavigationManager.NavigateTo($"/Product-item/{itemProductId}");
-        ProductService.SetProductID(itemProductId);
-    }
-
+private void MoveTo(int itemProductId)
+{
+NavigationManager.NavigateTo($"/Product-item/{itemProductId}");
+ProductService.SetProductID(itemProductId);
+}
 }

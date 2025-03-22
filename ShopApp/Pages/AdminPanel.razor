@@ -35,6 +35,7 @@
                         <th>#</th>
                         <th>Name</th>
                         <th>Category</th>
+                        <th>Color</th>
                         <th>Price</th>
                         <th>Count</th>
                         <th>Brand</th>
@@ -49,6 +50,7 @@
                             <td class="text-center">@product.Id</td>
                             <td>@product.Name</td>
                             <td>@product.Category</td>
+                            <td>@product.Color</td>
                             <td>@product.Price.ToString("C")</td>
                             <td class="text-center">@product.Count</td>
                             <td>@product.Brand</td>
@@ -112,6 +114,10 @@
                                     <input type="text" class="form-control" @bind="ProductModel.Category" />
                                 </div>
                                 <div class="col-md-6 mb-3">
+                                    <label class="form-label">Color</label>
+                                    <input type="text" class="form-control" @bind="ProductModel.Color" />
+                                </div>
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label">Brand</label>
                                     <input type="text" class="form-control" @bind="ProductModel.Brand" />
                                 </div>
@@ -129,7 +135,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Weight</label>
-                                    <input type="text" class="form-control" @bind="ProductModel.Weight" />
+                                    <input type="text" class="form-control" @bind="ProductModel.WeightGramm" />
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label class="form-label">Description</label>
@@ -204,7 +210,8 @@
             Brand = product.Brand,
             Country = product.Country,
             Description = product.Description,
-            Weight = product.Weight,
+            WeightGramm = product.WeightGramm,
+            Color = product.Color,
             ImageUrl = product.ImageUrl
         };
         EditMode = true;

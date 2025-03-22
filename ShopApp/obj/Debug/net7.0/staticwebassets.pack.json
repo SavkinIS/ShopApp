@@ -89,6 +89,10 @@
       "PackagePath": "staticwebassets/index.html"
     },
     {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/js/site.js",
+      "PackagePath": "staticwebassets/js/site.js"
+    },
+    {
       "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/products.png",
       "PackagePath": "staticwebassets/products.png"
     },

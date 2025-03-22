@@ -80,10 +80,11 @@
                         <div class="card-body">
                             <h5 class="card-title">@product.Name</h5>
                             <p class="card-text-desc">@product.Description</p>
+                            <p class="card-text"><strong>Цвет:</strong> @product.Color</p>
                             <p class="card-text"><strong>Category:</strong> @product.Category</p>
                             <p class="card-text"><strong>Brand:</strong> @product.Brand</p>
                             <p class="card-text"><strong>Country:</strong> @product.Country</p>
-                            <p class="card-text"><strong>Weight:</strong> @product.Weight</p>
+                            <p class="card-text"><strong>Weight:</strong> @product.WeightGramm.ToString("##,###")</p>
                             <p class="card-text-price">@product.Price.ToString("C")</p>
 
                         </div>

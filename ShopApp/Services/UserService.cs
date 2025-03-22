@@ -12,7 +12,11 @@ public class UserService
     {
         _instance = this;
     }
-    public static User? CurrentUser => _instance?._currentUser;
+    public static User? CurrentUser
+    {
+        get => _instance?._currentUser;
+        set => _instance._currentUser = value;
+    }
 
     public bool Register(User user)
     {

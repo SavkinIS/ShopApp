@@ -1,101 +1,123 @@
-﻿@using ShopApp.Services
-@inject PageControlService PageControl 
+﻿@using ShopApp.Models
+@using ShopApp.Services
+@inject UserService UserService
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
 
 <header>
-<div class="logo">Knitting Store</div>
-<button class="menu-button" onclick="toggleMenu()">Menu</button>
-<nav>
-    <NavLink class="nav-link" href="/Cart">
-        <span class="oi oi-plus" aria-hidden="true"></span> Cart
-    </NavLink>
-    <NavLink class="nav-link" href="/ProductList">
-        <span class="oi oi-list-rich" aria-hidden="true"></span> ProductList
-    </NavLink>
-    @if (UserService.CurrentUser == null)
-    {
-        <NavLink class="nav-link" href="/Login">
-            <span class="oi oi-account-login" aria-hidden="true"></span> Login
+    <div class="logo">Knitting Store</div>
+    <button class="menu-button" @onclick="ToggleMenu">Menu</button>
+    <nav class="@(collapseNavMenu ? "collapse" : "")">
+        <NavLink class="nav-link" href="/Cart">
+            <span class="oi oi-plus" aria-hidden="true"></span> Cart
         </NavLink>
-        <NavLink class="nav-link" href="/Register">
-            <span class="oi oi-person" aria-hidden="true"></span> Register
+        <NavLink class="nav-link" href="/ProductList">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> ProductList
         </NavLink>
-    }
-    else
-    {
-        <NavLink class="nav-link" href="/Profile">
-            <span class="oi oi-person" aria-hidden="true"></span> Profile
-        </NavLink>
-    }
-</nav>
-<div class="mobile-nav">
-    <NavLink class="nav-link" href="/Cart">
-        <span class="oi oi-plus" aria-hidden="true"></span> Cart
-    </NavLink>
-    <NavLink class="nav-link" href="/ProductList">
-        <span class="oi oi-list-rich" aria-hidden="true"></span> ProductList
-    </NavLink>
-    @if (UserService.CurrentUser == null)
-    {
-    <NavLink class="nav-link" href="/Login">
-        <span class="oi oi-account-login" aria-hidden="true"></span> Login
-    </NavLink>
-    <NavLink class="nav-link" href="/Register">
-        <span class="oi oi-person" aria-hidden="true"></span> Register
-    </NavLink>
-    }
-    else
-    {
-    <NavLink class="nav-link" href="/Profile">
-        <span class="oi oi-person" aria-hidden="true"></span> Profile
-    </NavLink>
-    }
-</div>
+        @if (UserService.CurrentUser == null)
+        {
+            <button class="nav-link btn-link" @onclick="ShowLoginModal">
+                <span class="oi oi-account-login" aria-hidden="true"></span> Войти
+            </button>
+        }
+        else
+        {
+            <NavLink class="nav-link" href="/Profile">
+                <span class="oi oi-person" aria-hidden="true"></span> Profile
+            </NavLink>
+            <button class="nav-link btn-link" @onclick="Logout">Выйти</button>
+        }
+    </nav>
 </header>
 
-@if (PageControl.IsMainBannerVisible)
+@if (showLoginModal)
 {
-    <section class="main-banner">
-
-    </section>
+    <div class="modal" @onclick="CloseLoginModal">
+        <div class="modal-content" @onclick:stopPropagation>
+            <h3>Вход</h3>
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                    <label>Email</label>
+                    <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="Email" />
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <InputText @bind-Value="loginModel.Password" class="form-control" type="password" placeholder="Пароль" />
+                </div>
+                <div class="form-group">
+                    <label>
+                        <InputCheckbox @bind-Value="loginModel.RememberMe" /> Запомнить меня
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+                <button type="button" class="btn btn-secondary" @onclick="ShowRegisterModal">Регистрация</button>
+            </EditForm>
+        </div>
+    </div>
 }
-
-<section class="shopName">
-    <h1>Клубочки Первна @PageControl.IsMainBannerVisible </h1>
-    <p>Your go-to place for all your knitting and crafting needs!</p>
-
-</section>
-
-<section class="gallery">
-    <NavLink class="gallery-item" style="background-image: url('./Clothers.png');" href="/ProductList">
-    </NavLink>
-    <NavLink class="gallery-item" style="background-image: url('./products.png');" href="/ProductList">
-    </NavLink>
-    <NavLink class="gallery-item" style="background-image: url('./Knut2.png');" href="/ProductList">
-    </NavLink>
-    <NavLink class="gallery-item" style="background-image: url('./Knut1.png');" href="/ProductList">
-    </NavLink>
-</section>
 
 @code {
-private bool collapseNavMenu = true;
+    private bool collapseNavMenu = false; // По умолчанию меню открыто
+    private bool showLoginModal = false;
+    private LoginModel loginModel = new();
 
+    private class LoginModel
+    {
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+        public bool RememberMe { get; set; }
+    }
 
-private void ToggleNavMenu()
-{
-collapseNavMenu = !collapseNavMenu;
+    private void ToggleMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void ShowLoginModal()
+    {
+        showLoginModal = true;
+    }
+
+    private void CloseLoginModal()
+    {
+        showLoginModal = false;
+        loginModel = new();
+    }
+
+    private void ShowRegisterModal()
+    {
+        CloseLoginModal();
+        NavigationManager.NavigateTo("/Register");
+    }
+
+    private async Task HandleLogin()
+    {
+        if (await AuthService.Login(loginModel.Email, loginModel.Password, loginModel.RememberMe))
+        {
+            var authUser = await AuthService.GetCurrentUserAsync();
+            if (authUser != null)
+            {
+                UserService.CurrentUser = new User
+                {
+                    Email = authUser.Email,
+                    Username = authUser.UserName
+                };
+            }
+            CloseLoginModal();
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Login failed");
+        }
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        UserService.CurrentUser = null;
+        NavigationManager.NavigateTo("/");
+    }
 }
-
-protected override void OnInitialized()
-{
-    PageControl.OnChange += StateHasChanged;
-}
-
-public void Dispose()
-{
-    PageControl.OnChange -= StateHasChanged;
-}
-}
-
-<style>
-   
-</style>

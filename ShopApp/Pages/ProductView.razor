@@ -23,8 +23,9 @@
                 <h1>@CurrentItem.Name</h1>
                 <p class="price"> @CurrentItem.Price.ToString("C") ₽</p>
                 <div class="specs">
+                    <p><strong>Цвет:</strong>@CurrentItem.Color</p>
                     <p><strong>Состав:</strong> 100% шерсть</p>
-                    <p><strong>Вес:</strong> 100 г</p>
+                    <p><strong>Вес:</strong> @CurrentItem.WeightGramm г</p>
                     <p><strong>Длина:</strong> 200 м</p>
                 </div>
                 @if (CartQuantity > 0)

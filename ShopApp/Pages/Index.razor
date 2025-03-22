@@ -1,0 +1,32 @@
+@page "/"
+@using ShopApp.Services
+@inject PageControlService PageControl
+
+@if (PageControl.IsMainBannerVisible)
+{
+    <section class="main-banner"></section>
+}
+
+<section class="shopName">
+    <h1>Клубочки Первна @PageControl.IsMainBannerVisible</h1>
+    <p>Your go-to place for all your knitting and crafting needs!</p>
+</section>
+
+<section class="gallery">
+    <NavLink class="gallery-item" style="background-image: url('./Clothers.png');" href="/ProductList"></NavLink>
+    <NavLink class="gallery-item" style="background-image: url('./products.png');" href="/ProductList"></NavLink>
+    <NavLink class="gallery-item" style="background-image: url('./Knut2.png');" href="/ProductList"></NavLink>
+    <NavLink class="gallery-item" style="background-image: url('./Knut1.png');" href="/ProductList"></NavLink>
+</section>
+
+@code {
+    protected override void OnInitialized()
+    {
+        PageControl.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        PageControl.OnChange -= StateHasChanged;
+    }
+}

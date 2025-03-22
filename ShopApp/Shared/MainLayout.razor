@@ -1,13 +1,13 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
-    <main>
-       
-        <article>
-            @Body
-        </article>
-    </main>
+<NavMenu />
+
+<div class="main">
+    @Body
 </div>
+
+<style>
+    .main {
+        margin-top: 80px; /* Отступ для фиксированного header */
+    }
+</style>

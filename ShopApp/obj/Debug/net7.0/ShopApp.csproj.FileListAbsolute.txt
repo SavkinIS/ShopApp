@@ -890,3 +890,6 @@
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/dro4500wet.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/trvdwn1v7w.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/ShopApp.csproj.Up2Date
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/Cart.razor.rz.scp.css
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/Register.razor.rz.scp.css
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/ProductView.razor.rz.scp.css

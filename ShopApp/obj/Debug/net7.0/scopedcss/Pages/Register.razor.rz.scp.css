@@ -1,0 +1,36 @@
+.container[b-48kk4kw2tr] {
+    max-width: 400px; /* Ограничиваем ширину формы */
+    margin: 0 auto; /* Центрируем форму */
+    padding: 20px;
+    background: white; /* Белый фон, как в модальном окне */
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Тень, как в модальном окне */
+    margin-top: 100px; /* Учитываем фиксированный header */
+}
+
+.form-group[b-48kk4kw2tr] {
+    margin-bottom: 15px;
+}
+
+.form-control[b-48kk4kw2tr] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.button-group[b-48kk4kw2tr] {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    width: 200px;
+    margin-left: auto; /* Центрируем по горизонтали */
+    margin-right: auto; /* Центрируем по горизонтали */
+}
+
+.button-group .btn-primary[b-48kk4kw2tr],
+.button-group .btn-secondary[b-48kk4kw2tr] {
+    width: 100%;
+    text-align: center;
+}

@@ -78,7 +78,7 @@ public class ProductsController : ControllerBase
         existingProduct.Brand = updatedProduct.Brand;
         existingProduct.Country = updatedProduct.Country;
         existingProduct.Count = updatedProduct.Count;
-        existingProduct.Weight = updatedProduct.Weight;
+        existingProduct.WeightGramm = updatedProduct.WeightGramm;
 
         _context.Products.Update(existingProduct);
         await _context.SaveChangesAsync();
@@ -150,7 +150,7 @@ public class ProductsController : ControllerBase
             {
                 int id = -1;
 
-                //Id	Name	Description	Price	ImageUrl	Category	Brand	Country	Weight	Count
+                //1Id 2Name 3Description 4Price 6Category 7Brand 8Country 9Weight 19Count 10ImageUrl 11color
                 id = int.TryParse(worksheet.Cells[row, 1]?.Text, out int parsedID) ? parsedID : -1;
                 string? name = worksheet.Cells[row, 2]?.Text?.Trim();
                 string? description = worksheet.Cells[row, 3]?.Text?.Trim();
@@ -166,6 +166,7 @@ public class ProductsController : ControllerBase
                     ? parsedCount
                     : (int?)null;
                 string? imageUrl = worksheet.Cells[row, 10]?.Text?.Trim();
+                string? color = worksheet.Cells[row, 11]?.Text?.Trim();
 
                 if (string.IsNullOrEmpty(name) || price == null || count == null)
                 {
@@ -174,11 +175,15 @@ public class ProductsController : ControllerBase
 
                 Product existingProduct = null;
                 if (id > 0)
+                {
                     // Ищем продукт в базе данных
                     existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+                }
+                   
 
                 if (existingProduct != null)
                 {
+                     Single.TryParse(weight, out float parsedWeight);
                     // Обновляем существующий продукт
                     existingProduct.Name = name;
                     existingProduct.Category = category;
@@ -187,11 +192,13 @@ public class ProductsController : ControllerBase
                     existingProduct.Count = count.Value;
                     existingProduct.Country = country;
                     existingProduct.Brand = brand;
-                    existingProduct.Weight = weight;
+                    existingProduct.WeightGramm = parsedWeight;
+                    existingProduct.Color = color;
                     _context.Products.Update(existingProduct);
                 }
                 else
                 {
+                    Single.TryParse(weight, out float parsedWeight);
                     // Добавляем новый продукт
                     Product newProduct = new Product
                     {
@@ -202,7 +209,8 @@ public class ProductsController : ControllerBase
                         Count = count.Value,
                         Country = country,
                         Brand = brand,
-                        Weight = weight,
+                        WeightGramm = parsedWeight,
+                        Color = color,
                     };
                     _context.Products.Add(newProduct);
                 }

@@ -12,6 +12,7 @@ body {
     margin: 0;
 }
 
+/* Header and Navigation */
 header {
     display: flex;
     justify-content: space-between;
@@ -35,13 +36,17 @@ nav {
     gap: 15px;
 }
 
-nav span {
+nav.collapse {
+    display: none; /* Скрываем меню, если collapseNavMenu = true */
+}
+
+nav .nav-link {
     text-decoration: none;
     color: #2a2a2a;
     font-weight: bold;
 }
 
-nav span:hover {
+nav .nav-link:hover {
     text-decoration: underline;
 }
 
@@ -59,30 +64,80 @@ nav span:hover {
     background-color: #d6895f;
 }
 
-.mobile-nav {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    position: absolute;
-    top: 100%;
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
     left: 0;
     width: 100%;
-    background-color: #f3d2b2;
-    padding: 10px;
-    border-top: 2px solid #e5c0a6;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.mobile-nav  span {
-    text-decoration: none;
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: #e59f71;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #d6895f;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-link {
+    background: none;
+    border: none;
     color: #2a2a2a;
+    cursor: pointer;
+    padding: 0;
     font-weight: bold;
 }
 
-.mobile-nav span:hover {
+.btn-link:hover {
     text-decoration: underline;
 }
 
-
+/* Main Banner */
 .main-banner {
     margin-top: 80px; /* To avoid overlap with the fixed header */
     max-height: 600px;
@@ -92,8 +147,8 @@ nav span:hover {
     margin: 0 auto;
     display: block;
     background-image: url('../Header.png');
-    background-repeat: no-repeat; /* Изображение не будет повторяться */
-    background-size: cover; /* Изображение будет масштабировано, чтобы заполнить блок */
+    background-repeat: no-repeat;
+    background-size: cover;
     background-position: center;
 }
 
@@ -122,6 +177,7 @@ nav span:hover {
     background-color: #d6895f;
 }
 
+/* Shop Name */
 .shopName {
     display: flex;
     flex-direction: column;
@@ -130,6 +186,7 @@ nav span:hover {
     gap: 10px;
 }
 
+/* Gallery */
 .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -158,6 +215,7 @@ nav span:hover {
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Products */
 .products {
     max-width: 1000px;
     margin: 0 auto;
@@ -171,6 +229,26 @@ nav span:hover {
     padding: 20px;
     max-width: 1000px;
     margin: 0 auto;
+}
+
+.card {
+    width: 100%;
+    border: 1px solid #e5c0a6;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    border-color: #e59f71;
 }
 
 .card img {
@@ -200,7 +278,17 @@ nav span:hover {
     margin-top: 10px;
 }
 
-.in-cart{
+.card-img {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.card-body {
+    width: 100%;
+}
+
+.in-cart {
     border: 3px solid #ff8b4b;
     max-width: 56px;
     height: 50px;
@@ -209,6 +297,7 @@ nav span:hover {
     padding: 12px;
 }
 
+/* Footer */
 footer {
     text-align: center;
     padding: 10px 20px;
@@ -218,206 +307,29 @@ footer {
     margin-top: 20px;
 }
 
+/* Media Queries */
 @media (max-width: 768px) {
     .menu-button {
-        display: block;
+        display: block; /* Показываем кнопку на мобильных */
     }
 
     nav {
-        display: none;
+        display: none; /* Скрываем меню по умолчанию */
     }
 
-    .mobile-nav {
-        display: flex;
+    nav:not(.collapse) {
+        display: flex; /* Показываем меню, если collapseNavMenu = false */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #f3d2b2;
+        padding: 10px;
+        border-top: 2px solid #e5c0a6;
     }
 }
 
-
-/*Product view */
-
-.product-page {
-    margin-top: 80px; /* Отступ для фиксированного хедера */
-    padding: 20px;
-    max-width: 1000px;
-    margin: 80px auto 0;
-}
-
-.product-container {
-    display: flex;
-    gap: 40px;
-    align-items: stretch; /* Растягиваем блоки на всю высоту */
-}
-
-.product-image, .product-details {
-    flex: 1; /* Оба блока занимают равное пространство */
-    height: auto; /* Высота автоматически подстраивается под контент */
-    display: flex;
-    flex-direction: column;
-}
-
-.product-image {
-    max-width: 500px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.product-details {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/*img {*/
-/*    width: 100%;*/
-/*    height: auto;*/
-/*    display: block;*/
-/*}*/
-
-.product-details h1 {
-    font-size: 2em;
-    margin-bottom: 10px;
-    color: #2a2a2a;
-}
-
-.product-details .price {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #e59f71;
-    margin-bottom: 20px;
-}
-
-.product-details .specs {
-    font-size: 1.1em;
-    line-height: 1.6;
-    color: #5c5c5c;
-    margin-bottom: 20px;
-}
-
-.production-item {
-    display: flex;
-    flex-direction: column; /* Элементы располагаются вертикально */
-    align-items: center; /* Центрирование по горизонтали */
-    gap: 10px; /* Расстояние между элементами */
-    width: 100%; /* Ширина на всю доступную ширину */
-}
-
-.production-item a {
-    width: 100%; /* Ссылка занимает всю ширину */
-    text-decoration: none; /* Убираем подчеркивание */
-    color: inherit; /* Наследуем цвет текста */
-}
-
-.card {
-    width: 100%; /* Карточка занимает всю ширину */
-    border: 1px solid #e5c0a6;
-    height: 490px;
-    border-radius: 10px;
-    padding: 10px;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.quantity-btn {
-    background-color: #e59f71;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.quantity-btn:hover {
-    background-color: #d6895f;
-}
-
-.quantity {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #2a2a2a;
-}
-
-.add-to-cart {
-    background-color: #e59f71;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%; /* Ширина на всю доступную ширину */
-}
-
-.add-to-cart:hover {
-    background-color: #d6895f;
-}
-
-.small-images {
-    display: grid;
-    grid-auto-flow: column; /* Элементы располагаются в одну строку */
-    gap: 10px;
-    margin-top: 20px;
-    overflow: hidden; /* Скрываем лишнее */
-}
-
-.small-images img {
-    width: 100%; /* Ширина автоматически подстраивается */
-    height: 80px;
-    border-radius: 10px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.3s ease;
-    object-fit: cover; /* Сохраняет пропорции изображения */
-}
-
-
-.small-images img:hover {
-    border-color: #e59f71;
-}
-
-.color-options {
-    margin-top: 40px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.color-option {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.3s ease;
-}
-
-.color-option:hover {
-    border-color: #e59f71;
-}
-
-.description-block {
-    margin-top: 40px;
-    text-align: center;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.description-block p {
-    font-size: 1.1em;
-    line-height: 1.6;
-    color: #5c5c5c;
-}
 @media (max-width: 480px) {
     nav {
         flex-wrap: wrap;
@@ -432,91 +344,4 @@ footer {
         height: 300px;
         background-position: right;
     }
-
-
-
-
-    @media (max-width: 768px) {
-        .product-container {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .product-image {
-            max-width: 100%;
-        }
-
-        .product-details {
-            width: 100%;
-        }
-
-        .small-images {
-            flex-wrap: wrap;
-            gap: 0;
-            justify-content: center;
-        }
-
-        .color-options {
-            justify-content: center;
-        }
-    }
-    
-    /*ProductView end*/
 }
-
-
-
-.card {
-    width: 100%; /* Карточка занимает всю ширину */
-    border: 1px solid #e5c0a6;
-    border-radius: 10px;
-    padding: 10px;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: all 0.3s ease; /* Плавный переход для всех свойств */
-}
-
-.card:hover {
-    transform: translateY(-5px); /* Легкий подъем карточки */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Увеличенная тень */
-    border-color: #e59f71; /* Изменение цвета границы */
-}
-
-.card a {
-    text-decoration: none; /* Убираем подчеркивание */
-    color: inherit; /* Наследуем цвет текста */
-    width: 100%; /* Ссылка занимает всю ширину */
-    height: 100%; /* Ссылка занимает всю высоту */
-}
-
-.card-img {
-    height: 200px;
-    object-fit: cover;
-    border-radius: 5px; /* Скругление углов изображения */
-}
-
-.card-body {
-    width: 100%; /* Контент занимает всю ширину */
-}
-
-.production-item-inCart {
-    width: 100%; /* Блок занимает всю ширину */
-    display: flex;
-    justify-content: center; /* Центрирование по горизонтали */
-    margin-top: 10px; /* Отступ сверху */
-}
-
-.quantity-control {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Расстояние между кнопками и числом */
-}
-
-
-
-
-

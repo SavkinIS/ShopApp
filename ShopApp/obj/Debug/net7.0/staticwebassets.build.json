@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "dY8PMsvsTlnaphxgoV3lgRnsA52dO1F2FvCA8kkp4O4=",
+  "Hash": "PmEzt2I9QsFgg67tW+MA7sZw0RqgnMjMt1R3YnC7DWI=",
   "Source": "ShopApp",
   "BasePath": "/",
   "Mode": "Root",
@@ -8641,6 +8641,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/index.html"
+    },
+    {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/js/site.js",
+      "SourceId": "ShopApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "js/site.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/js/site.js"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/Knut1.png",
