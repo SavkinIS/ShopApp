@@ -54,6 +54,10 @@ build_metadata.AdditionalFiles.CssScope = b-5qbm3r4ds7
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ2FydC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-hz0hu878f8
 
+[/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/OrderDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvT3JkZXJEZXRhaWxzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-8j7jocvir5
+
 [/Users/Ivan/RiderProjects/ShopApp/ShopApp/Pages/ProductList.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdExpc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-xw9wupu56s

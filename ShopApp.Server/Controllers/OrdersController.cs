@@ -27,22 +27,74 @@ public class OrdersController : ControllerBase
             return BadRequest("Order must have items.");
         }
 
-        // Проверяем, что заказ создаётся для текущего пользователя
+        if (string.IsNullOrEmpty(order.ClientId))
+        {
+            return BadRequest("ClientId is required.");
+        }
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null || userId != order.ClientId.ToString())
+        if (userId == null || userId != order.ClientId)
         {
             return Unauthorized("You can only create orders for yourself.");
         }
 
-        // Устанавливаем даты и статус
-        order.CreatedDate = DateTime.UtcNow;
-        order.Status = "Pending";
+        var calculatedTotal = order.Items.Sum(i => i.Quantity * i.Price);
+        if (order.Total != calculatedTotal)
+        {
+            return BadRequest("Order total does not match the sum of item prices.");
+        }
 
-        // Сохранение заказа в базе данных
+        order.CreatedDate = DateTime.UtcNow;
+        order.Status = "Processing";
         _context.Orders.Add(order);
         _context.SaveChanges();
 
         return Ok(new { message = "Order created successfully.", orderId = order.Id });
+    }
+
+    [Authorize]
+    [HttpPost]
+    [Route("update")]
+    public IActionResult UpdateOrder([FromBody] Order order)
+    {
+        if (order == null || !order.Items.Any())
+        {
+            return BadRequest("Order is empty.");
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        var orderDb = _context.Orders.FirstOrDefault(o => o.Id == order.Id);
+        if (orderDb == null)
+        {
+            return NotFound("Order not found.");
+        }
+
+        if (!isAdmin && orderDb.ClientId != userId)
+        {
+            return Unauthorized("You can only update your own orders.");
+        }
+
+        var validStatuses = new[] { "Processing", "Assembled", "Delivered", "Cancelled" };
+        if (!validStatuses.Contains(order.Status))
+        {
+            return BadRequest($"Invalid status. Allowed values: {string.Join(", ", validStatuses)}.");
+        }
+
+        if (order.Status == "Delivered" && orderDb.Status != "Delivered")
+        {
+            orderDb.CompletedDate = DateTime.UtcNow;
+        }
+        else if (order.Status != "Delivered")
+        {
+            orderDb.CompletedDate = null;
+        }
+
+        orderDb.Status = order.Status;
+        _context.SaveChanges();
+
+        return Ok(new { message = "Order updated successfully.", orderId = order.Id });
     }
 
     [Authorize]
@@ -72,8 +124,7 @@ public class OrdersController : ControllerBase
                     i.ProductName,
                     i.Quantity,
                     i.Price,
-                    i.ProductImageUrl,
-                    TotalPrice = i.Quantity * i.Price
+                    i.ProductImageUrl
                 }).ToList()
             })
             .FirstOrDefault();
@@ -83,7 +134,6 @@ public class OrdersController : ControllerBase
             return NotFound("Order not found.");
         }
 
-        // Проверяем, что пользователь имеет доступ к заказу
         if (!isAdmin && order.ClientId.ToString() != userId)
         {
             return Unauthorized("You can only view your own orders.");
@@ -100,7 +150,6 @@ public class OrdersController : ControllerBase
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var isAdmin = User.IsInRole("Admin");
 
-        // Проверяем, что пользователь запрашивает свои заказы или является администратором
         if (!isAdmin && currentUserId != userId)
         {
             return Unauthorized("You can only view your own orders.");
@@ -108,6 +157,7 @@ public class OrdersController : ControllerBase
 
         var orders = _context.Orders
             .Where(o => o.ClientId.ToString() == userId)
+            .OrderByDescending(o => o.CreatedDate)
             .Select(o => new Order
             {
                 Id = o.Id,
@@ -131,5 +181,35 @@ public class OrdersController : ControllerBase
             .ToList();
 
         return Ok(orders);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [Route("cancel/{id}")]
+    public IActionResult CancelOrder(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+        if (order == null)
+        {
+            return NotFound("Order not found.");
+        }
+
+        if (!isAdmin && order.ClientId.ToString() != userId)
+        {
+            return Unauthorized("You can only cancel your own orders.");
+        }
+
+        if (order.Status == "Delivered" || order.Status == "Cancelled")
+        {
+            return BadRequest("Cannot cancel an order that is already delivered or cancelled.");
+        }
+
+        order.Status = "Cancelled";
+        _context.SaveChanges();
+
+        return Ok("Order cancelled successfully.");
     }
 }

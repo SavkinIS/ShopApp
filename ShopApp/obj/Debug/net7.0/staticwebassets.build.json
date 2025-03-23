@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "5Ddq6iOHUxUNk8fBMBufGnDO6hb9cZfyb+pQshXYy3U=",
+  "Hash": "Xkmq+F+QHo1vEezu2ZLXU2bdBmy+ewNKszYzKZW379Q=",
   "Source": "ShopApp",
   "BasePath": "/",
   "Mode": "Root",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "/Users/Ivan/.nuget/packages/blazored.toast/4.2.1/staticwebassets/Blazored.Toast.bundle.scp.css",
+      "SourceId": "Blazored.Toast",
+      "SourceType": "Package",
+      "ContentRoot": "/Users/Ivan/.nuget/packages/blazored.toast/4.2.1/staticwebassets/",
+      "BasePath": "_content/Blazored.Toast",
+      "RelativePath": "Blazored.Toast.bundle.scp.css",
+      "AssetKind": "All",
+      "AssetMode": "Reference",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ProjectBundle",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/blazored.toast/4.2.1/staticwebassets/Blazored.Toast.bundle.scp.css"
+    },
     {
       "Identity": "/Users/Ivan/.nuget/packages/microsoft.aspnetcore.components.webassembly.authentication/9.0.0/staticwebassets/AuthenticationService.js",
       "SourceId": "Microsoft.AspNetCore.Components.WebAssembly.Authentication",
@@ -91,6 +110,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/Ivan/.nuget/packages/blazored.localstorage/4.5.0/lib/net7.0/Blazored.LocalStorage.dll"
+    },
+    {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Blazored.Toast.dll",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Blazored.Toast.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "WasmResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/blazored.toast/4.2.1/lib/net7.0/Blazored.Toast.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/dotnet.7.0.20.zfy7n5vbnq.js",
@@ -7406,6 +7444,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.Text.Encoding.dll"
+    },
+    {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/sr1xk3fxbc.gz",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Blazored.Toast.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Blazored.Toast.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Blazored.Toast.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/szf5t3tron.gz",

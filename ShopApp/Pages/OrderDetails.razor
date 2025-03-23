@@ -1,0 +1,215 @@
+@page "/order/{OrderId:int}"
+@using ShopApp.Models
+@using ShopApp.Services
+@inject OrderService OrderService
+@inject AuthService AuthService
+@inject CartService CartService
+@inject NavigationManager NavigationManager
+@inject Blazored.Toast.Services.IToastService ToastService
+
+<div class="order-details-container">
+    <h3>Order Details</h3>
+
+    @if (Order == null)
+    {
+    <p>Loading...</p>
+    }
+    else if (errorMessage != null)
+    {
+    <p class="error-message">@errorMessage</p>
+    }
+    else
+    {
+    <div class="order-info">
+        <p><strong>Order ID:</strong> #@Order.Id</p>
+        <p><strong>Status:</strong> @OrderStatusDisplay(Order.Status)</p>
+        <p><strong>Created Date:</strong> @Order.CreatedDate.ToString("dd MMMM yyyy")</p>
+        @if (Order.CompletedDate.HasValue)
+        {
+        <p><strong>Completed Date:</strong> @Order.CompletedDate.Value.ToString("dd MMMM yyyy")</p>
+        }
+        <p><strong>Total:</strong> @Order.Total.ToString("C")</p>
+        @if (!string.IsNullOrEmpty(Order.Comment))
+        {
+        <p><strong>Comment:</strong> @Order.Comment</p>
+        }
+    </div>
+
+    <div class="order-items">
+        <h4>Items</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Order.Items)
+            {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ProductImageUrl))
+                    {
+                    <img src="@item.ProductImageUrl" alt="@item.ProductName" class="product-image" />
+                    }
+                    else
+                    {
+                    <span>No image</span>
+                    }
+                </td>
+                <td>@item.ProductName</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price.ToString("C")</td>
+                <td>@((item.Quantity * item.Price).ToString("C"))</td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="order-actions">
+        @if (CanCancelOrder(Order.Status))
+        {
+        <button class="btn btn-danger" @onclick="ShowCancelConfirmation">Cancel Order</button>
+        }
+        <button class="btn btn-primary" @onclick="RepeatOrder">Repeat Order</button>
+        <button class="btn btn-secondary" @onclick="GoBack">Back to Profile</button>
+    </div>
+
+    @if (showCancelConfirmation)
+    {
+        <div class="modal @(showCancelConfirmation ? "show" : "")" style="display: @(showCancelConfirmation ? "block" : "none");">
+            <div class="modal-content">
+                <h4>Confirm Cancellation</h4>
+                <p>Are you sure you want to cancel this order?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-danger" @onclick="ConfirmCancel">Yes, Cancel</button>
+                    <button class="btn btn-secondary" @onclick="() => showCancelConfirmation = false">No</button>
+                </div>
+            </div>
+        </div>
+    }
+    }
+</div>
+
+@code {
+[Parameter]
+public int OrderId { get; set; }
+
+private Order? Order;
+private string? errorMessage;
+private bool showCancelConfirmation;
+
+protected override async Task OnInitializedAsync()
+{
+try
+{
+var user = await AuthService.GetCurrentUserAsync();
+if (user == null)
+{
+errorMessage = "You must be logged in to view this order.";
+ToastService.ShowError(errorMessage);
+return;
+}
+
+Order = await OrderService.GetOrderAsync(OrderId);
+if (Order == null)
+{
+errorMessage = "Order not found.";
+ToastService.ShowError(errorMessage);
+}
+else if (Order.ClientId != user.Id && !await AuthService.IsAdmin())
+{
+errorMessage = "You can only view your own orders.";
+ToastService.ShowError(errorMessage);
+Order = null;
+}
+}
+catch (Exception ex)
+{
+errorMessage = $"Error loading order: {ex.Message}";
+ToastService.ShowError(errorMessage);
+}
+}
+
+private string OrderStatusDisplay(string status)
+{
+return status switch
+{
+"Processing" => "In Process",
+"Assembled" => "Assembled",
+"Delivered" => "Delivered",
+"Cancelled" => "Cancelled",
+_ => "Unknown"
+};
+}
+
+private bool CanCancelOrder(string status)
+{
+return status != "Delivered" && status != "Cancelled";
+}
+
+private void ShowCancelConfirmation()
+{
+showCancelConfirmation = true;
+}
+
+private async Task ConfirmCancel()
+{
+showCancelConfirmation = false;
+if (!CanCancelOrder(Order.Status))
+{
+errorMessage = "Cannot cancel this order.";
+ToastService.ShowError(errorMessage);
+return;
+}
+
+try
+{
+await OrderService.CancelOrderAsync(OrderId);
+Order.Status = "Cancelled";
+ToastService.ShowSuccess("Order cancelled successfully.");
+}
+catch (Exception ex)
+{
+errorMessage = $"Error cancelling order: {ex.Message}";
+ToastService.ShowError(errorMessage);
+}
+}
+
+private async Task RepeatOrder()
+{
+try
+{
+var availableItems = await OrderService.GetAvailableItemsAsync(Order.Items);
+if (!availableItems.Any())
+{
+errorMessage = "No items from this order are available to repeat.";
+ToastService.ShowWarning(errorMessage);
+return;
+}
+
+foreach (var item in availableItems)
+{
+await CartService.UpdateQuantity(item.ProductId, item.Quantity);
+}
+
+ToastService.ShowSuccess("Items added to cart successfully.");
+NavigationManager.NavigateTo("/cart");
+}
+catch (Exception ex)
+{
+errorMessage = $"Error repeating order: {ex.Message}";
+ToastService.ShowError(errorMessage);
+}
+}
+
+private void GoBack()
+{
+NavigationManager.NavigateTo("/Profile");
+}
+}

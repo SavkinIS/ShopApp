@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "GWzF6pPxrnQ=",
+  "dgSpecHash": "xziwJK65mWk=",
   "success": true,
   "projectFilePath": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/ShopApp.csproj",
   "expectedPackageFiles": [
     "/Users/Ivan/.nuget/packages/blazored.localstorage/4.5.0/blazored.localstorage.4.5.0.nupkg.sha512",
+    "/Users/Ivan/.nuget/packages/blazored.toast/4.2.1/blazored.toast.4.2.1.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/epplus/7.5.1/epplus.7.5.1.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/epplus.interfaces/7.5.0/epplus.interfaces.7.5.0.nupkg.sha512",
     "/Users/Ivan/.nuget/packages/epplus.system.drawing/7.5.0/epplus.system.drawing.7.5.0.nupkg.sha512",

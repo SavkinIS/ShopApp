@@ -1,3 +1,5 @@
+@import '_content/Blazored.Toast/Blazored.Toast.bundle.scp.css';
+
 /* /Pages/AdminPanel.razor.rz.scp.css */
 /* Контейнер */
 .container[b-5qbm3r4ds7] {
@@ -561,6 +563,95 @@ textarea.form-control[b-5qbm3r4ds7] {
         padding: 0.2rem 0.4rem;
         font-size: 0.75rem;
     }
+}
+/* /Pages/OrderDetails.razor.rz.scp.css */
+.order-details-container[b-8j7jocvir5] {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.order-info p[b-8j7jocvir5] {
+    margin: 5px 0;
+}
+
+.order-items[b-8j7jocvir5] {
+    margin-top: 20px;
+}
+
+.product-image[b-8j7jocvir5] {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.order-actions[b-8j7jocvir5] {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.error-message[b-8j7jocvir5] {
+    color: red;
+}
+
+.modal[b-8j7jocvir5] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content[b-8j7jocvir5] {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-actions[b-8j7jocvir5] {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal[b-8j7jocvir5] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.show[b-8j7jocvir5] {
+    opacity: 1;
+}
+
+.modal-content[b-8j7jocvir5] {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 400px;
+    text-align: center;
+    transform: scale(0.8);
+    transition: transform 0.3s ease-in-out;
+}
+
+.modal.show .modal-content[b-8j7jocvir5] {
+    transform: scale(1);
 }
 /* /Pages/ProductList.razor.rz.scp.css */
 /* Контейнер страницы */

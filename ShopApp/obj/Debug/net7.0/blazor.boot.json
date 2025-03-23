@@ -1,7 +1,7 @@
 {
   "entryAssembly": "ShopApp",
   "resources": {
-    "hash": "sha256-pd5fbCyTehtLmrmIxmKpfPehmUUaoocAVYFXJQxswLA=",
+    "hash": "sha256-F9sLIGD0RCuPD8Xm/IhKk+bDqXFm6WB0t0aGKBaZnUs=",
     "runtime": {
       "dotnet.7.0.20.zfy7n5vbnq.js": "sha256-eaJTmow4t8eE7FZMZR5Ja41JMOefGCbIYDTdpclGsac=",
       "dotnet.timezones.blat": "sha256-gbATD5HDsHYtW8vdPYh9iSBY4O5CjvMeCSF5xXWF1xo=",
@@ -12,6 +12,7 @@
     },
     "assembly": {
       "Blazored.LocalStorage.dll": "sha256-xcO4wZtFwM5I9DIZf1sZpOdcsaTjw1HyqJ5AWciMDAk=",
+      "Blazored.Toast.dll": "sha256-Ku8s2WzN4+bWKOg5ulzREN/aRT7mn4CEWtJqMpkUU6M=",
       "EPPlus.dll": "sha256-iJtjDcxj2yfrcQXk8UIWg44elFDejnM1mSqkW+avFAI=",
       "EPPlus.Interfaces.dll": "sha256-ui0dTo+pTmQ0GN9jdiXD2o2wPL/Qi7FkQPrirWxXcT4=",
       "EPPlus.System.Drawing.dll": "sha256-IHmvEgtqxB+rXuNJkrt2g/VCYEV6BDUAwxnwHVRlipY=",
@@ -218,10 +219,10 @@
       "mscorlib.dll": "sha256-HYyp9hO+GKFyupcEiY1PxtBBXbHzefsO3Q8RiQTaNCA=",
       "netstandard.dll": "sha256-N5CcC3sLzGBesbmeJAp5bwxABN9u7SwkIO5qfFjzoik=",
       "System.Private.CoreLib.dll": "sha256-bJS1DJmhjP7PvegYG+Z8O9EDtRY78HKinA3LUMVLlSQ=",
-      "ShopApp.dll": "sha256-JGYPDtBZi9D5r5AU9/bL+gljISffeBB46HwZS7rXcG8="
+      "ShopApp.dll": "sha256-TGlatx9ShH1Uf+uLK54nefEi5dGDtVRHR6Gb2SotqSo="
     },
     "pdb": {
-      "ShopApp.pdb": "sha256-eV6CfA/WAsd4cA6NrC/ImkRlZQmCZ0kqqgLo3rwCYog="
+      "ShopApp.pdb": "sha256-ASptvLDrdFiFB9Iu7Tlz0ZNWvDhQmkq3XoHs+VsfSAs="
     },
     "runtimeAssets": {
       "dotnet.wasm": {

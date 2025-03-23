@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<CartService>();
+builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<PageControlService>();
 builder.Services.AddBlazoredLocalStorage();
 //builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
