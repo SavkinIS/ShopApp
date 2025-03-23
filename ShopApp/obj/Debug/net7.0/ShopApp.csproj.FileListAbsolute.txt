@@ -893,3 +893,4 @@
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/Cart.razor.rz.scp.css
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/Register.razor.rz.scp.css
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/ProductView.razor.rz.scp.css
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/AdminPanel.razor.rz.scp.css

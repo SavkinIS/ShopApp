@@ -11,8 +11,8 @@ using ShopApp.Server.Data;
 namespace ShopApp.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250322153230_UpdateDataProduct")]
-    partial class UpdateDataProduct
+    [Migration("20250322193528_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -345,7 +345,15 @@ namespace ShopApp.Server.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl3")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl4")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")

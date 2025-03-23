@@ -73,12 +73,15 @@ public class ProductsController : ControllerBase
         existingProduct.Price = updatedProduct.Price;
         existingProduct.Category = updatedProduct.Category;
         existingProduct.Description = updatedProduct.Description;
-        Console.WriteLine(updatedProduct.ImageUrl);
         existingProduct.ImageUrl = updatedProduct.ImageUrl;
+        existingProduct.ImageUrl2 = updatedProduct.ImageUrl2;
+        existingProduct.ImageUrl3 = updatedProduct.ImageUrl3;
+        existingProduct.ImageUrl4 = updatedProduct.ImageUrl4;
         existingProduct.Brand = updatedProduct.Brand;
         existingProduct.Country = updatedProduct.Country;
         existingProduct.Count = updatedProduct.Count;
         existingProduct.WeightGramm = updatedProduct.WeightGramm;
+        existingProduct.Color = updatedProduct.Color;
 
         _context.Products.Update(existingProduct);
         await _context.SaveChangesAsync();

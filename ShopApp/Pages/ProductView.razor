@@ -5,25 +5,47 @@
 @inject ProductService ProductService
 @inject CartService CartService
 @inject PageControlService PageControlService
+@inject NavigationManager NavigationManager
 
 @if (CurrentItem != null)
 {
-     <section class="product-page">
+    <section class="product-page">
         <div class="product-container">
             <div class="product-image">
-                <img src="@SelectedImage" alt="Product Image">
+                @if (!string.IsNullOrEmpty(SelectedImage))
+                {
+                    <img src="@SelectedImage" alt="Product Image" />
+                }
+                else
+                {
+                    <div class="no-image-main">
+                        <i class="bi bi-image"></i>
+                    </div>
+                }
                 <div class="small-images">
-                    <img src="Knut1.png" alt="Small Image 1" onclick="@ChangeSelectedImage("Knut1.png")">
-                    <img src="Knut2.png" alt="Small Image 2" onclick="@ChangeSelectedImage("Knut2.png")">
-                    <img src="products.png" alt="Small Image 3" onclick="@ChangeSelectedImage("products.png")">
-                    <img src="Clothers.png" alt="Small Image 4" onclick="@ChangeSelectedImage("Clothers.png")">
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl))
+                    {
+                        <img src="@CurrentItem.ImageUrl" alt="Small Image 1" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl)" />
+                    }
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl2))
+                    {
+                        <img src="@CurrentItem.ImageUrl2" alt="Small Image 2" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl2)" />
+                    }
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl3))
+                    {
+                        <img src="@CurrentItem.ImageUrl3" alt="Small Image 3" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl3)" />
+                    }
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl4))
+                    {
+                        <img src="@CurrentItem.ImageUrl4" alt="Small Image 4" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl4)" />
+                    }
                 </div>
             </div>
             <div class="product-details">
                 <h1>@CurrentItem.Name</h1>
-                <p class="price"> @CurrentItem.Price.ToString("C") ₽</p>
+                <p class="price">@CurrentItem.Price.ToString("C") ₽</p>
                 <div class="specs">
-                    <p><strong>Цвет:</strong>@CurrentItem.Color</p>
+                    <p><strong>Цвет:</strong> @CurrentItem.Color</p>
                     <p><strong>Состав:</strong> 100% шерсть</p>
                     <p><strong>Вес:</strong> @CurrentItem.WeightGramm г</p>
                     <p><strong>Длина:</strong> 200 м</p>
@@ -36,7 +58,7 @@
                         <button class="quantity-btn plus" @onclick="IncreaseQuantity">+</button>
                     </div>
                     <div style="margin-top: 10px">
-                        <p><strong>Цена:</strong>@ItemsPrice</p>
+                        <p><strong>Цена:</strong> @ItemsPrice</p>
                     </div>
                 }
                 else
@@ -46,33 +68,44 @@
             </div>
         </div>
 
-        <!-- Блок с цветами -->
-        <div class="color-options">
-            <div class="color-option" style="background-color: #ff8b4b;"></div>
-            <div class="color-option" style="background-color: #e59f71;"></div>
-            <div class="color-option" style="background-color: #d6895f;"></div>
-            <div class="color-option" style="background-color: #c5734d;"></div>
-            <div class="color-option" style="background-color: #b35d3b;"></div>
-            <div class="color-option" style="background-color: #a14729;"></div>
-            <div class="color-option" style="background-color: #8f3117;"></div>
-            <div class="color-option" style="background-color: #7d1b05;"></div>
-            <div class="color-option" style="background-color: #6b0500;"></div>
-            <div class="color-option" style="background-color: #590000;"></div>
+        <!-- Блок с другими цветами -->
+        <div class="color-variants">
+            <h3>Доступные цвета:</h3>
+            @if (SimilarProducts.Any())
+            {
+                <div class="color-links">
+                    @foreach (var product in SimilarProducts)
+                    {
+                        <div class="color-link" @onclick="() => SelectProduct(product)">
+                            <span class="color-name">@product.Color</span>
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="@product.Color" title="@product.Color" />
+                            }
+                            else
+                            {
+                                <div class="no-image">
+                                    <span>Нет изображения</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>Другие цвета недоступны.</p>
+            }
         </div>
 
         <!-- Блок с описанием -->
         <div class="description-block">
             <p>
                 @CurrentItem.Description
-                @* Этот мягкий и пушистый клубочек идеально подходит для создания теплых и уютных вещей.  *@
-                @* Изготовлен из 100% натуральной шерсти, он обеспечивает комфорт и долговечность.  *@
-                @* Цвет: теплый оранжевый с оттенками коричневого. *@
             </p>
         </div>
     </section>
-    
 }
-
 
 @code {
     [Parameter]
@@ -81,30 +114,45 @@
     private Product CurrentItem;
     private string SelectedImage { get; set; }
     private int CartQuantity { get; set; }
+    private List<Product> SimilarProducts { get; set; } = new List<Product>(); // Список товаров с таким же названием и производителем
 
     protected override async Task OnInitializedAsync()
     {
-       
         PageControlService.IsMainBannerVisible = false;
-        
-        //Id = await ProductService.GetProductID();
+
         if (Id <= 0)
             return;
-        Console.WriteLine($"ERORR ID ERORR ID  {Id}");
-        // Fetch product details by ID (mock or service call)
-        var products = (await ProductService.GetProductsAsync()).ToList();
-        Product item = products.First(p => p.Id == Id);
-        if (item != null)
-            CurrentItem = item;
-        else
-            return;
-        //SelectedImage = CurrentItem.Images.FirstOrDefault();
 
-        // Check cart for quantity (mock or service call)
+        // Загружаем все товары
+        var products = (await ProductService.GetProductsAsync()).ToList();
+        CurrentItem = products.FirstOrDefault(p => p.Id == Id);
+        if (CurrentItem == null)
+            return;
+
+        // Находим товары с таким же названием и производителем, но другим цветом
+        SimilarProducts = products
+            .Where(p => p.Name == CurrentItem.Name && p.Brand == CurrentItem.Brand && p.Color != CurrentItem.Color && p.Id != CurrentItem.Id)
+            .ToList();
+
+        // Устанавливаем начальное изображение
+        SelectedImage = GetFirstAvailableImage(CurrentItem);
+
+        // Проверяем количество в корзине
         CartQuantity = CartService.GetProductsCount(CurrentItem);
-        Debug.WriteLine($"Cart coumt {CartQuantity}");
-        SelectedImage = CurrentItem.ImageUrl;
         await GetTotalPrice();
+    }
+
+    private string GetFirstAvailableImage(Product product)
+    {
+        if (!string.IsNullOrEmpty(product.ImageUrl))
+            return product.ImageUrl;
+        if (!string.IsNullOrEmpty(product.ImageUrl2))
+            return product.ImageUrl2;
+        if (!string.IsNullOrEmpty(product.ImageUrl3))
+            return product.ImageUrl3;
+        if (!string.IsNullOrEmpty(product.ImageUrl4))
+            return product.ImageUrl4;
+        return null; // Если все пустые, возвращаем null
     }
 
     private async Task GetTotalPrice()
@@ -123,7 +171,6 @@
                     }
                 }
             }
-          
         }
     }
 
@@ -144,7 +191,7 @@
     private async Task IncreaseQuantity()
     {
         await CartService.UpdateQuantity(CurrentItem.Id, 1);
-        CartQuantity =  CartService.GetProductsCount(CurrentItem);
+        CartQuantity = CartService.GetProductsCount(CurrentItem);
         await GetTotalPrice();
     }
 
@@ -153,7 +200,7 @@
         if (CartQuantity > 0)
         {
             await CartService.UpdateQuantity(CurrentItem.Id, -1);
-            CartQuantity =  CartService.GetProductsCount(CurrentItem);
+            CartQuantity = CartService.GetProductsCount(CurrentItem);
             await GetTotalPrice();
         }
         else
@@ -162,18 +209,26 @@
         }
     }
 
-    
-    private int ItemsInCart()
+    private void ChangeSelectedImage(string imageSrc)
     {
-        CartQuantity =  CartService.GetProductsCount(CurrentItem);
-        return CartQuantity;
+        SelectedImage = imageSrc;
     }
 
-    private string ChangeSelectedImage(string imagSrc)
+    private async Task SelectProduct(Product product)
     {
-        string previuosImg = SelectedImage;
-        SelectedImage = imagSrc;
-        return previuosImg;
+        // Обновляем текущий товар
+        CurrentItem = product;
+        Id = product.Id;
+        SelectedImage = GetFirstAvailableImage(product); // Обновляем SelectedImage для нового товара
+        CartQuantity = CartService.GetProductsCount(CurrentItem);
+        await GetTotalPrice();
+
+        // Обновляем URL без перезагрузки страницы
+        NavigationManager.NavigateTo($"/Product-item/{Id}", forceLoad: false);
     }
 
+    private void SelectProductOpenNew(Product product)
+    {
+        NavigationManager.NavigateTo($"/Product-item/{product.Id}", forceLoad: true);
+    }
 }

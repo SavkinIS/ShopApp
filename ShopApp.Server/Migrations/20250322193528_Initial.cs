@@ -97,9 +97,13 @@ namespace ShopApp.Server.Migrations
                     Category = table.Column<string>(type: "TEXT", nullable: false),
                     Brand = table.Column<string>(type: "TEXT", nullable: false),
                     Country = table.Column<string>(type: "TEXT", nullable: false),
-                    Weight = table.Column<string>(type: "TEXT", nullable: false),
+                    WeightGramm = table.Column<float>(type: "REAL", nullable: false),
+                    Color = table.Column<string>(type: "TEXT", nullable: false),
                     Count = table.Column<int>(type: "INTEGER", nullable: false),
-                    ImageUrl = table.Column<string>(type: "TEXT", nullable: false)
+                    ImageUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    ImageUrl2 = table.Column<string>(type: "TEXT", nullable: true),
+                    ImageUrl3 = table.Column<string>(type: "TEXT", nullable: true),
+                    ImageUrl4 = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

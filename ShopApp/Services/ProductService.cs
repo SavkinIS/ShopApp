@@ -32,8 +32,23 @@ public class ProductService
 
     public async Task<IEnumerable<Product>> GetProductsAsync()
     {
-        await AddAuthorizationHeader();
-        return await _httpClient.GetFromJsonAsync<IEnumerable<Product>>("api/products");
+        try
+        {
+            var response = await _httpClient.GetAsync("api/products");
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Failed to fetch products. Status code: {response.StatusCode}");
+                return Enumerable.Empty<Product>();
+            }
+
+            var products = await response.Content.ReadFromJsonAsync<IEnumerable<Product>>();
+            return products ?? Enumerable.Empty<Product>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in GetProductsAsync: {ex.Message}");
+            return Enumerable.Empty<Product>();
+        }
     }
 
     
@@ -207,5 +222,23 @@ public class ProductService
         }
 
         return -999;
+    }
+
+    public async Task SaveSortPreferencesAsync(string sortField, string sortOrder)
+    {
+        await _localStorage.SetItemAsync("SortField", sortField);
+        await _localStorage.SetItemAsync("SortOrder", sortOrder);
+    }
+
+    public async Task<(string SortField, string SortOrder)> LoadSortPreferencesAsync()
+    {
+        var sortField = await _localStorage.GetItemAsync<string>("SortField") ?? "Name";
+        var sortOrder = await _localStorage.GetItemAsync<string>("SortOrder") ?? "Ascending";
+        return (sortField, sortOrder);
+    }
+    
+    public async Task DeleteImageAsync(string imageUrl)
+    {
+        await _httpClient.DeleteAsync($"api/upload?imageUrl={Uri.EscapeDataString(imageUrl)}");
     }
 }

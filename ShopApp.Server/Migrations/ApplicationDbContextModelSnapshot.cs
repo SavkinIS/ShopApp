@@ -342,7 +342,15 @@ namespace ShopApp.Server.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl3")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl4")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")

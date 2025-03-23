@@ -1,0 +1,460 @@
+/* Контейнер */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-top: 80px; /* Учитываем фиксированный header */
+}
+
+/* Фиксированная панель управления */
+.control-panel {
+    position: sticky;
+    top: 80px; /* Учитываем высоту фиксированного header */
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%); /* Градиентный фон */
+    z-index: 900; /* Меньше, чем у модального окна, но больше, чем у таблицы */
+    padding: 15px 20px;
+    border-bottom: 2px solid #d1d5db;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* Секция фильтрации и сортировки */
+.filter-sort-section {
+    display: flex;
+    justify-content: center; /* Центрируем содержимое */
+    flex-wrap: wrap;
+}
+
+/* Контент фильтрации и сортировки */
+.filter-sort-content {
+    background-color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+/* Секция кнопок */
+.action-buttons {
+    display: flex;
+    justify-content: center; /* Центрируем содержимое */
+    flex-wrap: wrap;
+}
+
+/* Контент кнопок */
+.action-buttons-content {
+    background-color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+}
+
+/* Секция таблицы */
+.table-section {
+    margin-top: 20px; /* Отступ, чтобы таблица не перекрывалась фиксированной панелью */
+}
+
+/* Заголовки */
+.text-center {
+    text-align: center;
+}
+
+/* Flexbox для кнопок */
+.d-flex {
+    display: flex;
+}
+
+.justify-content-end {
+    justify-content: flex-end;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+/* Таблица */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.table-dark {
+    background-color: #343a40;
+    color: white;
+}
+
+.align-middle {
+    vertical-align: middle;
+}
+
+/* Изображения в таблице */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+.image-gallery img {
+    max-width: 50px;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* Модальное окно */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.fade.show {
+    display: block;
+}
+
+.modal-dialog {
+    max-width: 800px;
+    width: 90%;
+    margin: 1.75rem auto;
+}
+
+.modal-xl {
+    max-width: 1200px; /* Увеличиваем ширину модального окна */
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.btn-close:hover {
+    color: #dc3545;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    gap: 10px;
+}
+
+/* Компактное модальное окно для подтверждения */
+.modal-sm {
+    max-width: 400px;
+}
+
+/* Форма */
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #495057;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #e59f71;
+    outline: none;
+    box-shadow: 0 0 5px rgba(229, 159, 113, 0.3);
+}
+
+.form-control[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.form-control[type="number"]::-webkit-outer-spin-button,
+.form-control[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+/* Превью изображений в модальном окне */
+.image-preview {
+    position: relative;
+    display: inline-block;
+}
+
+.image-preview img {
+    max-width: 100px; /* Уменьшаем в 2 раза (было 200px) */
+    height: auto;
+    border-radius: 4px;
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+/* Bootstrap Grid */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.col-md-3,
+.col-md-4,
+.col-md-6,
+.col-md-12 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.col-md-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
+.col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.col-md-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* Кнопки */
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: #e59f71;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #d6895f;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.me-1 {
+    margin-right: 0.25rem;
+}
+
+.ms-2 {
+    margin-left: 0.5rem;
+}
+
+/* Иконки */
+.bi {
+    margin-right: 5px;
+}
+
+/* Сообщения об ошибках */
+.alert {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Спиннер */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border: 0.25em solid #e59f71;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Отступы между элементами */
+.gap-2 {
+    gap: 0.5rem;
+}
+
+/* Медиазапросы */
+@media (max-width: 767px) {
+    .col-md-3,
+    .col-md-4,
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .filter-sort-content,
+    .action-buttons-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-sort-content > div,
+    .action-buttons-content .btn,
+    .action-buttons-content label {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .filter-sort-content .btn,
+    .action-buttons-content .btn,
+    .action-buttons-content label {
+        width: 100%;
+        text-align: center;
+    }
+
+    .control-panel {
+        padding: 10px;
+    }
+}
