@@ -1,0 +1,240 @@
+/* Контейнер страницы */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h3.text-center {
+    font-size: 2rem;
+    color: #2a2a2a;
+    margin-bottom: 20px;
+}
+
+/* Фильтры и сортировка */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.col-md-12,
+.col-md-3 {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px;
+}
+
+.form-label {
+    font-size: 1rem;
+    color: #2a2a2a;
+    margin-bottom: 5px;
+}
+
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e5c0a6;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #2a2a2a;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.form-check-input {
+    margin-right: 5px;
+}
+
+.form-check-label {
+    font-size: 0.9rem;
+    color: #2a2a2a;
+}
+
+/* Список продуктов */
+.production-holder {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.production-item {
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 300px; /* Ограничиваем ширину карточки */
+    border: 1px solid #e5c0a6;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    border-color: #e59f71;
+}
+
+.card-img-container {
+    width: 100%;
+    height: 200px; /* Фиксированная высота для изображения */
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.card-img-container:hover .card-img {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.card-img-placeholder {
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+}
+
+.card-img-placeholder i {
+    display: block;
+    line-height: 200px; /* Соответствует высоте контейнера */
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Изображение заполняет контейнер */
+}
+
+.card-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    color: #666;
+    font-size: 1.2rem;
+}
+
+.card-img-placeholder i {
+    font-size: 2rem;
+    color: #666;
+}
+
+.card-body {
+    width: 100%;
+}
+
+.card-body h5 {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    color: #2a2a2a;
+}
+
+.card-body p {
+    font-size: 0.9em;
+    margin: 2px 0;
+    color: #5c5c5c;
+}
+
+.card-text-desc {
+    font-size: 0.9em;
+    margin: 2px 0;
+    color: #5c5c5c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-text-price {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #e59f71;
+    margin-top: 10px;
+}
+
+.production-item-inCart {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-btn {
+    background-color: #e59f71;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+}
+
+.quantity-btn:hover {
+    background-color: #d6895f;
+}
+
+.quantity {
+    font-size: 1.2rem;
+    min-width: 30px;
+    text-align: center;
+}
+
+.add-to-cart {
+    background-color: #e59f71;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+
+
+.add-to-cart:hover {
+    background-color: #d6895f;
+    transform: translateY(-2px);
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .production-holder {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .card {
+        max-width: 250px;
+    }
+
+    .card-img-container {
+        height: 180px; /* Уменьшаем высоту на маленьких экранах */
+    }
+}
