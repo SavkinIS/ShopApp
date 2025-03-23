@@ -2,28 +2,263 @@
 @using ShopApp.Models
 @using ShopApp.Services
 @inject AuthService AuthService
+@inject OrderService OrderService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
-<h3>My Profile</h3>
+<div class="profile-container">
+    <h3 class="profile-title">My Profile</h3>
 
-@if (User == null)
-{
-    <p>You are not logged in.</p>
-    <button class="btn btn-primary" @onclick="GoToLogin">Go to Login</button>
-}
-else
-{
-    <p><strong>Username:</strong> @User.UserName</p>
-    <p><strong>Email:</strong> @User.Email</p>
-    <button class="btn btn-danger" @onclick="Logout">Logout</button>
-}
+    @if (User == null)
+    {
+        <div class="not-logged-in">
+            <p>You are not logged in.</p>
+            <button class="btn btn-primary" @onclick="GoToLogin">Go to Login</button>
+        </div>
+    }
+    else
+    {
+        <div class="profile-content">
+            <!-- Информация о пользователе -->
+            <div class="profile-info">
+                <h4>Profile Information</h4>
+                @if (isEditing)
+                {
+                    <div class="edit-form">
+                        <div class="form-group">
+                            <label for="fullName">Full Name:</label>
+                            <input id="fullName" type="text" class="form-control" @bind="editFullName" placeholder="Enter your full name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input id="email" type="email" class="form-control" @bind="editEmail" placeholder="Enter your email" />
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number:</label>
+                            <input id="phone" type="tel" class="form-control @(string.IsNullOrEmpty(phoneErrorMessage) ? "" : "is-invalid")" @bind="editPhone" placeholder="+79991234567" pattern="\+7[0-9]{10}" title="Phone number must start with +7 followed by exactly 10 digits (e.g., +79991234567)" />
+                            @if (!string.IsNullOrEmpty(phoneErrorMessage))
+                            {
+                                <div class="invalid-feedback">@phoneErrorMessage</div>
+                            }
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success" @onclick="SaveProfile">Save</button>
+                            <button class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <p class="error-message">@errorMessage</p>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p><strong>Username:</strong> @User.UserName</p>
+                    <p><strong>Full Name:</strong> @(User.FullName ?? "Not set")</p>
+                    <p><strong>Email:</strong> @User.Email</p>
+                    <p><strong>Phone Number:</strong> @(string.IsNullOrEmpty(User.Phone) ? "Not set" : User.Phone)</p>
+                    <p><strong>Registration Date:</strong> @User.RegistrationDate.ToString("dd MMMM yyyy")</p>
+                    <div class="profile-actions">
+                        <button class="btn btn-primary" @onclick="StartEdit">Edit Profile</button>
+                        <button class="btn btn-danger" @onclick="Logout">Logout</button>
+                        @if (isAdmin)
+                        {
+                            <button class="btn btn-warning" @onclick="GoToAdminPanel">Admin Panel</button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- История заказов -->
+            <div class="order-history">
+                <h4>Order History</h4>
+                @if (orders == null || !orders.Any())
+                {
+                    <p>No orders found.</p>
+                }
+                else
+                {
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in orders)
+                            {
+                                <tr>
+                                    <td>#@order.Id</td>
+                                    <td>@order.CreatedDate.ToString("dd MMMM yyyy")</td>
+                                    <td>@order.Total.ToString("C")</td>
+                                    <td>@order.Status</td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm" @onclick="() => ViewOrderDetails(order.Id)">View Details</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+            <!-- Смена пароля -->
+            <div class="change-password">
+                <h4>Change Password</h4>
+                <div class="form-group">
+                    <label for="currentPassword">Current Password:</label>
+                    <input id="currentPassword" type="password" class="form-control" @bind="currentPassword" />
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password:</label>
+                    <input id="newPassword" type="password" class="form-control" @bind="newPassword" />
+                </div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirm New Password:</label>
+                    <input id="confirmNewPassword" type="password" class="form-control" @bind="confirmNewPassword" />
+                </div>
+                <button class="btn btn-primary" @onclick="ChangePassword">Update Password</button>
+                @if (!string.IsNullOrEmpty(passwordErrorMessage))
+                {
+                    <p class="error-message">@passwordErrorMessage</p>
+                }
+            </div>
+        </div>
+    }
+</div>
 
 @code {
     private AuthenticatedUser? User;
+    private List<Order>? orders;
+    private bool isAdmin;
+    private bool isEditing;
+    private string editFullName;
+    private string editEmail;
+    private string editPhone;
+    private string errorMessage;
+    private string currentPassword;
+    private string newPassword;
+    private string confirmNewPassword;
+    private string passwordErrorMessage;
+    private string phoneErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
         User = await AuthService.GetCurrentUserAsync();
+        if (User != null)
+        {
+            orders = await OrderService.GetUserOrdersAsync(User.Id);
+            isAdmin = await AuthService.IsAdmin();
+        }
+    }
+
+    private void StartEdit()
+    {
+        isEditing = true;
+        editFullName = User.FullName;
+        editEmail = User.Email;
+        editPhone = User.Phone;
+        errorMessage = null;
+        phoneErrorMessage = null;
+
+        // Если номер телефона пустой, устанавливаем начальное значение с +7
+        if (string.IsNullOrEmpty(editPhone))
+        {
+            editPhone = "+7";
+        }
+    }
+
+    private async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (isEditing)
+        {
+            await JSRuntime.InvokeVoidAsync("applyPhoneMask");
+        }
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        errorMessage = null;
+        phoneErrorMessage = null;
+    }
+
+    private async Task SaveProfile()
+    {
+        if (string.IsNullOrEmpty(editEmail))
+        {
+            errorMessage = "Email cannot be empty.";
+            return;
+        }
+
+        phoneErrorMessage = null;
+        if (!string.IsNullOrEmpty(editPhone))
+        {
+            // Удаляем всё, кроме цифр
+            var digits = new string(editPhone.Where(char.IsDigit).ToArray());
+            if (digits.Length == 10)
+            {
+                editPhone = "+7" + digits; // Добавляем +7, если введено 10 цифр
+            }
+            else if (digits.Length == 11 && digits.StartsWith("7"))
+            {
+                editPhone = "+7" + digits.Substring(1); // Преобразуем 7XXXXXXXXXX в +7XXXXXXXXXX
+            }
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(editPhone, @"^\+7[0-9]{10}$"))
+            {
+                phoneErrorMessage = "Phone number must start with +7 and be followed by exactly 10 digits (e.g., +79991234567).";
+                return;
+            }
+        }
+
+        try
+        {
+            User.FullName = editFullName;
+            User.Email = editEmail;
+            User.Phone = editPhone;
+            await AuthService.UpdateUserAsync(User);
+            isEditing = false;
+            errorMessage = null;
+            phoneErrorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to update profile: {ex.Message}";
+        }
+    }
+
+    private async Task ChangePassword()
+    {
+        passwordErrorMessage = null;
+
+        if (string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmNewPassword))
+        {
+            passwordErrorMessage = "All fields are required.";
+            return;
+        }
+
+        if (newPassword != confirmNewPassword)
+        {
+            passwordErrorMessage = "New password and confirmation do not match.";
+            return;
+        }
+
+        try
+        {
+            await AuthService.ChangePasswordAsync(User.Id, currentPassword, newPassword);
+            currentPassword = null;
+            newPassword = null;
+            confirmNewPassword = null;
+        }
+        catch (Exception ex)
+        {
+            passwordErrorMessage = $"Failed to change password: {ex.Message}";
+        }
     }
 
     private async Task Logout()
@@ -37,5 +272,14 @@ else
     {
         NavigationManager.NavigateTo("/login");
     }
-}
 
+    private void GoToAdminPanel()
+    {
+        NavigationManager.NavigateTo("/AdminPanel");
+    }
+
+    private void ViewOrderDetails(int orderId)
+    {
+        NavigationManager.NavigateTo($"/order/{orderId}");
+    }
+}

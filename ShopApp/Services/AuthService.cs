@@ -61,7 +61,49 @@ public class AuthService
         if (string.IsNullOrEmpty(token)) return null;
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        return await _httpClient.GetFromJsonAsync<AuthenticatedUser>("api/account/currentuser");
+        var response = await _httpClient.GetAsync("api/account/currentuser");
+        if (response.IsSuccessStatusCode)
+        {
+            var userData = await response.Content.ReadFromJsonAsync<AuthenticatedUser>();
+            if (userData != null)
+            {
+                userData.FullName ??= "Not set";
+                userData.Phone ??= string.Empty;
+                userData.RegistrationDate = userData.RegistrationDate == default ? DateTime.UtcNow : userData.RegistrationDate;
+            }
+            return userData;
+        }
+        return null;
+    }
+
+    public async Task UpdateUserAsync(AuthenticatedUser user)
+    {
+        var token = await GetAuthTokenAsync();
+        if (string.IsNullOrEmpty(token))
+            throw new Exception("User is not authenticated.");
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.PutAsJsonAsync("api/account/update", user);
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to update user: {error}");
+        }
+    }
+
+    public async Task ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+    {
+        var token = await GetAuthTokenAsync();
+        if (string.IsNullOrEmpty(token))
+            throw new Exception("User is not authenticated.");
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.PostAsJsonAsync("api/account/change-password", new { userId, currentPassword, newPassword });
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to change password: {error}");
+        }
     }
 
     public async Task<string> GetAuthTokenAsync()

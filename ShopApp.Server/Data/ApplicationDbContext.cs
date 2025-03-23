@@ -6,7 +6,7 @@ using ShopApp.Server.Shared.Models;
 
 namespace ShopApp.Server.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -55,6 +55,17 @@ namespace ShopApp.Server.Data
             builder.Entity<IdentityUser>()
                 .HasIndex(u => u.NormalizedEmail)
                 .IsUnique();
+            
+            builder.Entity<Order>()
+                .HasMany(o => o.Items)
+                .WithOne()
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Убедимся, что ClientId хранится как строка, если это нужно
+            builder.Entity<Order>()
+                .Property(o => o.ClientId)
+                .HasConversion<string>();
         }
 
         // DbSet для моделей

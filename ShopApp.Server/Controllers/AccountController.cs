@@ -1,24 +1,21 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShopApp.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AccountController : ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
 
     public AccountController(
-        UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager,
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
         RoleManager<IdentityRole> roleManager, IConfiguration configuration)
     {
         _userManager = userManager;
@@ -36,7 +33,7 @@ public class AccountController : ControllerBase
         if (model.Password != model.ConfirmPassword)
             return BadRequest("Passwords do not match");
 
-        var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+        var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (!result.Succeeded)
@@ -60,61 +57,58 @@ public class AccountController : ControllerBase
         string AdminEmail = "admin@example.com";
         string AdminPassword = "Admin123!";
 
-        var userOdl = await _userManager.FindByEmailAsync(AdminEmail);
-        if (userOdl == null)
-            return BadRequest("Invalid email address");
+        var userOld = await _userManager.FindByEmailAsync(AdminEmail);
+        if (userOld != null)
+            return BadRequest("Admin user already exists");
 
-        var user = new IdentityUser { UserName = "Admin", Email = AdminEmail };
+        var user = new ApplicationUser { UserName = "Admin", Email = AdminEmail };
         var result = await _userManager.CreateAsync(user, AdminPassword);
 
         if (!result.Succeeded)
         {
-            Console.WriteLine($"User registered: {user.Email}");
+            Console.WriteLine($"User registration failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             return BadRequest(result.Errors);
         }
 
-
-        var r = await _userManager.AddToRoleAsync(user, AdminRole);
-
-        if (r.Succeeded)
+        if (!await _roleManager.RoleExistsAsync(AdminRole))
         {
-            Console.WriteLine($"Add admin role: {user.Email}");
+            await _roleManager.CreateAsync(new IdentityRole(AdminRole));
         }
 
-        return Ok("Registration successful");
+        var roleResult = await _userManager.AddToRoleAsync(user, AdminRole);
+        if (!roleResult.Succeeded)
+        {
+            Console.WriteLine($"Failed to add admin role: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+            return BadRequest(roleResult.Errors);
+        }
+
+        Console.WriteLine($"Admin user registered: {user.Email}");
+        return Ok("Admin registration successful");
     }
 
-    
-    // [HttpGet("currentuser")]
-    // public async Task<IActionResult> GetCurrentUser()
-    // {
-    //     var user = await _userManager.GetUserAsync(User);
-    //     if (user == null)
-    //     {
-    //         return Unauthorized();
-    //     }
-    //
-    //     return Ok(new AuthenticatedUser
-    //     {
-    //         UserName = user.UserName,
-    //         Email = user.Email
-    //     });
-    // }
-    
     [Authorize]
     [HttpGet("currentuser")]
-    public  async Task<IActionResult> GetCurrentUser()
+    public async Task<IActionResult> GetCurrentUser()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        if (userId == null)
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
         {
             return Unauthorized();
         }
-        
-        return Ok(new { UserId = userId, Email = email });
+
+        var roles = await _userManager.GetRolesAsync(user);
+        return Ok(new AuthenticatedUser
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
+            FullName = user.UserName, // Здесь можно добавить поле для FullName в ApplicationUser, если нужно
+            RegistrationDate = (await _userManager.GetUserAsync(User)).LockoutEnd?.UtcDateTime ?? DateTime.UtcNow,
+            // Пример: если в ApplicationUser нет поля для даты регистрации, можно использовать дату создания токена или другое
+        });
     }
-    
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
@@ -136,20 +130,65 @@ public class AccountController : ControllerBase
             Expiration = DateTime.UtcNow.AddMinutes(60),
             UserId = user.Id,
             Email = user.Email,
-            FullName = $"{user.UserName}", // Измените, если есть FirstName и LastName
+            FullName = user.UserName, // Измените, если есть FirstName и LastName
             Roles = roles.ToList()
         };
 
         return Ok(result);
     }
 
-
-
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
         return Ok("Logout successful");
+    }
+
+    [Authorize]
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateUser([FromBody] AuthenticatedUser model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Unauthorized();
+
+        // Валидация номера телефона
+        if (!string.IsNullOrEmpty(model.Phone) && !System.Text.RegularExpressions.Regex.IsMatch(model.Phone, @"^\+7[0-9]{10}$"))
+        {
+            return BadRequest("Phone number must start with +7 and be followed by exactly 10 digits (e.g., +79991234567).");
+        }
+
+        user.Email = model.Email;
+        user.UserName = model.Email;
+        user.FullName = model.FullName;
+        user.Phone = model.Phone;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        return Ok("Profile updated successfully");
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Unauthorized();
+
+        var passwordCheck = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+        if (!passwordCheck)
+            return BadRequest("Current password is incorrect");
+
+        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        return Ok("Password changed successfully");
     }
 
     [Authorize(Roles = "Admin")]
@@ -183,27 +222,4 @@ public class AccountController : ControllerBase
         var roles = await _userManager.GetRolesAsync(user);
         return Ok(roles.Contains("Admin"));
     }
-    
-   
 }
-
-public class RegisterModel
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string ConfirmPassword { get; set; }
-}
-
-public class LoginModel
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public bool RememberMe { get; set; }
-}
-
-public class AssignRoleModel
-{
-    public string Email { get; set; }
-    public string Role { get; set; }
-}
-

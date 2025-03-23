@@ -12,7 +12,7 @@ public static class IdentitySeedData
     {
         using var scope = serviceProvider.CreateScope();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         // Создаем роль "Admin" при необходимости
         if (!await roleManager.RoleExistsAsync(AdminRole))
@@ -25,7 +25,7 @@ public static class IdentitySeedData
         if (adminUser == null)
         {
             // Создаем нового пользователя-администратора
-            adminUser = new IdentityUser
+            adminUser = new ApplicationUser
             {
                 UserName = AdminEmail,
                 Email = AdminEmail,

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Ba2EH9xHuZGyyyB13DoBk3Ls3IHEzY9nMLd6Sy9J3OI=",
+  "Hash": "IIkP/TKrMlMlPAJcDHxXDL36bpbZiTVt68TjE+Lht+Q=",
   "Source": "ShopApp.Server",
   "BasePath": "_content/ShopApp.Server",
   "Mode": "Default",
@@ -9895,6 +9895,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/index.html"
+    },
+    {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/js/phoneMask.js",
+      "SourceId": "ShopApp",
+      "SourceType": "Project",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "js/phoneMask.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/js/phoneMask.js"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/wwwroot/js/site.js",

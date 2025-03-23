@@ -110,7 +110,7 @@ return;
 
 var order = new Order
 {
-ClientId = UserService.CurrentUser.Id,
+ClientId = UserService.CurrentUser.Id.ToString(),
 Items = cartItems,
 Total = CartService.GetTotalPrice(),
 Comment = orderComment,

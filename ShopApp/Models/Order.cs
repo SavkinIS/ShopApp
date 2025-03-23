@@ -4,7 +4,7 @@ namespace ShopApp.Models
     public class Order
     {
         public int Id { get; set; } // Уникальный идентификатор заказа
-        public int ClientId { get; set; } // ID клиента
+        public string ClientId { get; set; } // ID клиента
         public List<OrderItem> Items { get; set; } = new List<OrderItem>(); // Товары в заказе
         public decimal Total { get; set; } // Общая сумма заказа
         public string Comment { get; set; } // Комментарий клиента
@@ -24,6 +24,8 @@ namespace ShopApp.Models
             ProductImageUrl = productImageUrl;
         }
 
+        public OrderItem() { } // Добавим конструктор по умолчанию для десериализации
+
         public int Id { get; set; } // Уникальный идентификатор
         public int OrderId { get; set; } // Ссылка на заказ
         public int ProductId { get; set; } // ID товара
@@ -31,7 +33,7 @@ namespace ShopApp.Models
         public int Quantity { get; set; } // Количество
         public decimal Price { get; set; } // Цена за единицу
         public string ProductImageUrl { get; set; }
-        
+
         public string TotalPrice => (Quantity * Price).ToString("C");
     }
 }
