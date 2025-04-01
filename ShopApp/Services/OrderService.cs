@@ -15,17 +15,17 @@ public class OrderService
         _productService = productService;
     }
 
-    public async Task<List<Order>> GetUserOrdersAsync(string userId)
+    public async Task<List<OrderClient>> GetUserOrdersAsync(string userId)
     {
-        return await _httpClient.GetFromJsonAsync<List<Order>>($"api/orders/user/{userId}") ?? new List<Order>();
+        return await _httpClient.GetFromJsonAsync<List<OrderClient>>($"api/orders/user/{userId}") ?? new List<OrderClient>();
     }
 
-    public async Task<Order?> GetOrderAsync(int orderId)
+    public async Task<OrderClient?> GetOrderAsync(int orderId)
     {
         var response = await _httpClient.GetAsync($"api/orders/{orderId}");
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<Order>();
+            return await response.Content.ReadFromJsonAsync<OrderClient>();
         }
         return null;
     }
@@ -40,14 +40,14 @@ public class OrderService
         }
     }
 
-    public async Task<List<OrderItem>> GetAvailableItemsAsync(List<OrderItem> items)
+    public async Task<List<OrderItemClient>> GetAvailableItemsAsync(List<OrderItemClient> items)
     {
-        List<OrderItem> result = new List<OrderItem>();
+        List<OrderItemClient> result = new List<OrderItemClient>();
         _products = (await _productService.GetProductsAsync()).ToList();
 
         foreach (var item in items)
         {
-            var p = _products.Where(p => p.Id == item.ProductId).FirstOrDefault();
+            var p = _products.FirstOrDefault(p => p.Id == item.ProductId);
             
             if (p != null && p.Count > 0)
             {
@@ -58,12 +58,31 @@ public class OrderService
         return result;
     }
 
-    public async Task<int> SaveOrder(Order order)
+    public async Task<int> SaveOrder(OrderClient orderClient)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/orders/create", order);
+        var orderDto = new CreateOrderDto
+        {
+            ClientId = orderClient.ClientId,
+            Items = orderClient.Items.Select(item => new CreateOrderItemDto
+            {
+                ProductId = item.ProductId,
+                ProductName = item.ProductName,
+                Quantity = item.Quantity,
+                Price = item.Price,
+                ProductImageUrl = item.ProductImageUrl
+            }).ToList(),
+            Total = orderClient.Total,
+            Comment = orderClient.Comment,
+            Status = orderClient.Status,
+            CreatedDate = orderClient.CreatedDate
+        };
+
+        Console.WriteLine($"Sending order to server: {System.Text.Json.JsonSerializer.Serialize(orderDto)}");
+        var response = await _httpClient.PostAsJsonAsync("api/orders/create", orderDto);
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error response from server: {error}");
             throw new Exception($"Failed to save the order: {error}");
         }
 

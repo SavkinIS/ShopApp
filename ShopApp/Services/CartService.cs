@@ -8,18 +8,21 @@ public class CartService
 {
     private readonly HttpClient _httpClient;
     private readonly ProductService _productService;
+    private readonly AuthService _authService; // Добавляем AuthService
     private List<Product> _products = new List<Product>();
     private readonly ILocalStorageService _localStorage;
     private string _userEmail = null;
     private readonly IJSRuntime _jsRuntime;
 
-    public CartService(HttpClient httpClient, ProductService productService, ILocalStorageService localStorage, IJSRuntime jsRuntime)
+    public CartService(HttpClient httpClient, ProductService productService, AuthService authService, ILocalStorageService localStorage, IJSRuntime jsRuntime)
     {
         _httpClient = httpClient;
         _productService = productService;
+        _authService = authService;
         _localStorage = localStorage;
         _jsRuntime = jsRuntime;
     }
+
     
     
     public void SaveCart()
@@ -122,41 +125,48 @@ public class CartService
 
         for (int i = 0; i < Items.Count; i++)
         {
-            var price = _products.Where(p => p.Id ==  Items[i].ProductId).FirstOrDefault().Price;
-            totalPrice += Items[i].Quantity * price;
+            var product = _products.FirstOrDefault(p => p.Id == Items[i].ProductId);
+            if (product != null)
+            {
+                totalPrice += Items[i].Quantity * product.Price;
+            }
+            else
+            {
+                Console.WriteLine($"Product with ID {Items[i].ProductId} not found in _products.");
+            }
         }
-        
+    
         return totalPrice;
     }
 
+
   
-    public async Task<List<OrderItem>> GetItems()
+    public async Task<List<OrderItemClient>> GetItems()
     {
-        // Обновляем список продуктов перед использованием
         if (!_products.Any())
         {
             _products = (await _productService.GetProductsAsync()).ToList();
         }
 
-        // Генерация списка для отображения
         return Items.Select(item =>
         {
             var product = _products.FirstOrDefault(p => p.Id == item.ProductId);
             if (product != null)
             {
-                return new OrderItem(
-                    item.ProductId,
-                    product.Name,
-                    item.Quantity,
-                    product.Price,
-                    product.ImageUrl
-                );
+                return new OrderItemClient()
+                {
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    Quantity = item.Quantity,
+                    Price = product.Price,
+                    ProductImageUrl = product.ImageUrl
+                };
             }
-
-            return null; // Пропускаем отсутствующие товары
+            return null;
         }).Where(orderItem => orderItem != null).ToList();
     }
 
+   
     public async Task LoadCartAsync()
     {
         if (_userEmail == null)
@@ -166,11 +176,27 @@ public class CartService
             await LoadCartAsyncToLocalStorage();
         else
         {
-            Items = await _httpClient.GetFromJsonAsync<List<CartItem>>($"api/cart/{_userEmail}") ?? new List<CartItem>();
+            try
+            {
+                Items = await _httpClient.GetFromJsonAsync<List<CartItem>>($"api/cart/{_userEmail}") ?? new List<CartItem>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading cart from server: {ex.Message}");
+                Items = new List<CartItem>();
+            }
         }
-        
-        // Обновляем список продуктов для отображения
-        _products = (await _productService.GetProductsAsync()).ToList();
+
+        try
+        {
+            _products = (await _productService.GetProductsAsync())?.ToList() ?? new List<Product>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading products: {ex.Message}");
+            _products = new List<Product>();
+        }
+
         SaveCart();
     }
 
@@ -205,7 +231,14 @@ public class CartService
     public async Task LoadUser()
     {
         if (_userEmail == null)
-            _userEmail = await _localStorage.GetItemAsync<string>("userEmail");
+        {
+            var user = await _authService.GetCurrentUserAsync();
+            _userEmail = user?.Email;
+            if (_userEmail != null)
+            {
+                await _localStorage.SetItemAsync("userEmail", _userEmail);
+            }
+        }
     }
 
     public int GetProductsCount(Product product)

@@ -166,7 +166,7 @@
                 {
                     if (cartItems[i].ProductId == Id)
                     {
-                        ItemsPrice = cartItems[i].TotalPrice;
+                        ItemsPrice = (cartItems[i].Price * cartItems[i].Quantity).ToString();
                         return;
                     }
                 }

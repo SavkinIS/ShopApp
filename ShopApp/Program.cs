@@ -10,30 +10,40 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+// Устанавливаем базовый адрес API
+var apiBaseAddress = "http://localhost:5243";
 
+// Регистрируем глобальный HttpClient с правильным базовым адресом
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("http://localhost:5243") // Адрес вашего API
+    BaseAddress = new Uri(apiBaseAddress)
 });
 
-//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+// Регистрируем HttpClient для OrderService с правильным базовым адресом
+builder.Services.AddHttpClient<OrderService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseAddress);
+}).AddHttpMessageHandler<CustomAuthorizationMessageHandler>();
 
-builder.Services.AddScoped<UserService>();
-builder.Services.AddSingleton<ProductService>();
+// Регистрируем HttpClient для ProductService
+builder.Services.AddHttpClient<ProductService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseAddress);
+});
+
+// Регистрируем другие сервисы
+builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
-builder.Services.AddScoped<CartService>();
-builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<PageControlService>();
 builder.Services.AddBlazoredLocalStorage();
-//builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-//builder.Services.AddAuthorizationCore();
+builder.Services.AddBlazoredToast();
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<CustomAuthenticationStateProvider>());
-
 
 await builder.Build().RunAsync();

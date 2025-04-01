@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ShopApp.Models;
+using ShopApp.Server.Models;
 using ShopApp.Server.Shared.Models;
 
 namespace ShopApp.Server.Data

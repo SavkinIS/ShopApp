@@ -1,8 +1,9 @@
 ﻿@using ShopApp.Models
-@using ShopApp.Services
-@inject UserService UserService
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
+@inject Blazored.Toast.Services.IToastService ToastService
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@implements IDisposable
 
 <header>
     <div class="logo">Knitting Store</div>
@@ -14,7 +15,7 @@
         <NavLink class="nav-link" href="/ProductList">
             <span class="oi oi-list-rich" aria-hidden="true"></span> ProductList
         </NavLink>
-        @if (UserService.CurrentUser == null)
+        @if (currentUser == null)
         {
             <button class="nav-link btn-link" @onclick="ShowLoginModal">
                 <span class="oi oi-account-login" aria-hidden="true"></span> Войти
@@ -36,19 +37,19 @@
         <div class="modal-content" @onclick:stopPropagation>
             <h3>Вход</h3>
             <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
                 <div class="form-group">
                     <label>Email</label>
-                    <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="Email" />
+                    <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="Email"/>
                 </div>
                 <div class="form-group">
                     <label>Пароль</label>
-                    <InputText @bind-Value="loginModel.Password" class="form-control" type="password" placeholder="Пароль" />
+                    <InputText @bind-Value="loginModel.Password" class="form-control" type="password" placeholder="Пароль"/>
                 </div>
                 <div class="form-group">
                     <label>
-                        <InputCheckbox @bind-Value="loginModel.RememberMe" /> Запомнить меня
+                        <InputCheckbox @bind-Value="loginModel.RememberMe"/> Запомнить меня
                     </label>
                 </div>
                 <button type="submit" class="btn btn-primary">Войти</button>
@@ -59,15 +60,26 @@
 }
 
 @code {
-    private bool collapseNavMenu = false; // По умолчанию меню открыто
+    private bool collapseNavMenu = false;
     private bool showLoginModal = false;
     private LoginModel loginModel = new();
+    private AuthenticatedUser? currentUser;
 
-    private class LoginModel
+    protected override async Task OnInitializedAsync()
     {
-        public string Email { get; set; } = "";
-        public string Password { get; set; } = "";
-        public bool RememberMe { get; set; }
+        currentUser = await AuthService.GetCurrentUserAsync();
+        AuthService.OnUserChanged += UpdateUserState;
+    }
+
+    private async void UpdateUserState()
+    {
+        currentUser = await AuthService.GetCurrentUserAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnUserChanged -= UpdateUserState;
     }
 
     private void ToggleMenu()
@@ -94,30 +106,30 @@
 
     private async Task HandleLogin()
     {
-        if (await AuthService.Login(loginModel.Email, loginModel.Password, loginModel.RememberMe))
+        var (success, error) = await AuthService.Login(loginModel.Email, loginModel.Password, loginModel.RememberMe, AuthStateProvider);
+        if (success)
         {
-            var authUser = await AuthService.GetCurrentUserAsync();
-            if (authUser != null)
-            {
-                UserService.CurrentUser = new User
-                {
-                    Email = authUser.Email,
-                    Username = authUser.UserName
-                };
-            }
             CloseLoginModal();
-            StateHasChanged();
+            ToastService.ShowSuccess("Login successful!");
         }
         else
         {
-            Console.WriteLine("Login failed");
+            ToastService.ShowError($"Login failed: {error}");
         }
     }
 
     private async Task Logout()
     {
-        await AuthService.Logout();
-        UserService.CurrentUser = null;
+        await AuthService.Logout(AuthStateProvider);
+        ToastService.ShowSuccess("Logged out successfully!");
         NavigationManager.NavigateTo("/");
     }
+
+    private class LoginModel
+    {
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+        public bool RememberMe { get; set; }
+    }
+
 }

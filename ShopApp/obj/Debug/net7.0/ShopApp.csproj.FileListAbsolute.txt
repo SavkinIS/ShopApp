@@ -691,14 +691,9 @@
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/6q84teh6nc.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/nvbrvj4u9u.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/ge62oka79r.gz
-/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/ruricgeb46.gz
-/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/cgu31qi3rt.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/jcp83aj8c5.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/u6znk2u1a9.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/33nsor46q3.gz
-/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/10y2bq8a74.gz
-/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/vnqbs0anph.gz
-/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/0q5fwlwqrz.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/im3nlg7bid.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/hs9vmzkh2j.gz
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/rqys6ns1ht.gz
@@ -901,3 +896,12 @@
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/Blazored.Toast.dll
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/scopedcss/Pages/OrderDetails.razor.rz.scp.css
 /Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/sr1xk3fxbc.gz
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Http.dll
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Http.dll.gz
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/Microsoft.Extensions.Http.dll
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/c3j8z1wyjn.gz
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/llflzmqkfk.gz
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/rgqrs0vdoe.gz
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/ivyr7uylwm.gz
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/vkh1xuf8b3.gz
+/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/6i59fmowvx.gz

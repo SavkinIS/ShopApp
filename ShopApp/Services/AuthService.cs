@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -9,6 +8,8 @@ public class AuthService
 {
     private readonly HttpClient _httpClient;
     private readonly ILocalStorageService _localStorage;
+    private AuthenticatedUser? _cachedUser;
+    public event Action OnUserChanged;
 
     public AuthService(HttpClient httpClient, ILocalStorageService localStorage)
     {
@@ -16,13 +17,19 @@ public class AuthService
         _localStorage = localStorage;
     }
 
-    public async Task<bool> Register(string email, string password, string confirmPassword)
+    public async Task<(bool Success, string ErrorMessage)> Register(string email, string password, string confirmPassword)
     {
-        var result = await _httpClient.PostAsJsonAsync("api/account/register", new { email, password, confirmPassword });
-        return result.IsSuccessStatusCode;
+        var response = await _httpClient.PostAsJsonAsync("api/account/register", new { email, password, confirmPassword });
+        if (response.IsSuccessStatusCode)
+        {
+            var loginResult = await Login(email, password, false);
+            return loginResult;
+        }
+        var error = await response.Content.ReadAsStringAsync();
+        return (false, error);
     }
 
-    public async Task<bool> Login(string email, string password, bool rememberMe)
+    public async Task<(bool Success, string ErrorMessage)> Login(string email, string password, bool rememberMe, CustomAuthenticationStateProvider authStateProvider = null)
     {
         var response = await _httpClient.PostAsJsonAsync("api/account/login", new { email, password, rememberMe });
         if (response.IsSuccessStatusCode)
@@ -32,17 +39,30 @@ public class AuthService
             {
                 await _localStorage.SetItemAsync("authToken", result.Token);
                 await _localStorage.SetItemAsync("userEmail", result.Email);
-                return true;
+                _cachedUser = await FetchCurrentUserAsync();
+                if (authStateProvider != null)
+                {
+                    authStateProvider.NotifyUserAuthentication(result.Token);
+                }
+                OnUserChanged?.Invoke();
+                return (true, null);
             }
         }
-        return false;
+        var error = await response.Content.ReadAsStringAsync();
+        return (false, error);
     }
 
-    public async Task Logout()
+    public async Task Logout(CustomAuthenticationStateProvider authStateProvider = null)
     {
         await _httpClient.PostAsync("api/account/logout", null);
         await _localStorage.RemoveItemAsync("authToken");
         await _localStorage.RemoveItemAsync("userEmail");
+        _cachedUser = null;
+        if (authStateProvider != null)
+        {
+            authStateProvider.NotifyUserLogout();
+        }
+        OnUserChanged?.Invoke();
     }
 
     public async Task<bool> IsAdmin()
@@ -50,12 +70,71 @@ public class AuthService
         var token = await _localStorage.GetItemAsync<string>("authToken");
         if (string.IsNullOrEmpty(token)) return false;
 
-        var handler = new JwtSecurityTokenHandler();
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
         return jwtToken.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
     }
 
-    public async Task<AuthenticatedUser> GetCurrentUserAsync()
+    public async Task<AuthenticatedUser?> GetCurrentUserAsync()
+    {
+        if (_cachedUser != null)
+        {
+            return _cachedUser;
+        }
+
+        _cachedUser = await FetchCurrentUserAsync();
+        return _cachedUser;
+    }
+
+    public async Task UpdateUserAsync(AuthenticatedUser user)
+    {
+        var token = await GetAuthTokenAsync();
+        if (string.IsNullOrEmpty(token))
+            throw new Exception("User is not authenticated.");
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.PutAsJsonAsync("api/account/update", user);
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to update user: {error}");
+        }
+
+        _cachedUser = user;
+        OnUserChanged?.Invoke();
+    }
+
+    public async Task ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+    {
+        var token = await GetAuthTokenAsync();
+        if (string.IsNullOrEmpty(token))
+            throw new Exception("User is not authenticated.");
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.PostAsJsonAsync("api/account/change-password", new { userId, currentPassword, newPassword });
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to change password: {error}");
+        }
+    }
+
+    public async Task<bool> IsTokenValidAsync()
+    {
+        var token = await GetAuthTokenAsync();
+        if (string.IsNullOrEmpty(token)) return false;
+
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        return jwtToken.ValidTo >= DateTime.UtcNow;
+    }
+    
+    public async Task<string> GetAuthTokenAsync()
+    {
+        return await _localStorage.GetItemAsync<string>("authToken");
+    }
+
+    private async Task<AuthenticatedUser?> FetchCurrentUserAsync()
     {
         var token = await GetAuthTokenAsync();
         if (string.IsNullOrEmpty(token)) return null;
@@ -74,40 +153,5 @@ public class AuthService
             return userData;
         }
         return null;
-    }
-
-    public async Task UpdateUserAsync(AuthenticatedUser user)
-    {
-        var token = await GetAuthTokenAsync();
-        if (string.IsNullOrEmpty(token))
-            throw new Exception("User is not authenticated.");
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var response = await _httpClient.PutAsJsonAsync("api/account/update", user);
-        if (!response.IsSuccessStatusCode)
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to update user: {error}");
-        }
-    }
-
-    public async Task ChangePasswordAsync(string userId, string currentPassword, string newPassword)
-    {
-        var token = await GetAuthTokenAsync();
-        if (string.IsNullOrEmpty(token))
-            throw new Exception("User is not authenticated.");
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var response = await _httpClient.PostAsJsonAsync("api/account/change-password", new { userId, currentPassword, newPassword });
-        if (!response.IsSuccessStatusCode)
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to change password: {error}");
-        }
-    }
-
-    public async Task<string> GetAuthTokenAsync()
-    {
-        return await _localStorage.GetItemAsync<string>("authToken");
     }
 }

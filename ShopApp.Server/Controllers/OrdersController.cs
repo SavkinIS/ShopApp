@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApp.Models;
 using ShopApp.Server.Data;
 using System.Security.Claims;
+using ShopApp.Models;
+using Order = ShopApp.Server.Models.Order;
+using OrderItem = ShopApp.Server.Models.OrderItem;
 
 namespace ShopApp.Controllers;
 
@@ -18,39 +20,78 @@ public class OrdersController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost]
-    [Route("create")]
-    public IActionResult CreateOrder([FromBody] Order order)
+[HttpPost]
+[Route("create")]
+public IActionResult CreateOrder([FromBody] CreateOrderDto orderDto)
+{
+    try
     {
-        if (order == null || !order.Items.Any())
+        if (orderDto == null)
+        {
+            return BadRequest("Order is null.");
+        }
+
+        if (orderDto.Items == null || !orderDto.Items.Any())
         {
             return BadRequest("Order must have items.");
         }
 
-        if (string.IsNullOrEmpty(order.ClientId))
+        if (string.IsNullOrEmpty(orderDto.ClientId))
         {
             return BadRequest("ClientId is required.");
         }
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null || userId != order.ClientId)
+        if (userId == null)
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+
+        if (userId != orderDto.ClientId)
         {
             return Unauthorized("You can only create orders for yourself.");
         }
 
-        var calculatedTotal = order.Items.Sum(i => i.Quantity * i.Price);
-        if (order.Total != calculatedTotal)
+        var calculatedTotal = orderDto.Items.Sum(i => i.Quantity * i.Price);
+        if (orderDto.Total != calculatedTotal)
         {
-            return BadRequest("Order total does not match the sum of item prices.");
+            return BadRequest($"Order total does not match the sum of item prices. Expected: {calculatedTotal}, Received: {orderDto.Total}");
         }
 
-        order.CreatedDate = DateTime.UtcNow;
-        order.Status = "Processing";
+        var order = new Order
+        {
+            ClientId = orderDto.ClientId,
+            Total = orderDto.Total,
+            Comment = orderDto.Comment,
+            Status = "Processing",
+            CreatedDate = DateTime.UtcNow,
+            Items = orderDto.Items.Select(item => new OrderItem
+            {
+                ProductId = item.ProductId,
+                ProductName = item.ProductName,
+                Quantity = item.Quantity,
+                Price = item.Price,
+                ProductImageUrl = item.ProductImageUrl
+            }).ToList()
+        };
+
         _context.Orders.Add(order);
+        _context.SaveChanges();
+
+        // Устанавливаем OrderId для всех OrderItem
+        foreach (var item in order.Items)
+        {
+            item.OrderId = order.Id;
+        }
         _context.SaveChanges();
 
         return Ok(new { message = "Order created successfully.", orderId = order.Id });
     }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"An error occurred while creating the order: {ex.Message}");
+    }
+}
 
     [Authorize]
     [HttpPost]

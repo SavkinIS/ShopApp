@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Xkmq+F+QHo1vEezu2ZLXU2bdBmy+ewNKszYzKZW379Q=",
+  "Hash": "/kfVISIsHbPkz+fVtb7rg/8kjFY75/k0mebBIdduuzI=",
   "Source": "ShopApp",
   "BasePath": "/",
   "Mode": "Root",
@@ -603,7 +603,7 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/7.0.0/lib/net7.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll"
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/lib/net7.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.dll",
@@ -622,7 +622,7 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.dependencyinjection/7.0.0/lib/net7.0/Microsoft.Extensions.DependencyInjection.dll"
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.0/lib/net7.0/Microsoft.Extensions.DependencyInjection.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.FileProviders.Abstractions.dll",
@@ -682,6 +682,25 @@
       "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.filesystemglobbing/8.0.0/lib/net7.0/Microsoft.Extensions.FileSystemGlobbing.dll"
     },
     {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Http.dll",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Http.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "WasmResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.http/8.0.0/lib/net7.0/Microsoft.Extensions.Http.dll"
+    },
+    {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Logging.Abstractions.dll",
       "SourceId": "ShopApp",
       "SourceType": "Computed",
@@ -698,7 +717,7 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.logging.abstractions/7.0.1/lib/net7.0/Microsoft.Extensions.Logging.Abstractions.dll"
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.0/lib/net7.0/Microsoft.Extensions.Logging.Abstractions.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Logging.dll",
@@ -717,7 +736,7 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.logging/7.0.0/lib/net7.0/Microsoft.Extensions.Logging.dll"
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.logging/8.0.0/lib/net7.0/Microsoft.Extensions.Logging.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Options.dll",
@@ -736,7 +755,7 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.options/7.0.1/lib/net7.0/Microsoft.Extensions.Options.dll"
+      "OriginalItemSpec": "/Users/Ivan/.nuget/packages/microsoft.extensions.options/8.0.0/lib/net7.0/Microsoft.Extensions.Options.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Primitives.dll",
@@ -4254,25 +4273,6 @@
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.AspNetCore.Authorization.dll"
     },
     {
-      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/0q5fwlwqrz.gz",
-      "SourceId": "ShopApp",
-      "SourceType": "Computed",
-      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
-      "BasePath": "/",
-      "RelativePath": "_framework/Microsoft.Extensions.Options.dll.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Options.dll",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Options.dll"
-    },
-    {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/0twba1obb2.gz",
       "SourceId": "ShopApp",
       "SourceType": "Computed",
@@ -4309,25 +4309,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.Security.AccessControl.dll"
-    },
-    {
-      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/10y2bq8a74.gz",
-      "SourceId": "ShopApp",
-      "SourceType": "Computed",
-      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
-      "BasePath": "/",
-      "RelativePath": "_framework/Microsoft.Extensions.Logging.dll.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Logging.dll",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Logging.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/1c84cgx4ob.gz",
@@ -4784,6 +4765,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.Runtime.Serialization.Xml.dll"
+    },
+    {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/6i59fmowvx.gz",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Options.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Options.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Options.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/6p75ulbd68.gz",
@@ -5603,6 +5603,25 @@
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.AspNetCore.Metadata.dll"
     },
     {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/c3j8z1wyjn.gz",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.DependencyInjection.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.dll"
+    },
+    {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/c6jcu7gdzl.gz",
       "SourceId": "ShopApp",
       "SourceType": "Computed",
@@ -5715,25 +5734,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.IO.Compression.dll"
-    },
-    {
-      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/cgu31qi3rt.gz",
-      "SourceId": "ShopApp",
-      "SourceType": "Computed",
-      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
-      "BasePath": "/",
-      "RelativePath": "_framework/Microsoft.Extensions.DependencyInjection.Abstractions.dll.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/ci9ppr1fg5.gz",
@@ -6382,6 +6382,25 @@
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.Runtime.Extensions.dll"
     },
     {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/ivyr7uylwm.gz",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Logging.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Logging.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Logging.dll"
+    },
+    {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/iwo8xb2ha9.gz",
       "SourceId": "ShopApp",
       "SourceType": "Computed",
@@ -6722,6 +6741,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.Text.Encoding.Extensions.dll"
+    },
+    {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/llflzmqkfk.gz",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.DependencyInjection.Abstractions.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/lqjqg3p4x5.gz",
@@ -7313,6 +7351,25 @@
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.Runtime.Loader.dll"
     },
     {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/rgqrs0vdoe.gz",
+      "SourceId": "ShopApp",
+      "SourceType": "Computed",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Http.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Http.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Http.dll"
+    },
+    {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/rqe07fotnf.gz",
       "SourceId": "ShopApp",
       "SourceType": "Computed",
@@ -7349,25 +7406,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.IdentityModel.JsonWebTokens.dll"
-    },
-    {
-      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/ruricgeb46.gz",
-      "SourceId": "ShopApp",
-      "SourceType": "Computed",
-      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",
-      "BasePath": "/",
-      "RelativePath": "_framework/Microsoft.Extensions.DependencyInjection.dll.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.dll",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.DependencyInjection.dll"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/rv0zliev7v.gz",
@@ -7845,7 +7883,7 @@
       "OriginalItemSpec": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/_framework/System.Runtime.CompilerServices.Unsafe.dll"
     },
     {
-      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/vnqbs0anph.gz",
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/obj/Debug/net7.0/compressed/vkh1xuf8b3.gz",
       "SourceId": "ShopApp",
       "SourceType": "Computed",
       "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp/bin/Debug/net7.0/wwwroot/",

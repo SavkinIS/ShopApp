@@ -142,3 +142,7 @@
 /Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/obj/Debug/net7.0/ShopApp.Server.sourcelink.json
 /Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/obj/Debug/net7.0/ShopApp..6CF36A12.Up2Date
 /Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/bin/Debug/net7.0/Blazored.Toast.dll
+/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/bin/Debug/net7.0/Microsoft.Extensions.DependencyInjection.dll
+/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/bin/Debug/net7.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/bin/Debug/net7.0/Microsoft.Extensions.Http.dll
+/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/bin/Debug/net7.0/Microsoft.Extensions.Logging.dll
