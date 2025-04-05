@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApp.Server.Data;
 using System.Security.Claims;
-using ShopApp.Models;
+using ShopApp.Server.Models;
 using Order = ShopApp.Server.Models.Order;
 using OrderItem = ShopApp.Server.Models.OrderItem;
 
@@ -143,44 +143,53 @@ public IActionResult CreateOrder([FromBody] CreateOrderDto orderDto)
     [Route("{id}")]
     public IActionResult GetOrder(int id)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var isAdmin = User.IsInRole("Admin");
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
 
-        var order = _context.Orders
-            .Where(o => o.Id == id)
-            .Select(o => new
-            {
-                o.Id,
-                o.ClientId,
-                o.Status,
-                o.CreatedDate,
-                o.CompletedDate,
-                o.Total,
-                o.Comment,
-                Items = o.Items.Select(i => new
+            var order = _context.Orders
+                .Where(o => o.Id == id)
+                .Select(o => new OrderDto
                 {
-                    i.Id,
-                    i.OrderId,
-                    i.ProductId,
-                    i.ProductName,
-                    i.Quantity,
-                    i.Price,
-                    i.ProductImageUrl
-                }).ToList()
-            })
-            .FirstOrDefault();
+                    Id = o.Id,
+                    ClientId = o.ClientId,
+                    Status = o.Status,
+                    CreatedDate = o.CreatedDate,
+                    CompletedDate = o.CompletedDate,
+                    Total = o.Total,
+                    Comment = o.Comment,
+                    Items = o.Items != null
+                        ? o.Items.Select(i => new OrderItemDto
+                        {
+                            Id = i.Id,
+                            OrderId = i.OrderId,
+                            ProductId = i.ProductId,
+                            ProductName = i.ProductName,
+                            Quantity = i.Quantity,
+                            Price = i.Price,
+                            ProductImageUrl = i.ProductImageUrl
+                        }).ToList()
+                        : new List<OrderItemDto>()
+                })
+                .FirstOrDefault();
 
-        if (order == null)
-        {
-            return NotFound("Order not found.");
+            if (order == null)
+            {
+                return NotFound("Order not found.");
+            }
+
+            if (!isAdmin && order.ClientId != userId)
+            {
+                return Unauthorized("You can only view your own orders.");
+            }
+
+            return Ok(order);
         }
-
-        if (!isAdmin && order.ClientId.ToString() != userId)
+        catch (Exception ex)
         {
-            return Unauthorized("You can only view your own orders.");
+            return StatusCode(500, $"An error occurred while retrieving the order: {ex.Message}");
         }
-
-        return Ok(order);
     }
 
     [Authorize]
@@ -188,40 +197,49 @@ public IActionResult CreateOrder([FromBody] CreateOrderDto orderDto)
     [Route("user/{userId}")]
     public IActionResult GetUserOrders(string userId)
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var isAdmin = User.IsInRole("Admin");
-
-        if (!isAdmin && currentUserId != userId)
+        try
         {
-            return Unauthorized("You can only view your own orders.");
-        }
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
 
-        var orders = _context.Orders
-            .Where(o => o.ClientId.ToString() == userId)
-            .OrderByDescending(o => o.CreatedDate)
-            .Select(o => new Order
+            if (!isAdmin && currentUserId != userId)
             {
-                Id = o.Id,
-                ClientId = o.ClientId,
-                Status = o.Status,
-                CreatedDate = o.CreatedDate,
-                CompletedDate = o.CompletedDate,
-                Total = o.Total,
-                Comment = o.Comment,
-                Items = o.Items.Select(i => new OrderItem
-                {
-                    Id = i.Id,
-                    OrderId = i.OrderId,
-                    ProductId = i.ProductId,
-                    ProductName = i.ProductName,
-                    Quantity = i.Quantity,
-                    Price = i.Price,
-                    ProductImageUrl = i.ProductImageUrl
-                }).ToList()
-            })
-            .ToList();
+                return Unauthorized("You can only view your own orders.");
+            }
 
-        return Ok(orders);
+            var orders = _context.Orders
+                .Where(o => o.ClientId == userId)
+                .OrderByDescending(o => o.CreatedDate)
+                .Select(o => new OrderDto
+                {
+                    Id = o.Id,
+                    ClientId = o.ClientId,
+                    Status = o.Status,
+                    CreatedDate = o.CreatedDate,
+                    CompletedDate = o.CompletedDate,
+                    Total = o.Total,
+                    Comment = o.Comment,
+                    Items = o.Items != null
+                        ? o.Items.Select(i => new OrderItemDto
+                        {
+                            Id = i.Id,
+                            OrderId = i.OrderId,
+                            ProductId = i.ProductId,
+                            ProductName = i.ProductName,
+                            Quantity = i.Quantity,
+                            Price = i.Price,
+                            ProductImageUrl = i.ProductImageUrl
+                        }).ToList()
+                        : new List<OrderItemDto>()
+                })
+                .ToList();
+
+            return Ok(orders);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while retrieving user orders: {ex.Message}");
+        }
     }
 
     [Authorize]

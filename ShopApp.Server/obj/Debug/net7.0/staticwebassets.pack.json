@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/images/Clothers.png"
     },
     {
+      "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/Header.png",
+      "PackagePath": "staticwebassets/images/Header.png"
+    },
+    {
       "Id": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/Knut1.png",
       "PackagePath": "staticwebassets/images/Knut1.png"
     },

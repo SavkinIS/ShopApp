@@ -1,7 +1,7 @@
 {
   "entryAssembly": "ShopApp",
   "resources": {
-    "hash": "sha256-IAX3yOU37NHBa5cLjclv/GGL/2304vh4TUOaP84CdaE=",
+    "hash": "sha256-l6j/boNlBSsqFbH9d2AMN9KM18bUyrTKF60yb0XfLNo=",
     "runtime": {
       "dotnet.7.0.20.zfy7n5vbnq.js": "sha256-eaJTmow4t8eE7FZMZR5Ja41JMOefGCbIYDTdpclGsac=",
       "dotnet.timezones.blat": "sha256-gbATD5HDsHYtW8vdPYh9iSBY4O5CjvMeCSF5xXWF1xo=",
@@ -220,10 +220,10 @@
       "mscorlib.dll": "sha256-HYyp9hO+GKFyupcEiY1PxtBBXbHzefsO3Q8RiQTaNCA=",
       "netstandard.dll": "sha256-N5CcC3sLzGBesbmeJAp5bwxABN9u7SwkIO5qfFjzoik=",
       "System.Private.CoreLib.dll": "sha256-bJS1DJmhjP7PvegYG+Z8O9EDtRY78HKinA3LUMVLlSQ=",
-      "ShopApp.dll": "sha256-TSB1SwDRidAUiTY3zYaddDcy3Uz1PA13ac9YNxIWOco="
+      "ShopApp.dll": "sha256-igamrg5HQeIMzz1rM4oZMSzB7jU0Eo7P1sax9q4aThY="
     },
     "pdb": {
-      "ShopApp.pdb": "sha256-rujk2SOKCayriVt5tupY0I/9Q9vWhMAOsWkOS9n5mi0="
+      "ShopApp.pdb": "sha256-L4R7cgaGBI36FkrlamI0jxBbLYLImDf46Cz/rkPDLE4="
     },
     "runtimeAssets": {
       "dotnet.wasm": {

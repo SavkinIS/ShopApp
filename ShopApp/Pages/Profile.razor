@@ -3,26 +3,23 @@
 @using ShopApp.Services
 @inject AuthService AuthService
 @inject OrderService OrderService
-@inject NavigationManager NavigationManager
 @inject Blazored.Toast.Services.IToastService ToastService
 
 <div class="container mt-5">
     <h3>Профиль</h3>
-    @if (User == null)
+
+    @if (currentUser == null)
     {
-        <p>Пожалуйста, войдите в систему.</p>
+        <p>Загрузка...</p>
     }
     else
     {
-        <h4>Информация о пользователе</h4>
-        <p><strong>Email:</strong> @User.Email</p>
-        <p><strong>Имя пользователя:</strong> @User.UserName</p>
-        <p><strong>Полное имя:</strong> @User.FullName</p>
-        <p><strong>Телефон:</strong> @User.Phone</p>
-        <p><strong>Дата регистрации:</strong> @User.RegistrationDate.ToString("dd MMMM yyyy")</p>
+        <h4>Добро пожаловать, @currentUser.FullName!</h4>
+        <p>Email: @currentUser.Email</p>
+        <p>Дата регистрации: @currentUser.RegistrationDate.ToString("d")</p>
 
-        <h4>Мои заказы</h4>
-        @if (!orders.Any())
+        <h5>Ваши заказы</h5>
+        @if (orders == null || !orders.Any())
         {
             <p>У вас нет заказов.</p>
         }
@@ -31,7 +28,9 @@
             <ul>
                 @foreach (var order in orders)
                 {
-                    <li>Заказ #@order.Id - Статус: @order.Status - Сумма: @order.Total.ToString("C")</li>
+                    <li>
+                        Заказ #@order.Id от @order.CreatedDate.ToString("d") - Статус: @order.Status, Сумма: @order.Total
+                    </li>
                 }
             </ul>
         }
@@ -39,29 +38,22 @@
 </div>
 
 @code {
-    private AuthenticatedUser? User;
+    private AuthenticatedUser? currentUser;
     private List<OrderClient> orders = new();
-    private bool isAdmin;
 
     protected override async Task OnInitializedAsync()
     {
-        User = await AuthService.GetCurrentUserAsync();
-        if (User != null)
+        currentUser = await AuthService.GetCurrentUserAsync();
+        if (currentUser != null)
         {
             try
             {
-                orders = await OrderService.GetUserOrdersAsync(User.Id);
-                isAdmin = await AuthService.IsAdmin();
+                orders = await OrderService.GetUserOrdersAsync(currentUser.Id);
             }
             catch (Exception ex)
             {
                 ToastService.ShowError($"Failed to load orders: {ex.Message}");
             }
-        }
-        else
-        {
-            ToastService.ShowWarning("Please log in to view your profile.");
-            NavigationManager.NavigateTo("/Login");
         }
     }
 }

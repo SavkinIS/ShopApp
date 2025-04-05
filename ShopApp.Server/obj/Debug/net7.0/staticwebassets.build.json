@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "oUmJsjEVdncmjVm6GtZaUv/lhBl6zr3d06UmZA2g80w=",
+  "Hash": "DYg2aadvcuWr/8zsRuYtFxVKaqQSfLfjFPl+9IZmCrs=",
   "Source": "ShopApp.Server",
   "BasePath": "_content/ShopApp.Server",
   "Mode": "Default",
@@ -1269,6 +1269,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/images/empty_part.png"
+    },
+    {
+      "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/Header.png",
+      "SourceId": "ShopApp.Server",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/",
+      "BasePath": "_content/ShopApp.Server",
+      "RelativePath": "images/Header.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/Header.png"
     },
     {
       "Identity": "/Users/Ivan/RiderProjects/ShopApp/ShopApp.Server/wwwroot/images/i.webp",

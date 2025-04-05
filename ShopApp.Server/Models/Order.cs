@@ -58,4 +58,28 @@ namespace ShopApp.Server.Models
         [Required]
         public DateTime CreatedDate { get; set; }
     }
+    
+    
+    public class OrderDto
+    {
+        public int Id { get; set; }
+        public string ClientId { get; set; } = string.Empty;
+        public List<OrderItemDto> Items { get; set; } = new List<OrderItemDto>();
+        public decimal Total { get; set; }
+        public string Comment { get; set; } = string.Empty;
+        public string Status { get; set; } = "Pending";
+        public DateTime CreatedDate { get; set; }
+        public DateTime? CompletedDate { get; set; }
+    }
+
+    public class OrderItemDto
+    {
+        public int Id { get; set; }
+        public int OrderId { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+        public string ProductImageUrl { get; set; } = string.Empty;
+    }
 }

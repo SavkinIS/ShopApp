@@ -17,6 +17,13 @@ public class OrderService
 
     public async Task<List<OrderClient>> GetUserOrdersAsync(string userId)
     {
+        var response = await _httpClient.GetAsync($"api/orders/user/{userId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to retrieve user orders: {error}");
+        }
+
         return await _httpClient.GetFromJsonAsync<List<OrderClient>>($"api/orders/user/{userId}") ?? new List<OrderClient>();
     }
 
@@ -27,7 +34,9 @@ public class OrderService
         {
             return await response.Content.ReadFromJsonAsync<OrderClient>();
         }
-        return null;
+
+        var error = await response.Content.ReadAsStringAsync();
+        throw new Exception($"Failed to retrieve order: {error}");
     }
 
     public async Task CancelOrderAsync(int orderId)
