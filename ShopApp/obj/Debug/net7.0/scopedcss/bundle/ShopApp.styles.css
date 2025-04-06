@@ -1375,7 +1375,6 @@ h3.text-center[b-xw9wupu56s] {
     animation: fadeIn-b-lzopsi27j2 0.3s ease-in-out;
 }
 
-
 .is-invalid[b-lzopsi27j2] {
     border-color: #dc3545;
 }
@@ -1391,20 +1390,167 @@ h3.text-center[b-xw9wupu56s] {
     background-color: #e9ecef;
 }
 
-.is-invalid[b-lzopsi27j2] {
-    border-color: #dc3545;
-}
-
-.invalid-feedback[b-lzopsi27j2] {
-    display: block;
-    color: #dc3545;
-    font-size: 0.875em;
-    margin-top: 0.25rem;
-}
-
 @keyframes fadeIn-b-lzopsi27j2 {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* Стили для вкладок */
+.tabs[b-lzopsi27j2] {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Стили для избранного */
+.favorites-list[b-lzopsi27j2] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.favorite-item[b-lzopsi27j2] {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border: 1px solid #e5c0a6;
+    border-radius: 8px;
+    background-color: #fff;
+    width: 100%;
+    max-width: 350px;
+}
+
+.favorite-img[b-lzopsi27j2] {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.favorite-details[b-lzopsi27j2] {
+    flex: 1;
+}
+
+.favorite-details h5[b-lzopsi27j2] {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #2a2a2a;
+    cursor: pointer;
+}
+
+.favorite-details h5:hover[b-lzopsi27j2] {
+    color: #e59f71;
+}
+
+.favorite-details p[b-lzopsi27j2] {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #5c5c5c;
+}
+
+/* Стили для пагинации */
+.pagination[b-lzopsi27j2] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination span[b-lzopsi27j2] {
+    font-size: 1rem;
+    color: #2a2a2a;
+}
+
+/* Стили для деталей заказа */
+.order-details[b-lzopsi27j2] {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e5c0a6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.order-details h5[b-lzopsi27j2] {
+    font-size: 1.3rem;
+    color: #2a2a2a;
+    margin-bottom: 15px;
+}
+
+.order-details p[b-lzopsi27j2] {
+    font-size: 1rem;
+    color: #5c5c5c;
+    margin: 5px 0;
+}
+
+.order-details p strong[b-lzopsi27j2] {
+    color: #2a2a2a;
+}
+
+.order-details h6[b-lzopsi27j2] {
+    font-size: 1.1rem;
+    color: #2a2a2a;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* Стили для индикатора загрузки */
+.loading-spinner[b-lzopsi27j2] {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.spinner[b-lzopsi27j2] {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #e59f71;
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    animation: spin-b-lzopsi27j2 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+@keyframes spin-b-lzopsi27j2 {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Стили для модального окна */
+.modal[b-lzopsi27j2] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content[b-lzopsi27j2] {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.modal-content h3[b-lzopsi27j2] {
+    font-size: 1.5rem;
+    color: #2a2a2a;
+    margin-bottom: 15px;
+}
+
+.modal-content p[b-lzopsi27j2] {
+    font-size: 1rem;
+    color: #5c5c5c;
+    margin-bottom: 20px;
 }
 
 /* Адаптивность */
@@ -1422,6 +1568,27 @@ h3.text-center[b-xw9wupu56s] {
     .order-table th[b-lzopsi27j2],
     .order-table td[b-lzopsi27j2] {
         padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .tabs[b-lzopsi27j2] {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .favorite-item[b-lzopsi27j2] {
+        flex-direction: column;
+        align-items: flex-start;
+        max-width: 100%;
+    }
+
+    .favorite-img[b-lzopsi27j2] {
+        width: 100%;
+        height: auto;
+        max-height: 150px;
+    }
+
+    .pagination span[b-lzopsi27j2] {
         font-size: 0.9rem;
     }
 }

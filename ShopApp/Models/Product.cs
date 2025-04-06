@@ -17,5 +17,4 @@ public class Product
     public string? ImageUrl3 { get; set; } = string.Empty;
     public string? ImageUrl4 { get; set; } = string.Empty;
     
-    
 }

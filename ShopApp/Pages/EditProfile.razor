@@ -1,0 +1,113 @@
+@page "/EditProfile"
+@using System.ComponentModel.DataAnnotations
+@using ShopApp.Models
+@using ShopApp.Services
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject Blazored.Toast.Services.IToastService ToastService
+
+<div class="container mt-5">
+    <h3>Редактировать профиль</h3>
+
+    @if (currentUser == null)
+    {
+        <p>Загрузка...</p>
+    }
+    else
+    {
+        <EditForm Model="currentUser" OnValidSubmit="HandleUpdateProfile">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="form-group">
+                <label>Полное имя</label>
+                <InputText @bind-Value="currentUser.FullName" class="form-control" placeholder="Полное имя" />
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <InputText @bind-Value="currentUser.Email" class="form-control" placeholder="Email" disabled />
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
+        </EditForm>
+
+        <h4 class="mt-5">Сменить пароль</h4>
+        <EditForm Model="passwordModel" OnValidSubmit="HandleChangePassword">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="form-group">
+                <label>Текущий пароль</label>
+                <InputText @bind-Value="passwordModel.CurrentPassword" class="form-control" type="password" placeholder="Текущий пароль" />
+            </div>
+            <div class="form-group">
+                <label>Новый пароль</label>
+                <InputText @bind-Value="passwordModel.NewPassword" class="form-control" type="password" placeholder="Новый пароль" />
+            </div>
+            <div class="form-group">
+                <label>Подтверждение нового пароля</label>
+                <InputText @bind-Value="passwordModel.ConfirmNewPassword" class="form-control" type="password" placeholder="Подтверждение нового пароля" />
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Сменить пароль</button>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private AuthenticatedUser? currentUser;
+    private PasswordModel passwordModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await AuthService.GetCurrentUserAsync();
+        if (currentUser == null)
+        {
+            NavigationManager.NavigateTo("/Login");
+        }
+    }
+
+    private async Task HandleUpdateProfile()
+    {
+        if (currentUser == null) return;
+
+        try
+        {
+            await AuthService.UpdateUserAsync(currentUser);
+            ToastService.ShowSuccess("Профиль успешно обновлён!");
+            NavigationManager.NavigateTo("/Profile");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Failed to update profile: {ex.Message}");
+        }
+    }
+
+    private async Task HandleChangePassword()
+    {
+        if (currentUser == null) return;
+
+        try
+        {
+            await AuthService.ChangePasswordAsync(currentUser.Id, passwordModel.CurrentPassword, passwordModel.NewPassword);
+            ToastService.ShowSuccess("Пароль успешно изменён!");
+            passwordModel = new();
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Failed to change password: {ex.Message}");
+        }
+    }
+
+    private class PasswordModel
+    {
+        [Required(ErrorMessage = "Текущий пароль обязателен.")]
+        public string CurrentPassword { get; set; } = "";
+
+        [Required(ErrorMessage = "Новый пароль обязателен.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Новый пароль должен содержать минимум 6 символов.")]
+        public string NewPassword { get; set; } = "";
+
+        [Required(ErrorMessage = "Подтверждение пароля обязательно.")]
+        [Compare("NewPassword", ErrorMessage = "Пароли не совпадают.")]
+        public string ConfirmNewPassword { get; set; } = "";
+    }
+}

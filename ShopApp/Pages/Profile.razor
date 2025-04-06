@@ -1,45 +1,230 @@
 @page "/Profile"
+@using System.ComponentModel.DataAnnotations
 @using ShopApp.Models
 @using ShopApp.Services
 @inject AuthService AuthService
 @inject OrderService OrderService
+@inject FavoritesService FavoritesService
+@inject NavigationManager NavigationManager
 @inject Blazored.Toast.Services.IToastService ToastService
 
-<div class="container mt-5">
-    <h3>Профиль</h3>
+<div class="profile-container">
+    <h3 class="profile-title">Профиль</h3>
 
     @if (currentUser == null)
     {
-        <p>Загрузка...</p>
+        <p class="not-logged-in">Загрузка...</p>
     }
     else
     {
-        <h4>Добро пожаловать, @currentUser.FullName!</h4>
-        <p>Email: @currentUser.Email</p>
-        <p>Дата регистрации: @currentUser.RegistrationDate.ToString("d")</p>
+        <div class="profile-content">
+            <!-- Индикатор загрузки -->
+            @if (isLoading)
+            {
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Загрузка...</p>
+                </div>
+            }
+            else
+            {
+                <!-- Вкладки -->
+                <div class="tabs">
+                    <button class="btn @(activeTab == "info" ? "btn-primary" : "btn-secondary")" @onclick='() => SetActiveTab("info")'>Информация</button>
+                    <button class="btn @(activeTab == "favorites" ? "btn-primary" : "btn-secondary")" @onclick='() => SetActiveTab("favorites")'>Избранное</button>
+                    <button class="btn @(activeTab == "orders" ? "btn-primary" : "btn-secondary")" @onclick='() => SetActiveTab("orders")'>История заказов</button>
+                </div>
 
-        <h5>Ваши заказы</h5>
-        @if (orders == null || !orders.Any())
-        {
-            <p>У вас нет заказов.</p>
-        }
-        else
-        {
-            <ul>
-                @foreach (var order in orders)
+                <!-- Вкладка: Информация -->
+                @if (activeTab == "info")
                 {
-                    <li>
-                        Заказ #@order.Id от @order.CreatedDate.ToString("d") - Статус: @order.Status, Сумма: @order.Total
-                    </li>
+                    <div class="profile-info">
+                        <h4>Добро пожаловать, @currentUser.FullName!</h4>
+                        @if (!isEditing)
+                        {
+                            <p><strong>Email:</strong> @currentUser.Email</p>
+                            <p><strong>Телефон:</strong> @currentUser.Phone</p>
+                            <p><strong>Дата регистрации:</strong> @currentUser.RegistrationDate.ToString("d")</p>
+                            <div class="profile-actions">
+                                <button class="btn btn-primary" @onclick="StartEditing">Редактировать</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <EditForm Model="editModel" OnValidSubmit="SaveProfile">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary class="error-message" />
+                                <div class="form-group">
+                                    <label>Полное имя</label>
+                                    <InputText @bind-Value="editModel.FullName" class="form-control" />
+                                    <ValidationMessage For="() => editModel.FullName" class="invalid-feedback" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Телефон</label>
+                                    <InputText @bind-Value="editModel.Phone" class="form-control" />
+                                    <ValidationMessage For="() => editModel.Phone" class="invalid-feedback" />
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-success">Сохранить</button>
+                                    <button type="button" class="btn btn-secondary" @onclick="CancelEditing">Отмена</button>
+                                </div>
+                            </EditForm>
+                        }
+                    </div>
                 }
-            </ul>
-        }
+
+                <!-- Вкладка: Избранное -->
+                @if (activeTab == "favorites")
+                {
+                    <div class="favorites">
+                        <h4>Избранные товары</h4>
+                        @if (favorites == null || !favorites.Any())
+                        {
+                            <p>У вас нет избранных товаров.</p>
+                        }
+                        else
+                        {
+                            <div class="favorites-list">
+                                @foreach (var product in favorites)
+                                {
+                                    <div class="favorite-item">
+                                        <img src="@product.ImageUrl" alt="@product.Name" class="favorite-img" @onclick="() => NavigateToProduct(product.Id)" />
+                                        <div class="favorite-details">
+                                            <h5 @onclick="() => NavigateToProduct(product.Id)">@product.Name</h5>
+                                            <p>Цена: @product.Price.ToString("C")</p>
+                                            <button class="btn btn-danger btn-sm" @onclick="() => RemoveFromFavorites(product.Id)">Удалить</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Вкладка: История заказов -->
+                @if (activeTab == "orders")
+                {
+                    <div class="order-history">
+                        <h4>История заказов</h4>
+                        <p>Debug: orders count = @(orders?.Count ?? 0)</p>
+                        @if (orders == null || !orders.Any())
+                        {
+                            <p>У вас нет заказов.</p>
+                        }
+                        else
+                        {
+                            <table class="order-table">
+                                <thead>
+                                    <tr>
+                                        <th>№ Заказа</th>
+                                        <th>Дата</th>
+                                        <th>Сумма</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in orders)
+                                    {
+                                        <tr>
+                                            <td>#@order.Id</td>
+                                            <td>@order.CreatedDate.ToString("d")</td>
+                                            <td>@order.Total.ToString("C")</td>
+                                            <td>@order.Status</td>
+                                            <td>
+                                                <button class="btn btn-info btn-sm" @onclick="() => ShowOrderDetails(order.Id)">Подробнее</button>
+                                                @if (order.Status == "Pending")
+                                                {
+                                                    <button class="btn btn-danger btn-sm" @onclick="() => CancelOrder(order.Id)">Отменить</button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                            <!-- Пагинация -->
+                            <div class="pagination">
+                                <button class="btn btn-secondary" disabled="@(currentPage == 1)" @onclick="PreviousPage">Назад</button>
+                                <span>Страница @currentPage из @totalPages</span>
+                                <button class="btn btn-secondary" disabled="@(currentPage == totalPages)" @onclick="NextPage">Вперёд</button>
+                            </div>
+
+                            <!-- Детали заказа -->
+                            @if (selectedOrder != null)
+                            {
+                                <div class="order-details">
+                                    <h5>Детали заказа #@selectedOrder.Id</h5>
+                                    <p><strong>Дата:</strong> @selectedOrder.CreatedDate.ToString("d")</p>
+                                    <p><strong>Статус:</strong> @selectedOrder.Status</p>
+                                    <p><strong>Комментарий:</strong> @(string.IsNullOrEmpty(selectedOrder.Comment) ? "Нет комментария" : selectedOrder.Comment)</p>
+                                    <p><strong>Сумма:</strong> @selectedOrder.Total.ToString("C")</p>
+                                    <h6>Товары в заказе:</h6>
+                                    <table class="order-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Товар</th>
+                                                <th>Количество</th>
+                                                <th>Цена</th>
+                                                <th>Итого</th>
+                                                <th>Действия</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in selectedOrder.Items)
+                                            {
+                                                <tr>
+                                                    <td>@item.ProductName</td>
+                                                    <td>@item.Quantity</td>
+                                                    <td>@item.Price.ToString("C")</td>
+                                                    <td>@(item.Quantity * item.Price).ToString("C")</td>
+                                                    <td>
+                                                        <button class="btn btn-info btn-sm" @onclick="() => NavigateToProduct(item.ProductId)">Посмотреть</button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <button class="btn btn-secondary mt-3" @onclick="HideOrderDetails">Закрыть</button>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            }
+        </div>
     }
 </div>
+
+<!-- Модальное окно подтверждения -->
+@if (showConfirmModal)
+{
+    <div class="modal" @onclick="CloseConfirmModal">
+        <div class="modal-content" @onclick:stopPropagation>
+            <h3>Подтверждение</h3>
+            <p>Вы уверены, что хотите сохранить изменения?</p>
+            <div class="form-actions">
+                <button class="btn btn-success" @onclick="ConfirmSaveProfile">Да</button>
+                <button class="btn btn-secondary" @onclick="CloseConfirmModal">Нет</button>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private AuthenticatedUser? currentUser;
     private List<OrderClient> orders = new();
+    private List<Product> favorites = new();
+    private string activeTab = "info";
+    private int currentPage = 1;
+    private int pageSize = 5;
+    private int totalPages = 1;
+    private int totalOrders = 0;
+    private OrderClient? selectedOrder;
+    private bool isLoading = false;
+    private bool isEditing = false;
+    private bool showConfirmModal = false;
+    private EditProfileModel editModel;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,12 +233,221 @@
         {
             try
             {
-                orders = await OrderService.GetUserOrdersAsync(currentUser.Id);
+                isLoading = true;
+                await LoadOrders();
+                await FavoritesService.InitializeAsync();
+                favorites = await FavoritesService.GetFavoritesAsync();
+                FavoritesService.OnFavoritesChanged += UpdateFavorites;
             }
             catch (Exception ex)
             {
-                ToastService.ShowError($"Failed to load orders: {ex.Message}");
+                ToastService.ShowError($"Failed to load data: {ex.Message}");
+            }
+            finally
+            {
+                isLoading = false;
             }
         }
+    }
+
+    private async Task LoadOrders()
+    {
+        Console.WriteLine("Starting LoadOrders...");
+        isLoading = true;
+        try
+        {
+            Console.WriteLine($"Fetching orders for user {currentUser.Id}, page {currentPage}, pageSize {pageSize}");
+            var (loadedOrders, total, pages, page) = await OrderService.GetUserOrdersAsync(currentUser.Id, currentPage, pageSize);
+            Console.WriteLine($"Received {loadedOrders?.Count ?? 0} orders, total: {total}, pages: {pages}, currentPage: {page}");
+            orders = loadedOrders ?? new List<OrderClient>();
+            totalOrders = total;
+            totalPages = pages;
+            currentPage = page;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in LoadOrders: {ex.Message}\n{ex.StackTrace}");
+            ToastService.ShowError($"Failed to load orders: {ex.Message}");
+        }
+        finally
+        {
+            Console.WriteLine("LoadOrders completed, setting isLoading to false");
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadOrders();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadOrders();
+        }
+    }
+
+    private async Task ShowOrderDetails(int orderId)
+    {
+        try
+        {
+            isLoading = true;
+            selectedOrder = await OrderService.GetOrderAsync(orderId);
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Failed to load order details: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void HideOrderDetails()
+    {
+        selectedOrder = null;
+    }
+
+    private async Task CancelOrder(int orderId)
+    {
+        try
+        {
+            isLoading = true;
+            await OrderService.CancelOrderAsync(orderId);
+            ToastService.ShowSuccess("Order cancelled successfully!");
+            await LoadOrders();
+            if (selectedOrder != null && selectedOrder.Id == orderId)
+            {
+                selectedOrder = await OrderService.GetOrderAsync(orderId);
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Failed to cancel order: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+        if (activeTab == "orders")
+        {
+            currentPage = 1;
+            _ = LoadOrders();
+        }
+    }
+
+    private async void UpdateFavorites()
+    {
+        isLoading = true;
+        try
+        {
+            favorites = await FavoritesService.GetFavoritesAsync();
+            StateHasChanged();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task RemoveFromFavorites(int productId)
+    {
+        isLoading = true;
+        try
+        {
+            await FavoritesService.RemoveFromFavoritesAsync(productId);
+            ToastService.ShowSuccess("Removed from favorites!");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Failed to remove from favorites: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void NavigateToProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"/Product-item/{productId}");
+    }
+
+    private void StartEditing()
+    {
+        editModel = new EditProfileModel
+        {
+            FullName = currentUser.FullName,
+            Phone = currentUser.Phone
+        };
+        isEditing = true;
+    }
+
+    private async Task SaveProfile()
+    {
+        showConfirmModal = true;
+    }
+
+    private async Task ConfirmSaveProfile()
+    {
+        try
+        {
+            isLoading = true;
+            currentUser.FullName = editModel.FullName;
+            currentUser.Phone = editModel.Phone;
+            await AuthService.UpdateUserAsync(currentUser);
+            ToastService.ShowSuccess("Профиль обновлён!");
+            isEditing = false;
+            showConfirmModal = false;
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Ошибка при обновлении профиля: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void CloseConfirmModal()
+    {
+        showConfirmModal = false;
+    }
+
+    private void CancelEditing()
+    {
+        isEditing = false;
+        editModel = null;
+    }
+
+    public void Dispose()
+    {
+        FavoritesService.OnFavoritesChanged -= UpdateFavorites;
+    }
+
+    private class EditProfileModel
+    {
+        [Required(ErrorMessage = "Полное имя обязательно")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Имя должно быть от 2 до 100 символов")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Phone(ErrorMessage = "Неверный формат телефона")]
+        public string Phone { get; set; } = string.Empty;
     }
 }

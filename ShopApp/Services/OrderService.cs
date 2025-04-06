@@ -15,16 +15,17 @@ public class OrderService
         _productService = productService;
     }
 
-    public async Task<List<OrderClient>> GetUserOrdersAsync(string userId)
+    public async Task<(List<OrderClient> Orders, int TotalOrders, int TotalPages, int CurrentPage)> GetUserOrdersAsync(string userId, int page = 1, int pageSize = 5)
     {
-        var response = await _httpClient.GetAsync($"api/orders/user/{userId}");
+        var response = await _httpClient.GetAsync($"api/orders/user/{userId}?page={page}&pageSize={pageSize}");
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
             throw new Exception($"Failed to retrieve user orders: {error}");
         }
 
-        return await _httpClient.GetFromJsonAsync<List<OrderClient>>($"api/orders/user/{userId}") ?? new List<OrderClient>();
+        var result = await response.Content.ReadFromJsonAsync<PagedOrderResponse>();
+        return (result.Orders, result.TotalOrders, result.TotalPages, result.CurrentPage);
     }
 
     public async Task<OrderClient?> GetOrderAsync(int orderId)
@@ -103,5 +104,14 @@ public class OrderService
     {
         public string Message { get; set; }
         public int OrderId { get; set; }
+    }
+
+    private class PagedOrderResponse
+    {
+        public List<OrderClient> Orders { get; set; }
+        public int TotalOrders { get; set; }
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages { get; set; }
     }
 }

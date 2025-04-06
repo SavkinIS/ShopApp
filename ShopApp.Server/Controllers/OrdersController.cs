@@ -193,54 +193,74 @@ public IActionResult CreateOrder([FromBody] CreateOrderDto orderDto)
     }
 
     [Authorize]
-    [HttpGet]
-    [Route("user/{userId}")]
-    public IActionResult GetUserOrders(string userId)
+[HttpGet]
+[Route("user/{userId}")]
+public IActionResult GetUserOrders(string userId, [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
+{
+    try
     {
-        try
-        {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isAdmin = User.IsInRole("Admin");
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
 
-            if (!isAdmin && currentUserId != userId)
+        Console.WriteLine($"GetUserOrders: userId={userId}, currentUserId={currentUserId}, isAdmin={isAdmin}");
+
+        if (!isAdmin && currentUserId != userId)
+        {
+            return Unauthorized("You can only view your own orders.");
+        }
+
+        var query = _context.Orders
+            .Where(o => o.ClientId == userId)
+            .OrderByDescending(o => o.CreatedDate);
+
+        // Подсчитываем общее количество заказов
+        var totalOrders = query.Count();
+
+        // Применяем пагинацию
+        var orders = query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(o => new OrderDto
             {
-                return Unauthorized("You can only view your own orders.");
-            }
+                Id = o.Id,
+                ClientId = o.ClientId,
+                Status = o.Status,
+                CreatedDate = o.CreatedDate,
+                CompletedDate = o.CompletedDate,
+                Total = o.Total,
+                Comment = o.Comment,
+                Items = o.Items != null
+                    ? o.Items.Select(i => new OrderItemDto
+                    {
+                        Id = i.Id,
+                        OrderId = i.OrderId,
+                        ProductId = i.ProductId,
+                        ProductName = i.ProductName,
+                        Quantity = i.Quantity,
+                        Price = i.Price,
+                        ProductImageUrl = i.ProductImageUrl
+                    }).ToList()
+                    : new List<OrderItemDto>()
+            })
+            .ToList();
 
-            var orders = _context.Orders
-                .Where(o => o.ClientId == userId)
-                .OrderByDescending(o => o.CreatedDate)
-                .Select(o => new OrderDto
-                {
-                    Id = o.Id,
-                    ClientId = o.ClientId,
-                    Status = o.Status,
-                    CreatedDate = o.CreatedDate,
-                    CompletedDate = o.CompletedDate,
-                    Total = o.Total,
-                    Comment = o.Comment,
-                    Items = o.Items != null
-                        ? o.Items.Select(i => new OrderItemDto
-                        {
-                            Id = i.Id,
-                            OrderId = i.OrderId,
-                            ProductId = i.ProductId,
-                            ProductName = i.ProductName,
-                            Quantity = i.Quantity,
-                            Price = i.Price,
-                            ProductImageUrl = i.ProductImageUrl
-                        }).ToList()
-                        : new List<OrderItemDto>()
-                })
-                .ToList();
+        Console.WriteLine($"Found {orders.Count} orders for user {userId} on page {page}");
 
-            return Ok(orders);
-        }
-        catch (Exception ex)
+        return Ok(new
         {
-            return StatusCode(500, $"An error occurred while retrieving user orders: {ex.Message}");
-        }
+            Orders = orders,
+            TotalOrders = totalOrders,
+            CurrentPage = page,
+            PageSize = pageSize,
+            TotalPages = (int)Math.Ceiling((double)totalOrders / pageSize)
+        });
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error in GetUserOrders: {ex.Message}\n{ex.StackTrace}");
+        return StatusCode(500, $"An error occurred while retrieving user orders: {ex.Message}");
+    }
+}
 
     [Authorize]
     [HttpPost]

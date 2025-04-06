@@ -4,231 +4,257 @@
 @using ShopApp.Services
 @inject ProductService ProductService
 @inject CartService CartService
+@inject FavoritesService FavoritesService
 @inject PageControlService PageControlService
 @inject NavigationManager NavigationManager
+@inject Blazored.Toast.Services.IToastService ToastService
 
 @if (CurrentItem != null)
 {
-    <section class="product-page">
-        <div class="product-container">
-            <div class="product-image">
-                @if (!string.IsNullOrEmpty(SelectedImage))
-                {
-                    <img src="@SelectedImage" alt="Product Image" />
-                }
-                else
-                {
-                    <div class="no-image-main">
-                        <i class="bi bi-image"></i>
-                    </div>
-                }
-                <div class="small-images">
-                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl))
-                    {
-                        <img src="@CurrentItem.ImageUrl" alt="Small Image 1" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl)" />
-                    }
-                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl2))
-                    {
-                        <img src="@CurrentItem.ImageUrl2" alt="Small Image 2" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl2)" />
-                    }
-                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl3))
-                    {
-                        <img src="@CurrentItem.ImageUrl3" alt="Small Image 3" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl3)" />
-                    }
-                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl4))
-                    {
-                        <img src="@CurrentItem.ImageUrl4" alt="Small Image 4" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl4)" />
-                    }
-                </div>
-            </div>
-            <div class="product-details">
-                <h1>@CurrentItem.Name</h1>
-                <p class="price">@CurrentItem.Price.ToString("C") ₽</p>
-                <div class="specs">
-                    <p><strong>Цвет:</strong> @CurrentItem.Color</p>
-                    <p><strong>Состав:</strong> 100% шерсть</p>
-                    <p><strong>Вес:</strong> @CurrentItem.WeightGramm г</p>
-                    <p><strong>Длина:</strong> 200 м</p>
-                </div>
-                @if (CartQuantity > 0)
-                {
-                    <div class="quantity-control">
-                        <button class="quantity-btn minus" @onclick="DecreaseQuantity">-</button>
-                        <span class="quantity">@CartQuantity</span>
-                        <button class="quantity-btn plus" @onclick="IncreaseQuantity">+</button>
-                    </div>
-                    <div style="margin-top: 10px">
-                        <p><strong>Цена:</strong> @ItemsPrice</p>
-                    </div>
-                }
-                else
-                {
-                    <button class="add-to-cart" @onclick="AddToCart">Add to Cart</button>
-                }
-            </div>
-        </div>
-
-        <!-- Блок с другими цветами -->
-        <div class="color-variants">
-            <h3>Доступные цвета:</h3>
-            @if (SimilarProducts.Any())
+<section class="product-page">
+    <div class="product-container">
+        <div class="product-image">
+            @if (!string.IsNullOrEmpty(SelectedImage))
             {
-                <div class="color-links">
-                    @foreach (var product in SimilarProducts)
-                    {
-                        <div class="color-link" @onclick="() => SelectProduct(product)">
-                            <span class="color-name">@product.Color</span>
-                            @if (!string.IsNullOrEmpty(product.ImageUrl))
-                            {
-                                <img src="@product.ImageUrl" alt="@product.Color" title="@product.Color" />
-                            }
-                            else
-                            {
-                                <div class="no-image">
-                                    <span>Нет изображения</span>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
+            <img src="@SelectedImage" alt="Product Image" />
             }
             else
             {
-                <p>Другие цвета недоступны.</p>
+            <div class="no-image-main">
+                <i class="bi bi-image"></i>
+            </div>
             }
-        </div>
-
-        <!-- Блок с описанием -->
-        <div class="description-block">
-            <p>
-                @CurrentItem.Description
-            </p>
-        </div>
-    </section>
-}
-
-@code {
-    [Parameter]
-    public int Id { get; set; }
-
-    private Product CurrentItem;
-    private string SelectedImage { get; set; }
-    private int CartQuantity { get; set; }
-    private List<Product> SimilarProducts { get; set; } = new List<Product>(); // Список товаров с таким же названием и производителем
-
-    protected override async Task OnInitializedAsync()
-    {
-        PageControlService.IsMainBannerVisible = false;
-
-        if (Id <= 0)
-            return;
-
-        // Загружаем все товары
-        var products = (await ProductService.GetProductsAsync()).ToList();
-        CurrentItem = products.FirstOrDefault(p => p.Id == Id);
-        if (CurrentItem == null)
-            return;
-
-        // Находим товары с таким же названием и производителем, но другим цветом
-        SimilarProducts = products
-            .Where(p => p.Name == CurrentItem.Name && p.Brand == CurrentItem.Brand && p.Color != CurrentItem.Color && p.Id != CurrentItem.Id)
-            .ToList();
-
-        // Устанавливаем начальное изображение
-        SelectedImage = GetFirstAvailableImage(CurrentItem);
-
-        // Проверяем количество в корзине
-        CartQuantity = CartService.GetProductsCount(CurrentItem);
-        await GetTotalPrice();
-    }
-
-    private string GetFirstAvailableImage(Product product)
-    {
-        if (!string.IsNullOrEmpty(product.ImageUrl))
-            return product.ImageUrl;
-        if (!string.IsNullOrEmpty(product.ImageUrl2))
-            return product.ImageUrl2;
-        if (!string.IsNullOrEmpty(product.ImageUrl3))
-            return product.ImageUrl3;
-        if (!string.IsNullOrEmpty(product.ImageUrl4))
-            return product.ImageUrl4;
-        return null; // Если все пустые, возвращаем null
-    }
-
-    private async Task GetTotalPrice()
-    {
-        if (CartQuantity > 0)
-        {
-            var cartItems = await CartService.GetItems();
-            if (cartItems != null)
-            {
-                for (int i = 0; i < cartItems.Count; i++)
+            <div class="small-images">
+                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl))
                 {
-                    if (cartItems[i].ProductId == Id)
-                    {
-                        ItemsPrice = (cartItems[i].Price * cartItems[i].Quantity).ToString();
-                        return;
-                    }
+                <img src="@CurrentItem.ImageUrl" alt="Small Image 1" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl)" />
                 }
+                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl2))
+                {
+                <img src="@CurrentItem.ImageUrl2" alt="Small Image 2" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl2)" />
+                }
+                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl3))
+                {
+                <img src="@CurrentItem.ImageUrl3" alt="Small Image 3" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl3)" />
+                }
+                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl4))
+                {
+                <img src="@CurrentItem.ImageUrl4" alt="Small Image 4" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl4)" />
+                }
+            </div>
+        </div>
+        <div class="product-details">
+            <h1>@CurrentItem.Name</h1>
+            <p class="price">@CurrentItem.Price.ToString("C") ₽</p>
+            <div class="specs">
+                <p><strong>Цвет:</strong> @CurrentItem.Color</p>
+                <p><strong>Состав:</strong> 100% шерсть</p>
+                <p><strong>Вес:</strong> @CurrentItem.WeightGramm г</p>
+                <p><strong>Длина:</strong> 200 м</p>
+            </div>
+            @if (CartQuantity > 0)
+            {
+            <div class="quantity-control">
+                <button class="quantity-btn minus" @onclick="DecreaseQuantity">-</button>
+                <span class="quantity">@CartQuantity</span>
+                <button class="quantity-btn plus" @onclick="IncreaseQuantity">+</button>
+            </div>
+            <div style="margin-top: 10px">
+                <p><strong>Цена:</strong> @ItemsPrice</p>
+            </div>
             }
-        }
-    }
+            else
+            {
+            <button class="add-to-cart" @onclick="AddToCart">Add to Cart</button>
+            }
+            <button class="btn @(IsFavorite ? "btn-danger" : "btn-info") mt-2" @onclick="ToggleFavorite">
+                @(IsFavorite ? "Remove from Favorites" : "Add to Favorites")
+            </button>
+        </div>
+    </div>
 
-    public string ItemsPrice { get; set; }
-
-    public void Dispose()
-    {
-        PageControlService.IsMainBannerVisible = true;
-    }
-
-    private async Task AddToCart()
-    {
-        CartService.AddToCart(CurrentItem, 1);
-        CartQuantity++;
-        await GetTotalPrice();
-    }
-
-    private async Task IncreaseQuantity()
-    {
-        await CartService.UpdateQuantity(CurrentItem.Id, 1);
-        CartQuantity = CartService.GetProductsCount(CurrentItem);
-        await GetTotalPrice();
-    }
-
-    private async Task DecreaseQuantity()
-    {
-        if (CartQuantity > 0)
+    <!-- Блок с другими цветами -->
+    <div class="color-variants">
+        <h3>Доступные цвета:</h3>
+        @if (SimilarProducts.Any())
         {
-            await CartService.UpdateQuantity(CurrentItem.Id, -1);
-            CartQuantity = CartService.GetProductsCount(CurrentItem);
-            await GetTotalPrice();
+        <div class="color-links">
+            @foreach (var product in SimilarProducts)
+            {
+            <div class="color-link" @onclick="() => SelectProduct(product)">
+                <span class="color-name">@product.Color</span>
+                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                <img src="@product.ImageUrl" alt="@product.Color" title="@product.Color" />
+                }
+                else
+                {
+                <div class="no-image">
+                    <span>Нет изображения</span>
+                </div>
+                }
+            </div>
+            }
+        </div>
         }
         else
         {
-            ItemsPrice = "";
+        <p>Другие цвета недоступны.</p>
         }
-    }
+    </div>
 
-    private void ChangeSelectedImage(string imageSrc)
-    {
-        SelectedImage = imageSrc;
-    }
+    <!-- Блок с описанием -->
+    <div class="description-block">
+        <p>
+            @CurrentItem.Description
+        </p>
+    </div>
+</section>
+}
 
-    private async Task SelectProduct(Product product)
-    {
-        // Обновляем текущий товар
-        CurrentItem = product;
-        Id = product.Id;
-        SelectedImage = GetFirstAvailableImage(product); // Обновляем SelectedImage для нового товара
-        CartQuantity = CartService.GetProductsCount(CurrentItem);
-        await GetTotalPrice();
+@code {
+[Parameter]
+public int Id { get; set; }
 
-        // Обновляем URL без перезагрузки страницы
-        NavigationManager.NavigateTo($"/Product-item/{Id}", forceLoad: false);
-    }
+private Product CurrentItem;
+private string SelectedImage { get; set; }
+private int CartQuantity { get; set; }
+private List<Product> SimilarProducts { get; set; } = new List<Product>();
+private bool IsFavorite { get; set; }
 
-    private void SelectProductOpenNew(Product product)
-    {
-        NavigationManager.NavigateTo($"/Product-item/{product.Id}", forceLoad: true);
-    }
+protected override async Task OnInitializedAsync()
+{
+PageControlService.IsMainBannerVisible = false;
+
+if (Id <= 0)
+return;
+
+// Инициализируем избранное
+await FavoritesService.InitializeAsync();
+
+// Загружаем все товары
+var products = (await ProductService.GetProductsAsync()).ToList();
+CurrentItem = products.FirstOrDefault(p => p.Id == Id);
+if (CurrentItem == null)
+return;
+
+// Проверяем, находится ли товар в избранном
+IsFavorite = FavoritesService.IsFavorite(CurrentItem.Id);
+
+// Находим товары с таким же названием и производителем, но другим цветом
+SimilarProducts = products
+.Where(p => p.Name == CurrentItem.Name && p.Brand == CurrentItem.Brand && p.Color != CurrentItem.Color && p.Id != CurrentItem.Id)
+.ToList();
+
+// Устанавливаем начальное изображение
+SelectedImage = GetFirstAvailableImage(CurrentItem);
+
+// Проверяем количество в корзине
+CartQuantity = CartService.GetProductsCount(CurrentItem);
+await GetTotalPrice();
+}
+
+private string GetFirstAvailableImage(Product product)
+{
+if (!string.IsNullOrEmpty(product.ImageUrl))
+return product.ImageUrl;
+if (!string.IsNullOrEmpty(product.ImageUrl2))
+return product.ImageUrl2;
+if (!string.IsNullOrEmpty(product.ImageUrl3))
+return product.ImageUrl3;
+if (!string.IsNullOrEmpty(product.ImageUrl4))
+return product.ImageUrl4;
+return null;
+}
+
+private async Task GetTotalPrice()
+{
+if (CartQuantity > 0)
+{
+var cartItems = await CartService.GetItems();
+if (cartItems != null)
+{
+for (int i = 0; i < cartItems.Count; i++)
+{
+if (cartItems[i].ProductId == Id)
+{
+ItemsPrice = (cartItems[i].Price * cartItems[i].Quantity).ToString();
+return;
+}
+}
+}
+}
+}
+
+public string ItemsPrice { get; set; }
+
+public void Dispose()
+{
+PageControlService.IsMainBannerVisible = true;
+}
+
+private async Task AddToCart()
+{
+CartService.AddToCart(CurrentItem, 1);
+CartQuantity++;
+await GetTotalPrice();
+}
+
+private async Task IncreaseQuantity()
+{
+await CartService.UpdateQuantity(CurrentItem.Id, 1);
+CartQuantity = CartService.GetProductsCount(CurrentItem);
+await GetTotalPrice();
+}
+
+private async Task DecreaseQuantity()
+{
+if (CartQuantity > 0)
+{
+await CartService.UpdateQuantity(CurrentItem.Id, -1);
+CartQuantity = CartService.GetProductsCount(CurrentItem);
+await GetTotalPrice();
+}
+else
+{
+ItemsPrice = "";
+}
+}
+
+private void ChangeSelectedImage(string imageSrc)
+{
+SelectedImage = imageSrc;
+}
+
+private async Task SelectProduct(Product product)
+{
+CurrentItem = product;
+Id = product.Id;
+SelectedImage = GetFirstAvailableImage(product);
+CartQuantity = CartService.GetProductsCount(CurrentItem);
+IsFavorite = FavoritesService.IsFavorite(CurrentItem.Id);
+await GetTotalPrice();
+
+NavigationManager.NavigateTo($"/Product-item/{Id}", forceLoad: false);
+}
+
+private void SelectProductOpenNew(Product product)
+{
+NavigationManager.NavigateTo($"/Product-item/{product.Id}", forceLoad: true);
+}
+
+private async Task ToggleFavorite()
+{
+if (IsFavorite)
+{
+await FavoritesService.RemoveFromFavoritesAsync(CurrentItem.Id);
+ToastService.ShowSuccess("Removed from favorites!");
+}
+else
+{
+await FavoritesService.AddToFavoritesAsync(CurrentItem);
+ToastService.ShowSuccess("Added to favorites!");
+}
+IsFavorite = FavoritesService.IsFavorite(CurrentItem.Id);
+}
 }

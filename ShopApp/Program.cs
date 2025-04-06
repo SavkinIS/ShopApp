@@ -38,6 +38,7 @@ builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<PageControlService>();
+builder.Services.AddScoped<FavoritesService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
 
