@@ -11,115 +11,118 @@
 
 @if (CurrentItem != null)
 {
-<section class="product-page">
-    <div class="product-container">
-        <div class="product-image">
-            @if (!string.IsNullOrEmpty(SelectedImage))
-            {
-                <img src="@SelectedImage" alt="Product Image" />
-            }
-            else
-            {
-                <div class="no-image-main">
-                    <i class="bi bi-image"></i>
-                </div>
-            }
-            <div class="small-images">
-                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl))
+    <section class="product-page">
+        <div class="product-container">
+            <div class="product-image">
+                @if (!string.IsNullOrEmpty(SelectedImage))
                 {
-                    <img src="@CurrentItem.ImageUrl" alt="Small Image 1" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl)" />
-                }
-                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl2))
-                {
-                    <img src="@CurrentItem.ImageUrl2" alt="Small Image 2" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl2)" />
-                }
-                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl3))
-                {
-                    <img src="@CurrentItem.ImageUrl3" alt="Small Image 3" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl3)" />
-                }
-                @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl4))
-                {
-                    <img src="@CurrentItem.ImageUrl4" alt="Small Image 4" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl4)" />
-                }
-            </div>
-        </div>
-        <div class="product-details">
-            <h1>@CurrentItem.Name</h1>
-            <p class="price">@CurrentItem.Price.ToString("C") ₽</p>
-            <div class="specs">
-                <p><strong>Цвет:</strong> @CurrentItem.Color</p>
-                <p><strong>Состав:</strong> 100% шерсть</p>
-                <p><strong>Вес:</strong> @CurrentItem.WeightGramm г</p>
-                <p><strong>Длина:</strong> 200 м</p>
-            </div>
-            <div class="action-buttons">
-                @if (CartQuantity > 0)
-                {
-                    <div class="quantity-control">
-                        <button class="quantity-btn minus" @onclick="DecreaseQuantity">-</button>
-                        <span class="quantity">@CartQuantity</span>
-                        <button class="quantity-btn plus" @onclick="IncreaseQuantity">+</button>
-                    </div>
-                    <div style="margin-top: 10px">
-                        <p><strong>Цена:</strong> @ItemsPrice</p>
-                    </div>
+                    <img src="@SelectedImage" alt="Product Image"/>
                 }
                 else
                 {
-                    <button class="add-to-cart" @onclick="AddToCart">Add to Cart</button>
-                }
-            </div>
-            <div class="favorite-container">
-                <button class="favorite-btn" @onclick="ToggleFavorite" title="@(IsFavorite ? "Remove from Favorites" : "Add to Favorites")">
-                    <i class="bi @(IsFavorite ? "bi-heart-fill" : "bi-heart")"></i>
-                    <span class="favorite-span">@(IsFavorite ? "Удалить из избранного" : "В избранное")</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Блок с другими цветами -->
-    <div class="color-variants">
-        <h3>Доступные цвета:</h3>
-        @if (SimilarProducts.Any())
-        {
-            <div class="color-links">
-                @foreach (var product in SimilarProducts)
-                {
-                    <div class="color-link" @onclick="() => SelectProduct(product)">
-                        <span class="color-name">@product.Color</span>
-                        @if (!string.IsNullOrEmpty(product.ImageUrl))
-                        {
-                            <img src="@product.ImageUrl" alt="@product.Color" title="@product.Color" />
-                        }
-                        else
-                        {
-                            <div class="no-image">
-                                <span>Нет изображения</span>
-                            </div>
-                        }
+                    <div class="no-image-main">
+                        <i class="bi bi-image"></i>
                     </div>
                 }
+                <div class="small-images">
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl))
+                    {
+                        <img src="@CurrentItem.ImageUrl" alt="Small Image 1" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl)"/>
+                    }
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl2))
+                    {
+                        <img src="@CurrentItem.ImageUrl2" alt="Small Image 2" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl2)"/>
+                    }
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl3))
+                    {
+                        <img src="@CurrentItem.ImageUrl3" alt="Small Image 3" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl3)"/>
+                    }
+                    @if (!string.IsNullOrEmpty(CurrentItem.ImageUrl4))
+                    {
+                        <img src="@CurrentItem.ImageUrl4" alt="Small Image 4" @onclick="() => ChangeSelectedImage(CurrentItem.ImageUrl4)"/>
+                    }
+                </div>
             </div>
-        }
-        else
-        {
-            <p>Другие цвета недоступны.</p>
-        }
-    </div>
+            <div class="product-details">
+                <h1>@CurrentItem.Name</h1>
+                <p class="price">@CurrentItem.Price.ToString("C") ₽</p>
+                <div class="specs">
+                    <p>
+                        <strong>Цвет:</strong> @CurrentItem.Color
+                    </p>
+                    <p><strong>Состав:</strong> 100% шерсть</p>
+                    <p><strong>Вес:</strong> @CurrentItem.WeightGramm г</p>
+                    <p><strong>Длина:</strong> 200 м</p>
+                </div>
+                <div class="action-buttons">
+                    @if (CartQuantity > 0)
+                    {
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" @onclick="DecreaseQuantity">-</button>
+                            <span class="quantity">@CartQuantity</span>
+                            <button class="quantity-btn plus" @onclick="IncreaseQuantity">+</button>
+                        </div>
+                        <div style="margin-top: 10px">
+                            <p>
+                                <strong>Цена:</strong> @ItemsPrice
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <button class="add-to-cart" @onclick="AddToCart">Add to Cart</button>
+                    }
+                </div>
+                <div class="favorite-container">
+                    <button class="favorite-btn" @onclick="ToggleFavorite" title="@(IsFavorite ? "Remove from Favorites" : "Add to Favorites")">
+                        <i class="bi @(IsFavorite ? "bi-heart-fill" : "bi-heart")"></i>
+                        <span class="favorite-span">@(IsFavorite ? "Удалить из избранного" : "В избранное")</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    <!-- Блок с описанием -->
-    <div class="description-block">
-        <p>
-            @CurrentItem.Description
-        </p>
-    </div>
-</section>
+        <!-- Блок с другими цветами -->
+        <div class="color-variants">
+            <h3>Доступные цвета:</h3>
+            @if (SimilarProducts.Any())
+            {
+                <div class="color-links">
+                    @foreach (var product in SimilarProducts)
+                    {
+                        <div class="color-link" @onclick="() => SelectProduct(product)">
+                            <span class="color-name">@product.Color</span>
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="@product.Color" title="@product.Color"/>
+                            }
+                            else
+                            {
+                                <div class="no-image">
+                                    <span>Нет изображения</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>Другие цвета недоступны.</p>
+            }
+        </div>
+
+        <!-- Блок с описанием -->
+        <div class="description-block">
+            <p>
+                @CurrentItem.Description
+            </p>
+        </div>
+    </section>
 }
 
 @code {
-    [Parameter]
-    public int Id { get; set; }
+    [Parameter] public int Id { get; set; }
 
     private Product CurrentItem;
     private string SelectedImage { get; set; }
@@ -134,27 +137,25 @@
         if (Id <= 0)
             return;
 
-        // Инициализируем избранное
-        await FavoritesService.InitializeAsync();
-
-        // Загружаем все товары
+// Загружаем все товары
         var products = (await ProductService.GetProductsAsync()).ToList();
         CurrentItem = products.FirstOrDefault(p => p.Id == Id);
         if (CurrentItem == null)
             return;
 
-        // Проверяем, находится ли товар в избранном
-        IsFavorite = FavoritesService.IsFavorite(CurrentItem.Id);
+// Инициализируем избранное и проверяем, находится ли товар в избранном
+        await FavoritesService.InitializeAsync();
+        IsFavorite = await FavoritesService.CheckIsFavoriteAsync(CurrentItem.Id);
 
-        // Находим товары с таким же названием и производителем, но другим цветом
+// Находим товары с таким же названием и производителем, но другим цветом
         SimilarProducts = products
             .Where(p => p.Name == CurrentItem.Name && p.Brand == CurrentItem.Brand && p.Color != CurrentItem.Color && p.Id != CurrentItem.Id)
             .ToList();
 
-        // Устанавливаем начальное изображение
+// Устанавливаем начальное изображение
         SelectedImage = GetFirstAvailableImage(CurrentItem);
 
-        // Проверяем количество в корзине
+// Проверяем количество в корзине
         CartQuantity = CartService.GetProductsCount(CurrentItem);
         await GetTotalPrice();
     }
@@ -237,7 +238,7 @@
         Id = product.Id;
         SelectedImage = GetFirstAvailableImage(product);
         CartQuantity = CartService.GetProductsCount(CurrentItem);
-        IsFavorite = FavoritesService.IsFavorite(CurrentItem.Id);
+        IsFavorite = await FavoritesService.CheckIsFavoriteAsync(CurrentItem.Id);
         await GetTotalPrice();
 
         NavigationManager.NavigateTo($"/Product-item/{Id}", forceLoad: false);
@@ -250,17 +251,30 @@
 
     private async Task ToggleFavorite()
     {
-        if (IsFavorite)
+        try
         {
-            await FavoritesService.RemoveFromFavoritesAsync(CurrentItem.Id);
-            ToastService.ShowSuccess("Removed from favorites!");
+            if (IsFavorite)
+            {
+                await FavoritesService.RemoveFromFavoritesAsync(CurrentItem.Id);
+                ToastService.ShowSuccess("Removed from favorites!");
+            }
+            else
+            {
+                await FavoritesService.AddToFavoritesAsync(CurrentItem);
+                ToastService.ShowSuccess("Added to favorites!");
+            }
+            IsFavorite = await FavoritesService.CheckIsFavoriteAsync(CurrentItem.Id);
+            StateHasChanged();
         }
-        else
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            await FavoritesService.AddToFavoritesAsync(CurrentItem);
-            ToastService.ShowSuccess("Added to favorites!");
+            ToastService.ShowError("Please log in to manage favorites.");
+            NavigationManager.NavigateTo("/login");
         }
-        IsFavorite = FavoritesService.IsFavorite(CurrentItem.Id);
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error: {ex.Message}");
+        }
     }
+
 }

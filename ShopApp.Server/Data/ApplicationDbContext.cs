@@ -67,6 +67,19 @@ namespace ShopApp.Server.Data
             builder.Entity<Order>()
                 .Property(o => o.ClientId)
                 .HasConversion<string>();
+
+            // Настройка связи для Favorites
+            builder.Entity<Favorite>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Favorite>()
+                .HasOne(f => f.Product)
+                .WithMany()
+                .HasForeignKey(f => f.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         // DbSet для моделей
@@ -74,6 +87,6 @@ namespace ShopApp.Server.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-
+        public DbSet<Favorite> Favorites { get; set; } // Добавляем DbSet для избранных товаров
     }
 }
