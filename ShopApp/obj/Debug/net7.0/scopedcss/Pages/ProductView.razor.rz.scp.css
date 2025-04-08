@@ -112,7 +112,6 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 20px;
 }
 
 .quantity-btn[b-q9hbb3eopk] {
@@ -134,6 +133,19 @@
     font-size: 1.2rem;
     min-width: 30px;
     text-align: center;
+}
+
+/* Контейнер для кнопок действий */
+.action-buttons[b-q9hbb3eopk] {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Контейнер для кнопки избранного */
+.favorite-container[b-q9hbb3eopk] {
+    margin-top: 10px; /* Отступ сверху от action-buttons */
 }
 
 /* Блок с другими цветами */
@@ -230,8 +242,80 @@
     font-size: 2rem;
     color: #666;
 }
+
 .product-image .no-image-main[b-q9hbb3eopk] {
     background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+}
+
+/* Стили для кнопки избранного */
+.favorite-btn[b-q9hbb3eopk] {
+    border: none;
+    padding: 8px 12px; /* Увеличиваем padding для фона */
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Отступ между иконкой и текстом */
+    border-radius: 4px; /* Скругление углов */
+    transition: background-color 0.3s ease, transform 0.1s ease; /* Плавный переход */
+}
+
+/* Стили для кнопки, когда товар НЕ в избранном (пустое сердечко) */
+.favorite-btn:has(i.bi-heart)[b-q9hbb3eopk] {
+    /*background-color: #f8f9fa; !* Светлый фон *!*/
+    /*border: 1px solid #e59f71; !* Обводка в цвет темы *!*/
+    background: none;
+}
+
+/* Эффект при наведении, когда товар НЕ в избранном */
+.favorite-btn:has(i.bi-heart):hover[b-q9hbb3eopk] {
+    /*background-color: #e59f71; !* Фон при наведении *!*/
+    transform: translateY(-2px); /* Лёгкий подъём */
+}
+
+/* Стили для кнопки, когда товар в избранном (заполненное сердечко) */
+.favorite-btn:has(i.bi-heart-fill)[b-q9hbb3eopk] {
+    background: none; /* Прозрачный фон */
+    border: none; /* Убираем обводку */
+}
+
+/* Эффект при наведении, когда товар в избранном */
+.favorite-btn:has(i.bi-heart-fill):hover[b-q9hbb3eopk] {
+    background: none; /* Оставляем прозрачный фон */
+}
+
+.favorite-btn i[b-q9hbb3eopk] {
+    font-size: 27px; /* Размер иконки 20px */
+    color: #e59f71; /* Цвет иконки (по умолчанию) */
+    transition: color 0.3s ease, transform 0.1s ease; /* Плавный переход для цвета и анимации */
+}
+
+.favorite-btn i.bi-heart-fill[b-q9hbb3eopk] {
+    color: #dc3545; /* Цвет заполненного сердечка (красный) */
+    animation: pulse-b-q9hbb3eopk 0.5s ease; /* Анимация "пульсации" */
+}
+
+.favorite-btn:hover i[b-q9hbb3eopk] {
+    transform: scale(1.1); /* Лёгкое увеличение при наведении */
+}
+
+.favorite-btn:hover i.bi-heart[b-q9hbb3eopk] {
+    color: #dc3545; /* Цвет при наведении на пустое сердечко */
+}
+
+.favorite-btn:focus[b-q9hbb3eopk] {
+    outline: none; /* Убираем стандартный outline при фокусе */
+}
+
+.favorite-span[b-q9hbb3eopk] {
+    font-size: 22px;
+    color: #333;
+    padding-left: 10px;
+}
+
+@keyframes pulse-b-q9hbb3eopk {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
 /* Адаптивность */
@@ -274,4 +358,44 @@
     .color-link .color-name[b-q9hbb3eopk] {
         font-size: 0.8rem;
     }
+
+    /* Центрирование дочерних элементов product-details */
+    .product-details[b-q9hbb3eopk] {
+        text-align: center; /* Центрируем текст */
+    }
+
+    .product-details h1[b-q9hbb3eopk],
+    .product-details .price[b-q9hbb3eopk],
+    .product-details .specs[b-q9hbb3eopk] {
+        text-align: center; /* Центрируем заголовок, цену и характеристики */
+    }
+
+    .specs p[b-q9hbb3eopk] {
+        display: inline-block; /* Для корректного центрирования */
+        text-align: left; /* Текст внутри характеристик остаётся выровненным по левому краю */
+    }
+
+    .action-buttons[b-q9hbb3eopk] {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center; /* Центрируем кнопки */
+    }
+
+    /*.favorite-container {*/
+    /*    margin-top: 8px;*/
+    /*    text-align: center; !* Выравнивание по центру *!*/
+    /*}*/
+    
+    /*.favorite-btn {*/
+    /*    padding: 8px 12px; !* Уменьшаем padding на маленьких экранах *!*/
+    /*    gap: 8px; !* Отступ между иконкой и текстом *!*/
+    /*}*/
+    
+    /*.favorite-btn i {*/
+    /*    font-size: 18px; !* Уменьшаем иконку на маленьких экранах *!*/
+    /*}*/
+    
+    /*.favorite-span {*/
+    /*    font-size: 0.9rem; !* Уменьшаем текст на маленьких экранах *!*/
+    /*}*/
 }

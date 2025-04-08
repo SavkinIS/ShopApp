@@ -133,7 +133,7 @@
                                             <td>@order.Status</td>
                                             <td>
                                                 <button class="btn btn-info btn-sm" @onclick="() => ShowOrderDetails(order.Id)">Подробнее</button>
-                                                @if (order.Status == "Pending")
+                                                @if (order.Status != "Completed" && order.Status != "Shipping")
                                                 {
                                                     <button class="btn btn-danger btn-sm" @onclick="() => CancelOrder(order.Id)">Отменить</button>
                                                 }
