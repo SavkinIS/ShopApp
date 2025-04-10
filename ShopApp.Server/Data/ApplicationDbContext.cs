@@ -37,7 +37,7 @@ namespace ShopApp.Server.Data
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole
                 {
-                    Id = "1", // Уникальный идентификатор роли
+                    Id = "1",
                     Name = "Admin",
                     NormalizedName = "ADMIN"
                 },
@@ -63,7 +63,6 @@ namespace ShopApp.Server.Data
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Убедимся, что ClientId хранится как строка, если это нужно
             builder.Entity<Order>()
                 .Property(o => o.ClientId)
                 .HasConversion<string>();
@@ -80,13 +79,28 @@ namespace ShopApp.Server.Data
                 .WithMany()
                 .HasForeignKey(f => f.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Настройка TPT для Product
+            builder.Entity<Product>().ToTable("Products");
+            builder.Entity<Tool>().ToTable("Tools");
+            builder.Entity<Accessory>().ToTable("Accessories");
+            builder.Entity<Clothing>().ToTable("Clothing");
+            builder.Entity<MasterClass>().ToTable("MasterClasses");
+            builder.Entity<Yarn>().ToTable("Yarns");
+            builder.Entity<YarnBobbin>().ToTable("YarnBobbins");
         }
 
         // DbSet для моделей
         public DbSet<Product> Products { get; set; }
+        public DbSet<Tool> Tools { get; set; }
+        public DbSet<Accessory> Accessories { get; set; }
+        public DbSet<Clothing> Clothing { get; set; }
+        public DbSet<MasterClass> MasterClasses { get; set; }
+        public DbSet<Yarn> Yarns { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-        public DbSet<Favorite> Favorites { get; set; } // Добавляем DbSet для избранных товаров
+        public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<YarnBobbin> YarnBobbins { get; set; }
     }
 }

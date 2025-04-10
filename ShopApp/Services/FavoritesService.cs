@@ -27,12 +27,12 @@ public class FavoritesService
             }
             else
             {
-                _favorites = new List<Product>(); // Если запрос не удался, инициализируем пустой список
+                _favorites = new List<Product>();
             }
         }
         catch (Exception)
         {
-            _favorites = new List<Product>(); // Обработка ошибок
+            _favorites = new List<Product>();
         }
     }
 
@@ -47,13 +47,11 @@ public class FavoritesService
 
     public async Task<bool> CheckIsFavoriteAsync(int productId)
     {
-        // Сначала проверяем локальный список
         if (_favorites.Any(p => p.Id == productId))
         {
             return true;
         }
 
-        // Если в локальном списке нет, делаем запрос к серверу
         try
         {
             var response = await _httpClient.GetAsync($"api/favorites/isFavorite/{productId}");
@@ -62,7 +60,6 @@ public class FavoritesService
                 var isFavorite = await response.Content.ReadFromJsonAsync<bool>();
                 if (isFavorite && !_favorites.Any(p => p.Id == productId))
                 {
-                    // Если товар в избранном на сервере, но его нет в локальном списке, обновляем список
                     var product = await _httpClient.GetFromJsonAsync<Product>($"api/products/{productId}");
                     if (product != null)
                     {
@@ -81,10 +78,9 @@ public class FavoritesService
 
     public async Task AddToFavoritesAsync(Product product)
     {
-        // Проверяем, есть ли товар в избранном на сервере
         if (await CheckIsFavoriteAsync(product.Id))
         {
-            return; // Если товар уже в избранном, ничего не делаем
+            return;
         }
 
         var response = await _httpClient.PostAsJsonAsync("api/favorites/add", product.Id);
@@ -95,7 +91,6 @@ public class FavoritesService
         }
         else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            // Можно перенаправить на страницу логина
         }
     }
 

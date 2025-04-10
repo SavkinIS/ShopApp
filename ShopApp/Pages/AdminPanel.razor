@@ -7,295 +7,430 @@
 @inject IJSRuntime JSRuntime
 
 <div class="container mt-5">
-    <h2 class="text-center">Admin Panel</h2>
-    <hr />
+<h2 class="text-center">Admin Panel</h2>
+<hr/>
 
-    @if (IsAdmin)
-    {
-        <!-- Фиксированная панель управления -->
-        <div class="control-panel">
-            <!-- Фильтрация и сортировка -->
-            <div class="filter-sort-section mb-3">
-                <div class="filter-sort-content d-flex align-items-center gap-2">
-                    <div class="d-flex align-items-center">
-                        <label class="me-2">Filter:</label>
-                        <input type="text" class="form-control" placeholder="Search by Name or Brand" @bind="FilterText" @bind:event="oninput" />
-                        <button class="btn btn-secondary ms-2" @onclick="ResetFilters">
-                            <i class="bi bi-x-circle"></i> Clear
-                        </button>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <label class="me-2">Sort by:</label>
-                        <select class="form-control" @bind="SortField" @bind:after="SaveSortPreferences">
-                            <option value="Name">Name</option>
-                            <option value="Brand">Brand</option>
-                        </select>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <label class="me-2">Order:</label>
-                        <select class="form-control" @bind="SortOrder" @bind:after="SaveSortPreferences">
-                            <option value="Ascending">Ascending</option>
-                            <option value="Descending">Descending</option>
-                        </select>
-                    </div>
+@if (IsAdmin)
+{
+    <!-- Фиксированная панель управления -->
+    <div class="control-panel">
+        <!-- Фильтрация и сортировка -->
+        <div class="filter-sort-section mb-3">
+            <div class="filter-sort-content d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center">
+                    <label class="me-2">Filter:</label>
+                    <input type="text" class="form-control" placeholder="Search by Name or Brand" @bind="FilterText" @bind:event="oninput"/>
+                    <button class="btn btn-secondary ms-2" @onclick="ResetFilters">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </button>
                 </div>
-            </div>
-            <!-- Кнопки управления -->
-            <div class="action-buttons mb-3">
-                <div class="action-buttons-content d-flex gap-2">
-                    <button class="btn btn-primary" @onclick="AddProduct">
-                        <i class="bi bi-plus-circle"></i> Add Product
-                    </button>
-                    <InputFile OnChange="HandleExcelUpload" style="display:none" id="excelUpload" />
-                    <label class="btn btn-secondary" for="excelUpload">
-                        <i class="bi bi-upload"></i> Upload Excel
-                    </label>
-                    <button class="btn btn-success" @onclick="DownloadExcel">
-                        <i class="bi bi-download"></i> Download Excel
-                    </button>
-                    @if (Products.Any())
-                    {
-                        <button class="btn btn-info" @onclick="ShowDuplicateConfirmation">
-                            <i class="bi bi-copy"></i> Duplicate Last
-                        </button>
-                    }
+                <div class="d-flex align-items-center">
+                    <label class="me-2">Sort by:</label>
+                    <select class="form-control" @bind="SortField" @bind:after="SaveSortPreferences">
+                        <option value="Name">Name</option>
+                        <option value="Brand">Brand</option>
+                    </select>
+                </div>
+                <div class="d-flex align-items-center">
+                    <label class="me-2">Order:</label>
+                    <select class="form-control" @bind="SortOrder" @bind:after="SaveSortPreferences">
+                        <option value="Ascending">Ascending</option>
+                        <option value="Descending">Descending</option>
+                    </select>
                 </div>
             </div>
         </div>
-
-        <!-- Таблица -->
-        <div class="table-section">
-            <h3>Manage Products</h3>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered align-middle">
-                    <thead class="table-dark text-center">
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Color</th>
-                            <th>Price</th>
-                            <th>Count</th>
-                            <th>Brand</th>
-                            <th>Images</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in FilteredAndSortedProducts)
-                        {
-                            <tr>
-                                <td class="text-center">@product.Id</td>
-                                <td>@product.Name</td>
-                                <td>@product.Category</td>
-                                <td>@product.Color</td>
-                                <td>@product.Price.ToString("C")</td>
-                                <td class="text-center">@product.Count</td>
-                                <td>@product.Brand</td>
-                                <td class="text-center">
-                                    <div class="image-gallery">
-                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
-                                        {
-                                            <img src="@product.ImageUrl" alt="Product Image 1" class="img-thumbnail" />
-                                        }
-                                        @if (!string.IsNullOrEmpty(product.ImageUrl2))
-                                        {
-                                            <img src="@product.ImageUrl2" alt="Product Image 2" class="img-thumbnail" />
-                                        }
-                                        @if (!string.IsNullOrEmpty(product.ImageUrl3))
-                                        {
-                                            <img src="@product.ImageUrl3" alt="Product Image 3" class="img-thumbnail" />
-                                        }
-                                        @if (!string.IsNullOrEmpty(product.ImageUrl4))
-                                        {
-                                            <img src="@product.ImageUrl4" alt="Product Image 4" class="img-thumbnail" />
-                                        }
-                                        @if (string.IsNullOrEmpty(product.ImageUrl) && 
-                                             string.IsNullOrEmpty(product.ImageUrl2) && 
-                                             string.IsNullOrEmpty(product.ImageUrl3) && 
-                                             string.IsNullOrEmpty(product.ImageUrl4))
-                                        {
-                                            <span class="text-muted">No Images</span>
-                                        }
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-warning btn-sm me-1" @onclick="() => EditProduct(product)">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(product.Id)">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+        <!-- Кнопки управления -->
+        <div class="action-buttons mb-3">
+            <div class="action-buttons-content d-flex gap-2">
+                <button class="btn btn-primary" @onclick="AddProduct">
+                    <i class="bi bi-plus-circle"></i> Add Product
+                </button>
+                <InputFile OnChange="HandleExcelUpload" style="display:none" id="excelUpload"/>
+                <label class="btn btn-secondary" for="excelUpload">
+                    <i class="bi bi-upload"></i> Upload Excel
+                </label>
+                <button class="btn btn-success" @onclick="DownloadExcel">
+                    <i class="bi bi-download"></i> Download Excel
+                </button>
+                @if (Products.Any())
+                {
+                    <button class="btn btn-info" @onclick="ShowDuplicateConfirmation">
+                        <i class="bi bi-copy"></i> Duplicate Last
+                    </button>
+                }
             </div>
         </div>
-    }
-    else if (IsLoading)
-    {
-        <div class="text-center mt-4">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-danger mt-4 text-center" role="alert">
-            Access denied. Only administrators can view this page.
-        </div>
-    }
+    </div>
 
-    <!-- Модальное окно для добавления/редактирования товара -->
-    @if (ShowAddProductModal)
-    {
-        <div class="modal fade show d-block" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">@((EditMode ? "Edit Product" : "Add Product"))</h5>
-                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            <div class="row">
+    <!-- Таблица -->
+    <div class="table-section">
+        <h3>Manage Products</h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Count</th>
+                    <th>Brand</th>
+                    <th>Images</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var product in FilteredAndSortedProducts)
+                {
+                    <tr>
+                        <td class="text-center">@product.Id</td>
+                        <td>@product.Name</td>
+                        <td>
+                            @(product switch
+                            {
+                                Tool _ => "Tool",
+                                Accessory _ => "Accessory",
+                                Clothing _ => "Clothing",
+                                MasterClass _ => "MasterClass",
+                                YarnBobbin _ => "YarnBobbin",
+                                Yarn _ => "Yarn",
+                                _ => "Unknown"
+                            })
+                        </td>
+                        <td>@product.Price.ToString("C")</td>
+                        <td class="text-center">@product.Count</td>
+                        <td>@product.Brand</td>
+                        <td class="text-center">
+                            <div class="image-gallery">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="Product Image 1" class="img-thumbnail"/>
+                                }
+                                @if (!string.IsNullOrEmpty(product.ImageUrl2))
+                                {
+                                    <img src="@product.ImageUrl2" alt="Product Image 2" class="img-thumbnail"/>
+                                }
+                                @if (!string.IsNullOrEmpty(product.ImageUrl3))
+                                {
+                                    <img src="@product.ImageUrl3" alt="Product Image 3" class="img-thumbnail"/>
+                                }
+                                @if (!string.IsNullOrEmpty(product.ImageUrl4))
+                                {
+                                    <img src="@product.ImageUrl4" alt="Product Image 4" class="img-thumbnail"/>
+                                }
+                                @if (string.IsNullOrEmpty(product.ImageUrl) &&
+                                     string.IsNullOrEmpty(product.ImageUrl2) &&
+                                     string.IsNullOrEmpty(product.ImageUrl3) &&
+                                     string.IsNullOrEmpty(product.ImageUrl4))
+                                {
+                                    <span class="text-muted">No Images</span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-warning btn-sm me-1" @onclick="() => EditProduct(product)">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(product.Id)">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else if (IsLoading)
+{
+    <div class="text-center mt-4">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger mt-4 text-center" role="alert">
+        Access denied. Only administrators can view this page.
+    </div>
+}
+
+<!-- Модальное окно для добавления/редактирования товара -->
+@if (ShowAddProductModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@((EditMode ? "Edit Product" : "Add Product"))</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" @bind="ProductModel.Name"/>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Type</label>
+                                <select class="form-control" @bind="SelectedType" @bind:after="UpdateProductModel">
+                                    <option value="tool">Tool</option>
+                                    <option value="accessory">Accessory</option>
+                                    <option value="clothing">Clothing</option>
+                                    <option value="masterclass">MasterClass</option>
+                                    <option value="yarn">Yarn</option>
+                                    <option value="yarnbobbin">YarnBobbin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Brand</label>
+                                <input type="text" class="form-control" @bind="ProductModel.Brand"/>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Country</label>
+                                <input type="text" class="form-control" @bind="ProductModel.Country"/>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Price</label>
+                                <input type="number" class="form-control" step="0.01" @bind="ProductModel.Price"/>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Count</label>
+                                <input type="number" class="form-control" @bind="ProductModel.Count"/>
+                            </div>
+                            <!-- Специфичные поля -->
+                            @if (ProductModel is Tool tool)
+                            {
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">Name</label>
-                                    <input type="text" class="form-control" @bind="ProductModel.Name" />
+                                    <label class="form-label">Material</label>
+                                    <input type="text" class="form-control" @bind="tool.Material"/>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">Category</label>
-                                    <input type="text" class="form-control" @bind="ProductModel.Category" />
+                                    <label class="form-label">Size</label>
+                                    <input type="text" class="form-control" @bind="tool.Size"/>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">Color</label>
-                                    <input type="text" class="form-control" @bind="ProductModel.Color" />
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Brand</label>
-                                    <input type="text" class="form-control" @bind="ProductModel.Brand" />
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" @bind="ProductModel.Country" />
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Price</label>
-                                    <input type="number" class="form-control" step="0.01" @bind="ProductModel.Price" />
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Count</label>
-                                    <input type="number" class="form-control" @bind="ProductModel.Count" />
+                                    <label class="form-label">Purpose</label>
+                                    <input type="text" class="form-control" @bind="tool.Purpose"/>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">Weight (grams)</label>
-                                    <input type="number" class="form-control" step="0.1" @bind="ProductModel.WeightGramm" />
+                                    <input type="number" class="form-control" step="0.1" @bind="tool.WeightGramm"/>
                                 </div>
-                                <div class="col-md-12 mb-3">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control" rows="3" @bind="ProductModel.Description"></textarea>
+                            }
+                            else if (ProductModel is Accessory accessory)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Material</label>
+                                    <input type="text" class="form-control" @bind="accessory.Material"/>
                                 </div>
-                                <!-- Поля для загрузки изображений -->
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Image 1</label>
-                                    <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 1))" />
-                                    @if (!string.IsNullOrEmpty(ProductModel.ImageUrl))
-                                    {
-                                        <div class="image-preview mt-2">
-                                            <img src="@ProductModel.ImageUrl" alt="Product Image 1" class="img-thumbnail" />
-                                            <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(1)">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    }
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Size</label>
+                                    <input type="text" class="form-control" @bind="accessory.Size"/>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Image 2</label>
-                                    <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 2))" />
-                                    @if (!string.IsNullOrEmpty(ProductModel.ImageUrl2))
-                                    {
-                                        <div class="image-preview mt-2">
-                                            <img src="@ProductModel.ImageUrl2" alt="Product Image 2" class="img-thumbnail" />
-                                            <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(2)">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    }
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Type</label>
+                                    <input type="text" class="form-control" @bind="accessory.Type"/>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Image 3</label>
-                                    <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 3))" />
-                                    @if (!string.IsNullOrEmpty(ProductModel.ImageUrl3))
-                                    {
-                                        <div class="image-preview mt-2">
-                                            <img src="@ProductModel.ImageUrl3" alt="Product Image 3" class="img-thumbnail" />
-                                            <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(3)">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    }
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Weight (grams)</label>
+                                    <input type="number" class="form-control" step="0.1" @bind="accessory.WeightGramm"/>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Image 4</label>
-                                    <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 4))" />
-                                    @if (!string.IsNullOrEmpty(ProductModel.ImageUrl4))
-                                    {
-                                        <div class="image-preview mt-2">
-                                            <img src="@ProductModel.ImageUrl4" alt="Product Image 4" class="img-thumbnail" />
-                                            <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(4)">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    }
+                            }
+                            else if (ProductModel is Clothing clothing)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Size</label>
+                                    <input type="text" class="form-control" @bind="clothing.Size"/>
                                 </div>
-                                @if (!string.IsNullOrEmpty(UploadErrorMessage))
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Fabric</label>
+                                    <input type="text" class="form-control" @bind="clothing.Fabric"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Season</label>
+                                    <input type="text" class="form-control" @bind="clothing.Season"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Color</label>
+                                    <input type="text" class="form-control" @bind="clothing.Color"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Weight (grams)</label>
+                                    <input type="number" class="form-control" step="0.1" @bind="clothing.WeightGramm"/>
+                                </div>
+                            }
+                            else if (ProductModel is MasterClass masterClass)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Event Date</label>
+                                    <input type="date" class="form-control" @bind="masterClass.EventDate"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Duration (hours)</label>
+                                    <input type="number" class="form-control" @bind="masterClass.DurationHours"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Difficulty Level</label>
+                                    <input type="text" class="form-control" @bind="masterClass.DifficultyLevel"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Format</label>
+                                    <input type="text" class="form-control" @bind="masterClass.Format"/>
+                                </div>
+                            }
+                            else if (ProductModel is YarnBobbin yarnBobbin)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Type</label>
+                                    <input type="text" class="form-control" @bind="yarnBobbin.Type"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Color</label>
+                                    <input type="text" class="form-control" @bind="yarnBobbin.Color"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Weight (grams)</label>
+                                    <input type="number" class="form-control" step="0.1" @bind="yarnBobbin.WeightGramm"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Tools Size</label>
+                                    <input type="text" class="form-control" @bind="yarnBobbin.ToolsSize"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Length (meters)</label>
+                                    <input type="number" class="form-control" step="0.1" @bind="yarnBobbin.Length"/>
+                                </div>
+                            }
+                            else if (ProductModel is Yarn yarn)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Type</label>
+                                    <input type="text" class="form-control" @bind="yarn.Type"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Color</label>
+                                    <input type="text" class="form-control" @bind="yarn.Color"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Weight (grams)</label>
+                                    <input type="number" class="form-control" step="0.1" @bind="yarn.WeightGramm"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Tools Size</label>
+                                    <input type="text" class="form-control" @bind="yarn.ToolsSize"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Length (meters)</label>
+                                    <input type="number" class="form-control" step="0.1" @bind="yarn.Length"/>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" rows="3" @bind="ProductModel.Description"></textarea>
+                            </div>
+                            <!-- Поля для загрузки изображений -->
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Image 1</label>
+                                <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 1))"/>
+                                @if (!string.IsNullOrEmpty(ProductModel.ImageUrl))
                                 {
-                                    <div class="col-md-12 mb-3">
-                                        <div class="alert alert-danger" role="alert">
-                                            @UploadErrorMessage
-                                        </div>
+                                    <div class="image-preview mt-2">
+                                        <img src="@ProductModel.ImageUrl" alt="Product Image 1" class="img-thumbnail"/>
+                                        <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(1)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 }
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" @onclick="SaveProduct">
-                            <i class="bi bi-save"></i> Save
-                        </button>
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">
-                            <i class="bi bi-x-circle"></i> Close
-                        </button>
-                    </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Image 2</label>
+                                <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 2))"/>
+                                @if (!string.IsNullOrEmpty(ProductModel.ImageUrl2))
+                                {
+                                    <div class="image-preview mt-2">
+                                        <img src="@ProductModel.ImageUrl2" alt="Product Image 2" class="img-thumbnail"/>
+                                        <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(2)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Image 3</label>
+                                <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 3))"/>
+                                @if (!string.IsNullOrEmpty(ProductModel.ImageUrl3))
+                                {
+                                    <div class="image-preview mt-2">
+                                        <img src="@ProductModel.ImageUrl3" alt="Product Image 3" class="img-thumbnail"/>
+                                        <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(3)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Image 4</label>
+                                <InputFile class="form-control" OnChange="@(e => HandleImageUpload(e, 4))"/>
+                                @if (!string.IsNullOrEmpty(ProductModel.ImageUrl4))
+                                {
+                                    <div class="image-preview mt-2">
+                                        <img src="@ProductModel.ImageUrl4" alt="Product Image 4" class="img-thumbnail"/>
+                                        <button class="btn btn-danger btn-sm delete-image-btn" @onclick="() => DeleteImage(4)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(UploadErrorMessage))
+                            {
+                                <div class="col-md-12 mb-3">
+                                    <div class="alert alert-danger" role="alert">
+                                        @UploadErrorMessage
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="SaveProduct">
+                        <i class="bi bi-save"></i> Save
+                    </button>
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">
+                        <i class="bi bi-x-circle"></i> Close
+                    </button>
                 </div>
             </div>
         </div>
-    }
+    </div>
+}
 
-    <!-- Модальное окно для подтверждения дублирования -->
-    @if (ShowDuplicateModal)
-    {
-        <div class="modal fade show d-block" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-sm" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Duplicate</h5>
-                        <button type="button" class="btn-close" @onclick="CloseDuplicateModal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to duplicate the last product?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" @onclick="ConfirmDuplicate">Yes</button>
-                        <button type="button" class="btn btn-secondary" @onclick="CloseDuplicateModal">No</button>
-                    </div>
+<!-- Модальное окно для подтверждения дублирования -->
+@if (ShowDuplicateModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Duplicate</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDuplicateModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to duplicate the last product?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="ConfirmDuplicate">Yes</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CloseDuplicateModal">No</button>
                 </div>
             </div>
         </div>
-    }
+    </div>
+}
 </div>
 
 @code {
@@ -304,15 +439,16 @@
     private bool ShowAddProductModal = false;
     private bool ShowDuplicateModal = false;
     private bool EditMode = false;
-    private Product ProductModel = new Product();
+    private Product ProductModel = new Tool(); // По умолчанию Tool
     private List<Product> Products = new List<Product>();
     private string UploadErrorMessage;
+    private string SelectedType = "tool";
 
-    // Сортировка
+// Сортировка
     private string SortField { get; set; } = "Name";
     private string SortOrder { get; set; } = "Ascending";
 
-    // Фильтрация
+// Фильтрация
     private string FilterText { get; set; } = string.Empty;
 
     private IEnumerable<Product> FilteredAndSortedProducts
@@ -321,7 +457,7 @@
         {
             var filtered = Products.AsEnumerable();
 
-            // Фильтрация
+// Фильтрация
             if (!string.IsNullOrWhiteSpace(FilterText))
             {
                 var filterLower = FilterText.ToLower();
@@ -330,7 +466,7 @@
                     (p.Brand != null && p.Brand.ToLower().Contains(filterLower)));
             }
 
-            // Сортировка
+// Сортировка
             if (SortField == "Name")
             {
                 filtered = SortOrder == "Ascending"
@@ -360,7 +496,6 @@
             return;
         }
 
-        // Загружаем параметры сортировки
         var (sortField, sortOrder) = await ProductService.LoadSortPreferencesAsync();
         SortField = sortField;
         SortOrder = sortOrder;
@@ -381,32 +516,208 @@
 
     private void AddProduct()
     {
-        ProductModel = new Product();
+        ProductModel = new Tool();
+        SelectedType = "tool";
         EditMode = false;
         ShowAddProductModal = true;
     }
 
     private void EditProduct(Product product)
     {
-        ProductModel = new Product
+        ProductModel = product switch
         {
-            Id = product.Id,
-            Name = product.Name,
-            Category = product.Category,
-            Price = product.Price,
-            Count = product.Count,
-            Brand = product.Brand,
-            Country = product.Country,
-            Description = product.Description,
-            WeightGramm = product.WeightGramm,
-            Color = product.Color,
-            ImageUrl = product.ImageUrl,
-            ImageUrl2 = product.ImageUrl2,
-            ImageUrl3 = product.ImageUrl3,
-            ImageUrl4 = product.ImageUrl4
+            Tool tool => new Tool
+            {
+                Id = tool.Id,
+                Name = tool.Name,
+                Price = tool.Price,
+                Count = tool.Count,
+                Brand = tool.Brand,
+                Country = tool.Country,
+                Description = tool.Description,
+                Material = tool.Material,
+                Size = tool.Size,
+                Purpose = tool.Purpose,
+                WeightGramm = tool.WeightGramm,
+                ImageUrl = tool.ImageUrl,
+                ImageUrl2 = tool.ImageUrl2,
+                ImageUrl3 = tool.ImageUrl3,
+                ImageUrl4 = tool.ImageUrl4
+            },
+            Accessory accessory => new Accessory
+            {
+                Id = accessory.Id,
+                Name = accessory.Name,
+                Price = accessory.Price,
+                Count = accessory.Count,
+                Brand = accessory.Brand,
+                Country = accessory.Country,
+                Description = accessory.Description,
+                Material = accessory.Material,
+                Size = accessory.Size,
+                Type = accessory.Type,
+                WeightGramm = accessory.WeightGramm,
+                ImageUrl = accessory.ImageUrl,
+                ImageUrl2 = accessory.ImageUrl2,
+                ImageUrl3 = accessory.ImageUrl3,
+                ImageUrl4 = accessory.ImageUrl4
+            },
+            Clothing clothing => new Clothing
+            {
+                Id = clothing.Id,
+                Name = clothing.Name,
+                Price = clothing.Price,
+                Count = clothing.Count,
+                Brand = clothing.Brand,
+                Country = clothing.Country,
+                Description = clothing.Description,
+                Size = clothing.Size,
+                Fabric = clothing.Fabric,
+                Season = clothing.Season,
+                Color = clothing.Color,
+                WeightGramm = clothing.WeightGramm,
+                ImageUrl = clothing.ImageUrl,
+                ImageUrl2 = clothing.ImageUrl2,
+                ImageUrl3 = clothing.ImageUrl3,
+                ImageUrl4 = clothing.ImageUrl4
+            },
+            MasterClass masterClass => new MasterClass
+            {
+                Id = masterClass.Id,
+                Name = masterClass.Name,
+                Price = masterClass.Price,
+                Count = masterClass.Count,
+                Brand = masterClass.Brand,
+                Country = masterClass.Country,
+                Description = masterClass.Description,
+                EventDate = masterClass.EventDate,
+                DurationHours = masterClass.DurationHours,
+                DifficultyLevel = masterClass.DifficultyLevel,
+                Format = masterClass.Format,
+                ImageUrl = masterClass.ImageUrl,
+                ImageUrl2 = masterClass.ImageUrl2,
+                ImageUrl3 = masterClass.ImageUrl3,
+                ImageUrl4 = masterClass.ImageUrl4
+            },
+            YarnBobbin yarnBobbin => new YarnBobbin
+            {
+                Id = yarnBobbin.Id,
+                Name = yarnBobbin.Name,
+                Price = yarnBobbin.Price,
+                Count = yarnBobbin.Count,
+                Brand = yarnBobbin.Brand,
+                Country = yarnBobbin.Country,
+                Description = yarnBobbin.Description,
+                Type = yarnBobbin.Type,
+                Color = yarnBobbin.Color,
+                WeightGramm = yarnBobbin.WeightGramm,
+                ToolsSize = yarnBobbin.ToolsSize,
+                Length = yarnBobbin.Length,
+                ImageUrl = yarnBobbin.ImageUrl,
+                ImageUrl2 = yarnBobbin.ImageUrl2,
+                ImageUrl3 = yarnBobbin.ImageUrl3,
+                ImageUrl4 = yarnBobbin.ImageUrl4
+            },
+            Yarn yarn => new Yarn
+            {
+                Id = yarn.Id,
+                Name = yarn.Name,
+                Price = yarn.Price,
+                Count = yarn.Count,
+                Brand = yarn.Brand,
+                Country = yarn.Country,
+                Description = yarn.Description,
+                Type = yarn.Type,
+                Color = yarn.Color,
+                WeightGramm = yarn.WeightGramm,
+                ToolsSize = yarn.ToolsSize,
+                Length = yarn.Length,
+                ImageUrl = yarn.ImageUrl,
+                ImageUrl2 = yarn.ImageUrl2,
+                ImageUrl3 = yarn.ImageUrl3,
+                ImageUrl4 = yarn.ImageUrl4
+            },
+            _ => new Tool()
         };
+
+        SelectedType = product switch
+        {
+            Tool _ => "tool",
+            Accessory _ => "accessory",
+            Clothing _ => "clothing",
+            MasterClass _ => "masterclass",
+            YarnBobbin _ => "yarnbobbin",
+            Yarn _ => "yarn",
+            _ => "tool"
+        };
+
         EditMode = true;
         ShowAddProductModal = true;
+    }
+
+    private void UpdateProductModel()
+    {
+        var currentId = ProductModel.Id;
+        var currentImages = (ProductModel.ImageUrl, ProductModel.ImageUrl2, ProductModel.ImageUrl3, ProductModel.ImageUrl4);
+
+        ProductModel = SelectedType.ToLower() switch
+        {
+            "tool" => new Tool
+            {
+                Material = ProductModel is Tool tool ? tool.Material : "",
+                Size = ProductModel is Tool t ? t.Size : "",
+                Purpose = ProductModel is Tool tp ? tp.Purpose : "",
+                WeightGramm = ProductModel is Tool tw ? tw.WeightGramm : 0
+            },
+            "accessory" => new Accessory
+            {
+                Material = ProductModel is Accessory acc ? acc.Material : "",
+                Size = ProductModel is Accessory a ? a.Size : "",
+                Type = ProductModel is Accessory at ? at.Type : "",
+                WeightGramm = ProductModel is Accessory aw ? aw.WeightGramm : 0
+            },
+            "clothing" => new Clothing
+            {
+                Size = ProductModel is Clothing c ? c.Size : "",
+                Fabric = ProductModel is Clothing cf ? cf.Fabric : "",
+                Season = ProductModel is Clothing cs ? cs.Season : "",
+                Color = ProductModel is Clothing cc ? cc.Color : "",
+                WeightGramm = ProductModel is Clothing cw ? cw.WeightGramm : 0
+            },
+            "masterclass" => new MasterClass
+            {
+                EventDate = ProductModel is MasterClass mc ? mc.EventDate : DateTime.Now,
+                DurationHours = ProductModel is MasterClass mcd ? mcd.DurationHours : 0,
+                DifficultyLevel = ProductModel is MasterClass mcl ? mcl.DifficultyLevel : "",
+                Format = ProductModel is MasterClass mcf ? mcf.Format : ""
+            },
+            "yarnbobbin" => new YarnBobbin
+            {
+                Type = ProductModel is Yarn y ? y.Type : "",
+                Color = ProductModel is Yarn yc ? yc.Color : "",
+                WeightGramm = ProductModel is Yarn yw ? yw.WeightGramm : 0,
+                ToolsSize = ProductModel is Yarn yt ? yt.ToolsSize : "",
+                Length = ProductModel is Yarn yl ? yl.Length : 0
+            },
+            "yarn" => new Yarn
+            {
+                Type = ProductModel is Yarn y ? y.Type : "",
+                Color = ProductModel is Yarn yc ? yc.Color : "",
+                WeightGramm = ProductModel is Yarn yw ? yw.WeightGramm : 0,
+                ToolsSize = ProductModel is Yarn yt ? yt.ToolsSize : "",
+                Length = ProductModel is Yarn yl ? yl.Length : 0
+            },
+            _ => new Tool()
+        };
+
+        ProductModel.Id = currentId;
+        ProductModel.Name = ProductModel.Name;
+        ProductModel.Price = ProductModel.Price;
+        ProductModel.Count = ProductModel.Count;
+        ProductModel.Brand = ProductModel.Brand;
+        ProductModel.Country = ProductModel.Country;
+        ProductModel.Description = ProductModel.Description;
+        (ProductModel.ImageUrl, ProductModel.ImageUrl2, ProductModel.ImageUrl3, ProductModel.ImageUrl4) = currentImages;
     }
 
     private async Task HandleImageUpload(InputFileChangeEventArgs e, int imageNumber)
@@ -432,6 +743,7 @@
                         ProductModel.ImageUrl4 = imageUrl;
                         break;
                 }
+
                 UploadErrorMessage = null;
             }
             catch
@@ -444,7 +756,6 @@
             UploadErrorMessage = "Please upload a valid image file.";
         }
     }
-   
 
     private async Task SaveProduct()
     {
@@ -519,27 +830,119 @@
         if (!FilteredAndSortedProducts.Any()) return;
 
         var lastProduct = FilteredAndSortedProducts.Last();
-        var newProduct = new Product
+        Product newProduct = lastProduct switch
         {
-            Name = lastProduct.Name + " (Copy)",
-            Category = lastProduct.Category,
-            Price = lastProduct.Price,
-            Count = lastProduct.Count,
-            Brand = lastProduct.Brand,
-            Country = lastProduct.Country,
-            Description = lastProduct.Description,
-            WeightGramm = lastProduct.WeightGramm,
-            Color = lastProduct.Color,
-            ImageUrl = lastProduct.ImageUrl,
-            ImageUrl2 = lastProduct.ImageUrl2,
-            ImageUrl3 = lastProduct.ImageUrl3,
-            ImageUrl4 = lastProduct.ImageUrl4
+            Tool tool => new Tool
+            {
+                Name = tool.Name + " (Copy)",
+                Price = tool.Price,
+                Count = tool.Count,
+                Brand = tool.Brand,
+                Country = tool.Country,
+                Description = tool.Description,
+                Material = tool.Material,
+                Size = tool.Size,
+                Purpose = tool.Purpose,
+                WeightGramm = tool.WeightGramm,
+                ImageUrl = tool.ImageUrl,
+                ImageUrl2 = tool.ImageUrl2,
+                ImageUrl3 = tool.ImageUrl3,
+                ImageUrl4 = tool.ImageUrl4
+            },
+            Accessory accessory => new Accessory
+            {
+                Name = accessory.Name + " (Copy)",
+                Price = accessory.Price,
+                Count = accessory.Count,
+                Brand = accessory.Brand,
+                Country = accessory.Country,
+                Description = accessory.Description,
+                Material = accessory.Material,
+                Size = accessory.Size,
+                Type = accessory.Type,
+                WeightGramm = accessory.WeightGramm,
+                ImageUrl = accessory.ImageUrl,
+                ImageUrl2 = accessory.ImageUrl2,
+                ImageUrl3 = accessory.ImageUrl3,
+                ImageUrl4 = accessory.ImageUrl4
+            },
+            Clothing clothing => new Clothing
+            {
+                Name = clothing.Name + " (Copy)",
+                Price = clothing.Price,
+                Count = clothing.Count,
+                Brand = clothing.Brand,
+                Country = clothing.Country,
+                Description = clothing.Description,
+                Size = clothing.Size,
+                Fabric = clothing.Fabric,
+                Season = clothing.Season,
+                Color = clothing.Color,
+                WeightGramm = clothing.WeightGramm,
+                ImageUrl = clothing.ImageUrl,
+                ImageUrl2 = clothing.ImageUrl2,
+                ImageUrl3 = clothing.ImageUrl3,
+                ImageUrl4 = clothing.ImageUrl4
+            },
+            MasterClass masterClass => new MasterClass
+            {
+                Name = masterClass.Name + " (Copy)",
+                Price = masterClass.Price,
+                Count = masterClass.Count,
+                Brand = masterClass.Brand,
+                Country = masterClass.Country,
+                Description = masterClass.Description,
+                EventDate = masterClass.EventDate,
+                DurationHours = masterClass.DurationHours,
+                DifficultyLevel = masterClass.DifficultyLevel,
+                Format = masterClass.Format,
+                ImageUrl = masterClass.ImageUrl,
+                ImageUrl2 = masterClass.ImageUrl2,
+                ImageUrl3 = masterClass.ImageUrl3,
+                ImageUrl4 = masterClass.ImageUrl4
+            },
+            YarnBobbin yarnBobbin => new YarnBobbin
+            {
+                Name = yarnBobbin.Name + " (Copy)",
+                Price = yarnBobbin.Price,
+                Count = yarnBobbin.Count,
+                Brand = yarnBobbin.Brand,
+                Country = yarnBobbin.Country,
+                Description = yarnBobbin.Description,
+                Type = yarnBobbin.Type,
+                Color = yarnBobbin.Color,
+                WeightGramm = yarnBobbin.WeightGramm,
+                ToolsSize = yarnBobbin.ToolsSize,
+                Length = yarnBobbin.Length,
+                ImageUrl = yarnBobbin.ImageUrl,
+                ImageUrl2 = yarnBobbin.ImageUrl2,
+                ImageUrl3 = yarnBobbin.ImageUrl3,
+                ImageUrl4 = yarnBobbin.ImageUrl4
+            },
+            Yarn yarn => new Yarn
+            {
+                Name = yarn.Name + " (Copy)",
+                Price = yarn.Price,
+                Count = yarn.Count,
+                Brand = yarn.Brand,
+                Country = yarn.Country,
+                Description = yarn.Description,
+                Type = yarn.Type,
+                Color = yarn.Color,
+                WeightGramm = yarn.WeightGramm,
+                ToolsSize = yarn.ToolsSize,
+                Length = yarn.Length,
+                ImageUrl = yarn.ImageUrl,
+                ImageUrl2 = yarn.ImageUrl2,
+                ImageUrl3 = yarn.ImageUrl3,
+                ImageUrl4 = yarn.ImageUrl4
+            },
+            _ => new Tool()
         };
 
         await ProductService.AddProductAsync(newProduct);
         Products = (await ProductService.GetProductsAsync()).ToList();
 
-        // Находим только что добавленный товар (предполагаем, что у него будет максимальный Id)
         var duplicatedProduct = Products.OrderByDescending(p => p.Id).FirstOrDefault();
         if (duplicatedProduct != null)
         {
@@ -548,7 +951,7 @@
 
         CloseDuplicateModal();
     }
-    
+
     private async Task DeleteImage(int imageNumber)
     {
         string imageUrl = null;
@@ -571,9 +974,11 @@
                 ProductModel.ImageUrl4 = null;
                 break;
         }
+
         if (!string.IsNullOrEmpty(imageUrl))
         {
             await ProductService.DeleteImageAsync(imageUrl);
         }
     }
+
 }

@@ -12,21 +12,23 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <label for="searchQuery" class="form-label">Search</label>
-            <input id="searchQuery" type="text" class="form-control" placeholder="Search by name or description..." @bind="SearchQuery" />
+            <input id="searchQuery" type="text" class="form-control" placeholder="Search by name or description..." @bind="SearchQuery"/>
         </div>
     </div>
 
     <!-- Фильтры -->
     <div class="row mb-4">
-        <!-- Фильтр по категориям -->
+        <!-- Фильтр по типам -->
         <div class="col-md-3">
-            <label for="categoryFilter" class="form-label">Category</label>
-            <select id="categoryFilter" class="form-select" @bind="SelectedCategory">
-                <option value="">All Categories</option>
-                @foreach (var category in Categories.Distinct())
-                {
-                <option value="@category">@category</option>
-                }
+            <label for="typeFilter" class="form-label">Type</label>
+            <select id="typeFilter" class="form-select" @bind="SelectedType">
+                <option value="">All Types</option>
+                <option value="tool">Tools</option>
+                <option value="accessory">Accessories</option>
+                <option value="clothing">Clothing</option>
+                <option value="masterclass">Master Classes</option>
+                <option value="yarn">Yarns</option>
+                <option value="yarnbobbin">Yarn Bobbins</option> <!-- Добавляем YarnBobbin -->
             </select>
         </div>
 
@@ -35,10 +37,10 @@
             <h5>Brands</h5>
             @foreach (var brand in Brands.Distinct())
             {
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="brand_@brand" value="@brand" @onchange="e => ToggleBrandSelection(e, brand)" checked="@SelectedBrands.Contains(brand)" />
-                <label class="form-check-label" for="brand_@brand">@brand</label>
-            </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="brand_@brand" value="@brand" @onchange="e => ToggleBrandSelection(e, brand)" checked="@SelectedBrands.Contains(brand)"/>
+                    <label class="form-check-label" for="brand_@brand">@brand</label>
+                </div>
             }
         </div>
 
@@ -47,10 +49,10 @@
             <h5>Countries</h5>
             @foreach (var country in Countries.Distinct())
             {
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="country_@country" value="@country" @onchange="e => ToggleCountrySelection(e, country)" checked="@SelectedCountries.Contains(country)" />
-                <label class="form-check-label" for="country_@country">@country</label>
-            </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="country_@country" value="@country" @onchange="e => ToggleCountrySelection(e, country)" checked="@SelectedCountries.Contains(country)"/>
+                    <label class="form-check-label" for="country_@country">@country</label>
+                </div>
             }
         </div>
 
@@ -69,143 +71,186 @@
     <section class="production-holder">
         @if (FilteredProducts().Any())
         {
-        @foreach (var product in FilteredProducts())
-        {
-        <div class="production-item">
-            <div class="card">
-                <a href="@($"/Product-item/{product.Id}")" target="_blank" style="display: block; width: 100%; height: 100%; color: inherit; text-decoration: none;">
-                    <div class="card-img-container">
-                        @if (!string.IsNullOrEmpty(GetFirstAvailableImage(product)))
-                        {
-                        <img src="@GetFirstAvailableImage(product)" class="card-img" alt="@product.Name" />
-                        }
-                        else
-                        {
-                        <div class="card-img-placeholder">
-                            <i class="bi bi-image"></i>
+            @foreach (var product in FilteredProducts())
+            {
+                <div class="production-item">
+                    <div class="card">
+                        <a href="@($"/Product-item/{product.Id}")" target="_blank" style="display: block; width: 100%; height: 100%; color: inherit; text-decoration: none;">
+                            <div class="card-img-container">
+                                @if (!string.IsNullOrEmpty(GetFirstAvailableImage(product)))
+                                {
+                                    <img src="@GetFirstAvailableImage(product)" class="card-img" alt="@product.Name"/>
+                                }
+                                else
+                                {
+                                    <div class="card-img-placeholder">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="card-text-desc">@product.Description</p>
+                                @switch (product)
+                                {
+                                case Tool tool:
+                                <p class="card-text"><strong>Материал:</strong> @tool.Material</p>
+                                <p class="card-text"><strong>Вес:</strong> @tool.WeightGramm г</p>
+                                break;
+                                case Accessory accessory:
+                                <p class="card-text"><strong>Тип:</strong> @accessory.Type</p>
+                                <p class="card-text"><strong>Вес:</strong> @accessory.WeightGramm г</p>
+                                break;
+                                case Clothing clothing:
+                                <p class="card-text"><strong>Цвет:</strong> @clothing.Color</p>
+                                <p class="card-text"><strong>Вес:</strong> @clothing.WeightGramm г</p>
+                                break;
+                                case MasterClass masterClass:
+                                <p class="card-text"><strong>Дата:</strong> @masterClass.EventDate.ToString("d")</p>
+                                break;
+                                case YarnBobbin yarnBobbin: // Добавляем YarnBobbin
+                                <p class="card-text"><strong>Тип:</strong> @yarnBobbin.Type</p>
+                                <p class="card-text"><strong>Цвет:</strong> @yarnBobbin.Color</p>
+                                <p class="card-text"><strong>Вес:</strong> @yarnBobbin.WeightGramm г</p>
+                                break;
+                                case Yarn yarn:
+                                <p class="card-text"><strong>Тип:</strong> @yarn.Type</p>
+                                <p class="card-text"><strong>Цвет:</strong> @yarn.Color</p>
+                                <p class="card-text"><strong>Вес:</strong> @yarn.WeightGramm г</p>
+                                break;
+                                }
+                                <p class="card-text">
+                                    <strong>Brand:</strong> @product.Brand
+                                </p>
+                                <p class="card-text">
+                                    <strong>Country:</strong> @product.Country
+                                </p>
+                                <p class="card-text-price">@product.Price.ToString("C")</p>
+                            </div>
+                        </a>
+                        <div class="production-item-inCart">
+                            @if (ItemsInCart(product) > 0)
+                            {
+                                <div class="quantity-control">
+                                    <button class="quantity-btn minus" @onclick="() => RemoveFromCart(product)">-</button>
+                                    <span class="quantity">@ItemsInCart(product)</span>
+                                    <button class="quantity-btn plus" @onclick="() => AddToCart(product)">+</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <button class="add-to-cart" @onclick="() => AddToCart(product)">Add to Cart</button>
+                            }
                         </div>
-                        }
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text-desc">@product.Description</p>
-                        <p class="card-text"><strong>Цвет:</strong> @product.Color</p>
-                        <p class="card-text"><strong>Category:</strong> @product.Category</p>
-                        <p class="card-text"><strong>Brand:</strong> @product.Brand</p>
-                        <p class="card-text"><strong>Country:</strong> @product.Country</p>
-                        <p class="card-text"><strong>Weight:</strong> @product.WeightGramm.ToString("##,###")</p>
-                        <p class="card-text-price">@product.Price.ToString("C")</p>
-                    </div>
-                </a>
-                <div class="production-item-inCart">
-                    @if (ItemsInCart(product) > 0)
-                    {
-                    <div class="quantity-control">
-                        <button class="quantity-btn minus" @onclick="() => RemoveFromCart(product)">-</button>
-                        <span class="quantity">@ItemsInCart(product)</span>
-                        <button class="quantity-btn plus" @onclick="() => AddToCart(product)">+</button>
-                    </div>
-                    }
-                    else
-                    {
-                    <button class="add-to-cart" @onclick="() => AddToCart(product)">Add to Cart</button>
-                    }
                 </div>
-            </div>
-        </div>
-        }
+            }
         }
         else
         {
-        <p class="text-center">No products found.</p>
+            <p class="text-center">No products found.</p>
         }
     </section>
 </div>
 
 @code {
-private IEnumerable<Product> Products = new List<Product>();
+    private IEnumerable<Product> Products = new List<Product>();
 
-protected override async Task OnInitializedAsync()
-{
-Products = await ProductService.GetProductsAsync();
-}
+    protected override async Task OnInitializedAsync()
+    {
+        Products = await ProductService.GetProductsAsync();
+    }
 
-private string SearchQuery = string.Empty;
-private string SelectedCategory = string.Empty;
-private HashSet<string> SelectedBrands = new();
-private HashSet<string> SelectedCountries = new();
-private string SortBy = "PriceAsc";
+    private string SearchQuery = string.Empty;
+    private string SelectedType = string.Empty;
+    private HashSet<string> SelectedBrands = new();
+    private HashSet<string> SelectedCountries = new();
+    private string SortBy = "PriceAsc";
 
-private List<string> Categories => Products.Select(p => p.Category).Distinct().ToList();
-private List<string> Brands => Products.Select(p => p.Brand).Distinct().ToList();
-private List<string> Countries => Products.Select(p => p.Country).Distinct().ToList();
+    private List<string> Brands => Products.Select(p => p.Brand).Distinct().ToList();
+    private List<string> Countries => Products.Select(p => p.Country).Distinct().ToList();
 
-private IEnumerable<Product> FilteredProducts()
-{
-var filtered = Products
-.Where(p => string.IsNullOrEmpty(SelectedCategory) || p.Category == SelectedCategory)
-.Where(p => !SelectedBrands.Any() || SelectedBrands.Contains(p.Brand))
-.Where(p => !SelectedCountries.Any() || SelectedCountries.Contains(p.Country))
-.Where(p => string.IsNullOrEmpty(SearchQuery) ||
-p.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
-p.Description.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
+    private IEnumerable<Product> FilteredProducts()
+    {
+        var filtered = Products;
 
-Console.WriteLine($"Filtered {filtered.Count()} products.");
-return SortBy switch
-{
-"PriceAsc" => filtered.OrderBy(p => p.Price),
-"PriceDesc" => filtered.OrderByDescending(p => p.Price),
-_ => filtered.OrderBy(p => p.Name)
-};
-}
+        if (!string.IsNullOrEmpty(SelectedType))
+        {
+            filtered = SelectedType.ToLower() switch
+            {
+                "tool" => filtered.OfType<Tool>(),
+                "accessory" => filtered.OfType<Accessory>(),
+                "clothing" => filtered.OfType<Clothing>(),
+                "masterclass" => filtered.OfType<MasterClass>(),
+                "yarnbobbin" => filtered.OfType<YarnBobbin>(), // Добавляем YarnBobbin
+                "yarn" => filtered.OfType<Yarn>(),
+                _ => filtered
+            };
+        }
 
-private string GetFirstAvailableImage(Product product)
-{
-if (!string.IsNullOrEmpty(product.ImageUrl))
-return product.ImageUrl;
-if (!string.IsNullOrEmpty(product.ImageUrl2))
-return product.ImageUrl2;
-if (!string.IsNullOrEmpty(product.ImageUrl3))
-return product.ImageUrl3;
-if (!string.IsNullOrEmpty(product.ImageUrl4))
-return product.ImageUrl4;
-return null; // Если все пустые, возвращаем null
-}
+        filtered = filtered
+            .Where(p => !SelectedBrands.Any() || SelectedBrands.Contains(p.Brand))
+            .Where(p => !SelectedCountries.Any() || SelectedCountries.Contains(p.Country))
+            .Where(p => string.IsNullOrEmpty(SearchQuery) ||
+                        p.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
+                        p.Description.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
 
-private async Task AddToCart(Product product)
-{
-await CartService.AddToCart(product);
-}
+        return SortBy switch
+        {
+            "PriceAsc" => filtered.OrderBy(p => p.Price),
+            "PriceDesc" => filtered.OrderByDescending(p => p.Price),
+            _ => filtered.OrderBy(p => p.Name)
+        };
+    }
 
-private void ToggleBrandSelection(ChangeEventArgs e, string brand)
-{
-if ((e.Value as bool?) == true)
-SelectedBrands.Add(brand);
-else
-SelectedBrands.Remove(brand);
-}
+    private string GetFirstAvailableImage(Product product)
+    {
+        if (!string.IsNullOrEmpty(product.ImageUrl))
+            return product.ImageUrl;
+        if (!string.IsNullOrEmpty(product.ImageUrl2))
+            return product.ImageUrl2;
+        if (!string.IsNullOrEmpty(product.ImageUrl3))
+            return product.ImageUrl3;
+        if (!string.IsNullOrEmpty(product.ImageUrl4))
+            return product.ImageUrl4;
+        return null;
+    }
 
-private void ToggleCountrySelection(ChangeEventArgs e, string country)
-{
-if ((e.Value as bool?) == true)
-SelectedCountries.Add(country);
-else
-SelectedCountries.Remove(country);
-}
+    private async Task AddToCart(Product product)
+    {
+        await CartService.AddToCart(product);
+    }
 
-private int ItemsInCart(Product product)
-{
-return CartService.GetProductsCount(product);
-}
+    private void ToggleBrandSelection(ChangeEventArgs e, string brand)
+    {
+        if ((e.Value as bool?) == true)
+            SelectedBrands.Add(brand);
+        else
+            SelectedBrands.Remove(brand);
+    }
 
-private async Task RemoveFromCart(Product product)
-{
-await CartService.UpdateQuantity(product.Id, -1);
-}
+    private void ToggleCountrySelection(ChangeEventArgs e, string country)
+    {
+        if ((e.Value as bool?) == true)
+            SelectedCountries.Add(country);
+        else
+            SelectedCountries.Remove(country);
+    }
 
-private void MoveTo(int itemProductId)
-{
-NavigationManager.NavigateTo($"/Product-item/{itemProductId}");
-ProductService.SetProductID(itemProductId);
-}
+    private int ItemsInCart(Product product)
+    {
+        return CartService.GetProductsCount(product);
+    }
+
+    private async Task RemoveFromCart(Product product)
+    {
+        await CartService.UpdateQuantity(product.Id, -1);
+    }
+
+    private void MoveTo(int itemProductId)
+    {
+        NavigationManager.NavigateTo($"/Product-item/{itemProductId}");
+        ProductService.SetProductID(itemProductId);
+    }
+
 }

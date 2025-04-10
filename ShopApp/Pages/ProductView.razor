@@ -47,12 +47,48 @@
                 <h1>@CurrentItem.Name</h1>
                 <p class="price">@CurrentItem.Price.ToString("C") ₽</p>
                 <div class="specs">
-                    <p>
-                        <strong>Цвет:</strong> @CurrentItem.Color
-                    </p>
-                    <p><strong>Состав:</strong> 100% шерсть</p>
-                    <p><strong>Вес:</strong> @CurrentItem.WeightGramm г</p>
-                    <p><strong>Длина:</strong> 200 м</p>
+                    @switch (CurrentItem)
+                    {
+                    case Tool tool:
+                    <p><strong>Материал:</strong> @tool.Material</p>
+                    <p><strong>Размер:</strong> @tool.Size</p>
+                    <p><strong>Назначение:</strong> @tool.Purpose</p>
+                    <p><strong>Вес:</strong> @tool.WeightGramm г</p>
+                    break;
+                    case Accessory accessory:
+                    <p><strong>Материал:</strong> @accessory.Material</p>
+                    <p><strong>Размер:</strong> @accessory.Size</p>
+                    <p><strong>Тип:</strong> @accessory.Type</p>
+                    <p><strong>Вес:</strong> @accessory.WeightGramm г</p>
+                    break;
+                    case Clothing clothing:
+                    <p><strong>Размер:</strong> @clothing.Size</p>
+                    <p><strong>Ткань:</strong> @clothing.Fabric</p>
+                    <p><strong>Сезон:</strong> @clothing.Season</p>
+                    <p><strong>Цвет:</strong> @clothing.Color</p>
+                    <p><strong>Вес:</strong> @clothing.WeightGramm г</p>
+                    break;
+                    case MasterClass masterClass:
+                    <p><strong>Дата события:</strong> @masterClass.EventDate.ToString("d")</p>
+                    <p><strong>Продолжительность:</strong> @masterClass.DurationHours ч</p>
+                    <p><strong>Уровень сложности:</strong> @masterClass.DifficultyLevel</p>
+                    <p><strong>Формат:</strong> @masterClass.Format</p>
+                    break;
+                    case YarnBobbin yarnBobbin: // Добавляем YarnBobbin
+                    <p><strong>Тип:</strong> @yarnBobbin.Type</p>
+                    <p><strong>Цвет:</strong> @yarnBobbin.Color</p>
+                    <p><strong>Вес:</strong> @yarnBobbin.WeightGramm г</p>
+                    <p><strong>Размер инструмента:</strong> @yarnBobbin.ToolsSize</p>
+                    <p><strong>Длина:</strong> @yarnBobbin.Length м</p>
+                    break;
+                    case Yarn yarn:
+                    <p><strong>Тип:</strong> @yarn.Type</p>
+                    <p><strong>Цвет:</strong> @yarn.Color</p>
+                    <p><strong>Вес:</strong> @yarn.WeightGramm г</p>
+                    <p><strong>Размер инструмента:</strong> @yarn.ToolsSize</p>
+                    <p><strong>Длина:</strong> @yarn.Length м</p>
+                    break;
+                    }
                 </div>
                 <div class="action-buttons">
                     @if (CartQuantity > 0)
@@ -82,35 +118,38 @@
             </div>
         </div>
 
-        <!-- Блок с другими цветами -->
-        <div class="color-variants">
-            <h3>Доступные цвета:</h3>
-            @if (SimilarProducts.Any())
-            {
-                <div class="color-links">
-                    @foreach (var product in SimilarProducts)
-                    {
-                        <div class="color-link" @onclick="() => SelectProduct(product)">
-                            <span class="color-name">@product.Color</span>
-                            @if (!string.IsNullOrEmpty(product.ImageUrl))
-                            {
-                                <img src="@product.ImageUrl" alt="@product.Color" title="@product.Color"/>
-                            }
-                            else
-                            {
-                                <div class="no-image">
-                                    <span>Нет изображения</span>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <p>Другие цвета недоступны.</p>
-            }
-        </div>
+        <!-- Блок с другими цветами (только для Clothing) -->
+        @if (CurrentItem is Clothing)
+        {
+            <div class="color-variants">
+                <h3>Доступные цвета:</h3>
+                @if (SimilarProducts.Any())
+                {
+                    <div class="color-links">
+                        @foreach (var product in SimilarProducts.OfType<Clothing>())
+                        {
+                            <div class="color-link" @onclick="() => SelectProduct(product)">
+                                <span class="color-name">@product.Color</span>
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="@product.Color" title="@product.Color"/>
+                                }
+                                else
+                                {
+                                    <div class="no-image">
+                                        <span>Нет изображения</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>Другие цвета недоступны.</p>
+                }
+            </div>
+        }
 
         <!-- Блок с описанием -->
         <div class="description-block">
@@ -137,25 +176,25 @@
         if (Id <= 0)
             return;
 
-// Загружаем все товары
         var products = (await ProductService.GetProductsAsync()).ToList();
         CurrentItem = products.FirstOrDefault(p => p.Id == Id);
         if (CurrentItem == null)
             return;
 
-// Инициализируем избранное и проверяем, находится ли товар в избранном
         await FavoritesService.InitializeAsync();
         IsFavorite = await FavoritesService.CheckIsFavoriteAsync(CurrentItem.Id);
 
-// Находим товары с таким же названием и производителем, но другим цветом
-        SimilarProducts = products
-            .Where(p => p.Name == CurrentItem.Name && p.Brand == CurrentItem.Brand && p.Color != CurrentItem.Color && p.Id != CurrentItem.Id)
-            .ToList();
+        // Находим товары с таким же названием и производителем (для Clothing — с другим цветом)
+        if (CurrentItem is Clothing)
+        {
+            SimilarProducts = products
+                .OfType<Clothing>()
+                .Where(p => p.Name == CurrentItem.Name && p.Brand == CurrentItem.Brand && p.Color != ((Clothing)CurrentItem).Color && p.Id != CurrentItem.Id)
+                .Cast<Product>()
+                .ToList();
+        }
 
-// Устанавливаем начальное изображение
         SelectedImage = GetFirstAvailableImage(CurrentItem);
-
-// Проверяем количество в корзине
         CartQuantity = CartService.GetProductsCount(CurrentItem);
         await GetTotalPrice();
     }
@@ -232,7 +271,7 @@
         SelectedImage = imageSrc;
     }
 
-    private async Task SelectProduct(Product product)
+    private async Task SelectProduct(Clothing product)
     {
         CurrentItem = product;
         Id = product.Id;
@@ -242,11 +281,6 @@
         await GetTotalPrice();
 
         NavigationManager.NavigateTo($"/Product-item/{Id}", forceLoad: false);
-    }
-
-    private void SelectProductOpenNew(Product product)
-    {
-        NavigationManager.NavigateTo($"/Product-item/{product.Id}", forceLoad: true);
     }
 
     private async Task ToggleFavorite()
@@ -276,5 +310,4 @@
             ToastService.ShowError($"Error: {ex.Message}");
         }
     }
-
 }

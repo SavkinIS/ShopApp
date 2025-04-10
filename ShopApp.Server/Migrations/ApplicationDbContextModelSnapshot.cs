@@ -341,14 +341,6 @@ namespace ShopApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Count")
                         .HasColumnType("INTEGER");
 
@@ -379,12 +371,11 @@ namespace ShopApp.Server.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
-                    b.Property<float>("WeightGramm")
-                        .HasColumnType("REAL");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("ShopApp.Server.Models.Order", b =>
@@ -450,6 +441,129 @@ namespace ShopApp.Server.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Accessory", b =>
+                {
+                    b.HasBaseType("ShopApp.Models.Product");
+
+                    b.Property<string>("Material")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("WeightGramm")
+                        .HasColumnType("REAL");
+
+                    b.ToTable("Accessories", (string)null);
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Clothing", b =>
+                {
+                    b.HasBaseType("ShopApp.Models.Product");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Fabric")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Season")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("WeightGramm")
+                        .HasColumnType("REAL");
+
+                    b.ToTable("Clothing", (string)null);
+                });
+
+            modelBuilder.Entity("ShopApp.Models.MasterClass", b =>
+                {
+                    b.HasBaseType("ShopApp.Models.Product");
+
+                    b.Property<string>("DifficultyLevel")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DurationHours")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.ToTable("MasterClasses", (string)null);
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Tool", b =>
+                {
+                    b.HasBaseType("ShopApp.Models.Product");
+
+                    b.Property<string>("Material")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("WeightGramm")
+                        .HasColumnType("REAL");
+
+                    b.ToTable("Tools", (string)null);
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Yarn", b =>
+                {
+                    b.HasBaseType("ShopApp.Models.Product");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("Length")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("ToolsSize")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("WeightGramm")
+                        .HasColumnType("REAL");
+
+                    b.ToTable("Yarns", (string)null);
+                });
+
+            modelBuilder.Entity("ShopApp.Models.YarnBobbin", b =>
+                {
+                    b.HasBaseType("ShopApp.Models.Yarn");
+
+                    b.ToTable("YarnBobbins", (string)null);
                 });
 
             modelBuilder.Entity("Favorite", b =>
@@ -527,6 +641,60 @@ namespace ShopApp.Server.Migrations
                     b.HasOne("ShopApp.Server.Models.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Accessory", b =>
+                {
+                    b.HasOne("ShopApp.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("ShopApp.Models.Accessory", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Clothing", b =>
+                {
+                    b.HasOne("ShopApp.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("ShopApp.Models.Clothing", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShopApp.Models.MasterClass", b =>
+                {
+                    b.HasOne("ShopApp.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("ShopApp.Models.MasterClass", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Tool", b =>
+                {
+                    b.HasOne("ShopApp.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("ShopApp.Models.Tool", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Yarn", b =>
+                {
+                    b.HasOne("ShopApp.Models.Product", null)
+                        .WithOne()
+                        .HasForeignKey("ShopApp.Models.Yarn", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShopApp.Models.YarnBobbin", b =>
+                {
+                    b.HasOne("ShopApp.Models.Yarn", null)
+                        .WithOne()
+                        .HasForeignKey("ShopApp.Models.YarnBobbin", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

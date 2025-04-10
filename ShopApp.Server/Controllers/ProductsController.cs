@@ -23,8 +23,37 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
     {
-        var products = await _context.Products.ToListAsync();
+        var products = await _context.Products
+            .Include(p => p is Tool ? ((Tool)p).Id : 0) // Загружаем данные для Tools
+            .Include(p => p is Accessory ? ((Accessory)p).Id : 0) // Загружаем данные для Accessories
+            .Include(p => p is Clothing ? ((Clothing)p).Id : 0) // Загружаем данные для Clothing
+            .Include(p => p is MasterClass ? ((MasterClass)p).Id : 0) // Загружаем данные для MasterClasses
+            .Include(p => p is Yarn ? ((Yarn)p).Id : 0) // Загружаем данные для Yarns
+            .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0)
+            .ToListAsync();
+
         return Ok(products);
+    }
+
+    // GET: api/products/{id}
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Product>> GetProductById(int id)
+    {
+        var product = await _context.Products
+            .Include(p => p is Tool ? ((Tool)p).Id : 0)
+            .Include(p => p is Accessory ? ((Accessory)p).Id : 0)
+            .Include(p => p is Clothing ? ((Clothing)p).Id : 0)
+            .Include(p => p is MasterClass ? ((MasterClass)p).Id : 0)
+            .Include(p => p is Yarn ? ((Yarn)p).Id : 0)
+            .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(product);
     }
 
     // POST: api/products
@@ -36,25 +65,42 @@ public class ProductsController : ControllerBase
             return BadRequest("Invalid product data.");
         }
 
-        _context.Products.Add(newProduct);
+        // Проверяем, что newProduct — это конкретный тип, а не абстрактный Product
+        if (newProduct is Tool tool)
+        {
+            _context.Tools.Add(tool);
+        }
+        else if (newProduct is Accessory accessory)
+        {
+            _context.Accessories.Add(accessory);
+        }
+        else if (newProduct is Clothing clothing)
+        {
+            _context.Clothing.Add(clothing);
+        }
+        else if (newProduct is MasterClass masterClass)
+        {
+            _context.MasterClasses.Add(masterClass);
+        }
+        else if (newProduct is YarnBobbin yarnBobbin) // Добавляем YarnBobbin
+        {
+            _context.YarnBobbins.Add(yarnBobbin);
+        }
+        else if (newProduct is Yarn yarn)
+        {
+            _context.Yarns.Add(yarn);
+        }
+        else
+        {
+            return BadRequest("Product type is not supported.");
+        }
+
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
     }
 
-    // GET: api/products/{id}
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Product>> GetProductById(int id)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(product);
-    }
-
     // PUT: api/products/{id}
+    [HttpPut("{id}")]
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product updatedProduct)
     {
@@ -63,25 +109,84 @@ public class ProductsController : ControllerBase
             return BadRequest("Product ID mismatch or invalid product data.");
         }
 
-        var existingProduct = await _context.Products.FindAsync(id);
+        var existingProduct = await _context.Products
+            .Include(p => p is Tool ? ((Tool)p).Id : 0)
+            .Include(p => p is Accessory ? ((Accessory)p).Id : 0)
+            .Include(p => p is Clothing ? ((Clothing)p).Id : 0)
+            .Include(p => p is MasterClass ? ((MasterClass)p).Id : 0)
+            .Include(p => p is Yarn ? ((Yarn)p).Id : 0)
+            .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0) // Добавляем Include для YarnBobbin
+            .FirstOrDefaultAsync(p => p.Id == id);
+
         if (existingProduct == null)
         {
             return NotFound();
         }
 
+        // Обновляем общие свойства
         existingProduct.Name = updatedProduct.Name;
-        existingProduct.Price = updatedProduct.Price;
-        existingProduct.Category = updatedProduct.Category;
         existingProduct.Description = updatedProduct.Description;
+        existingProduct.Price = updatedProduct.Price;
+        existingProduct.Brand = updatedProduct.Brand;
+        existingProduct.Country = updatedProduct.Country;
+        existingProduct.Count = updatedProduct.Count;
         existingProduct.ImageUrl = updatedProduct.ImageUrl;
         existingProduct.ImageUrl2 = updatedProduct.ImageUrl2;
         existingProduct.ImageUrl3 = updatedProduct.ImageUrl3;
         existingProduct.ImageUrl4 = updatedProduct.ImageUrl4;
-        existingProduct.Brand = updatedProduct.Brand;
-        existingProduct.Country = updatedProduct.Country;
-        existingProduct.Count = updatedProduct.Count;
-        existingProduct.WeightGramm = updatedProduct.WeightGramm;
-        existingProduct.Color = updatedProduct.Color;
+
+        // Обновляем специфичные свойства
+        if (existingProduct is Tool existingTool && updatedProduct is Tool updatedTool)
+        {
+            existingTool.Material = updatedTool.Material;
+            existingTool.Size = updatedTool.Size;
+            existingTool.Purpose = updatedTool.Purpose;
+            existingTool.WeightGramm = updatedTool.WeightGramm;
+        }
+        else if (existingProduct is Accessory existingAccessory && updatedProduct is Accessory updatedAccessory)
+        {
+            existingAccessory.Material = updatedAccessory.Material;
+            existingAccessory.Size = updatedAccessory.Size;
+            existingAccessory.Type = updatedAccessory.Type;
+            existingAccessory.WeightGramm = updatedAccessory.WeightGramm;
+        }
+        else if (existingProduct is Clothing existingClothing && updatedProduct is Clothing updatedClothing)
+        {
+            existingClothing.Size = updatedClothing.Size;
+            existingClothing.Fabric = updatedClothing.Fabric;
+            existingClothing.Season = updatedClothing.Season;
+            existingClothing.Color = updatedClothing.Color;
+            existingClothing.WeightGramm = updatedClothing.WeightGramm;
+        }
+        else if (existingProduct is MasterClass existingMasterClass && updatedProduct is MasterClass updatedMasterClass)
+        {
+            existingMasterClass.EventDate = updatedMasterClass.EventDate;
+            existingMasterClass.DurationHours = updatedMasterClass.DurationHours;
+            existingMasterClass.DifficultyLevel = updatedMasterClass.DifficultyLevel;
+            existingMasterClass.Format = updatedMasterClass.Format;
+        }
+        else if (existingProduct is YarnBobbin existingYarnBobbin &&
+                 updatedProduct is YarnBobbin updatedYarnBobbin) // Добавляем YarnBobbin
+        {
+            // У YarnBobbin пока нет специфичных свойств, но обновляем свойства Yarn
+            ((Yarn)existingYarnBobbin).Type = updatedYarnBobbin.Type;
+            ((Yarn)existingYarnBobbin).Color = updatedYarnBobbin.Color;
+            ((Yarn)existingYarnBobbin).WeightGramm = updatedYarnBobbin.WeightGramm;
+            ((Yarn)existingYarnBobbin).ToolsSize = updatedYarnBobbin.ToolsSize;
+            ((Yarn)existingYarnBobbin).Length = updatedYarnBobbin.Length;
+        }
+        else if (existingProduct is Yarn existingYarn && updatedProduct is Yarn updatedYarn)
+        {
+            existingYarn.Type = updatedYarn.Type;
+            existingYarn.Color = updatedYarn.Color;
+            existingYarn.WeightGramm = updatedYarn.WeightGramm;
+            existingYarn.ToolsSize = updatedYarn.ToolsSize;
+            existingYarn.Length = updatedYarn.Length;
+        }
+        else
+        {
+            return BadRequest("Product type mismatch or unsupported type.");
+        }
 
         _context.Products.Update(existingProduct);
         await _context.SaveChangesAsync();
@@ -124,7 +229,7 @@ public class ProductsController : ControllerBase
             await file.CopyToAsync(stream);
         }
 
-        var serverUrl = $"{Request.Scheme}://{Request.Host}"; // Генерация URL сервера
+        var serverUrl = $"{Request.Scheme}://{Request.Host}";
         var imageUrl = $"{serverUrl}/images/{fileName}";
         return Ok(imageUrl);
     }
@@ -151,17 +256,13 @@ public class ProductsController : ControllerBase
 
             for (int row = 2; row <= worksheet.Dimension.Rows; row++)
             {
-                int id = -1;
-
-                //1Id 2Name 3Description 4Price 6Category 7Brand 8Country 9Weight 19Count 10ImageUrl 11color
-                id = int.TryParse(worksheet.Cells[row, 1]?.Text, out int parsedID) ? parsedID : -1;
+                int id = int.TryParse(worksheet.Cells[row, 1]?.Text, out int parsedID) ? parsedID : -1;
                 string? name = worksheet.Cells[row, 2]?.Text?.Trim();
                 string? description = worksheet.Cells[row, 3]?.Text?.Trim();
                 decimal? price = decimal.TryParse(worksheet.Cells[row, 4]?.Text, out decimal parsedPrice)
                     ? parsedPrice
                     : (decimal?)null;
-                //
-                string? category = worksheet.Cells[row, 5]?.Text?.Trim();
+                string? type = worksheet.Cells[row, 5]?.Text?.Trim();
                 string? brand = worksheet.Cells[row, 6]?.Text?.Trim();
                 string? country = worksheet.Cells[row, 7]?.Text?.Trim();
                 string? weight = worksheet.Cells[row, 8]?.Text?.Trim();
@@ -171,51 +272,170 @@ public class ProductsController : ControllerBase
                 string? imageUrl = worksheet.Cells[row, 10]?.Text?.Trim();
                 string? color = worksheet.Cells[row, 11]?.Text?.Trim();
 
-                if (string.IsNullOrEmpty(name) || price == null || count == null)
+                if (string.IsNullOrEmpty(name) || price == null || count == null || string.IsNullOrEmpty(type))
                 {
-                    continue; // Пропускаем некорректные строки
+                    continue;
                 }
+
+                Product newProduct = type.ToLower() switch
+                {
+                    "tool" => new Tool
+                    {
+                        Material = "",
+                        Size = "",
+                        Purpose = "",
+                        WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0
+                    },
+                    "accessory" => new Accessory
+                    {
+                        Material = "",
+                        Size = "",
+                        Type = "",
+                        WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0
+                    },
+                    "clothing" => new Clothing
+                    {
+                        Size = "",
+                        Fabric = "",
+                        Season = "",
+                        Color = color ?? "",
+                        WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0
+                    },
+                    "masterclass" => new MasterClass
+                    {
+                        EventDate = DateTime.Now,
+                        DurationHours = 0,
+                        DifficultyLevel = "",
+                        Format = ""
+                    },
+                    "yarnbobbin" => new YarnBobbin // Добавляем YarnBobbin
+                    {
+                        Type = "",
+                        Color = color ?? "",
+                        WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0,
+                        ToolsSize = "",
+                        Length = 0
+                    },
+                    "yarn" => new Yarn
+                    {
+                        Type = "",
+                        Color = color ?? "",
+                        WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0,
+                        ToolsSize = "",
+                        Length = 0
+                    },
+                    _ => null
+                };
+
+                if (newProduct == null)
+                {
+                    continue;
+                }
+
+                newProduct.Name = name;
+                newProduct.Description = description;
+                newProduct.Price = price.Value;
+                newProduct.Brand = brand;
+                newProduct.Country = country;
+                newProduct.Count = count.Value;
+                newProduct.ImageUrl = imageUrl;
 
                 Product existingProduct = null;
                 if (id > 0)
                 {
-                    // Ищем продукт в базе данных
                     existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
                 }
-                   
 
                 if (existingProduct != null)
                 {
-                     Single.TryParse(weight, out float parsedWeight);
-                    // Обновляем существующий продукт
-                    existingProduct.Name = name;
-                    existingProduct.Category = category;
-                    existingProduct.Description = description;
-                    existingProduct.Price = price.Value;
-                    existingProduct.Count = count.Value;
-                    existingProduct.Country = country;
-                    existingProduct.Brand = brand;
-                    existingProduct.WeightGramm = parsedWeight;
-                    existingProduct.Color = color;
+                    existingProduct.Name = newProduct.Name;
+                    existingProduct.Description = newProduct.Description;
+                    existingProduct.Price = newProduct.Price;
+                    existingProduct.Brand = newProduct.Brand;
+                    existingProduct.Country = newProduct.Country;
+                    existingProduct.Count = newProduct.Count;
+                    existingProduct.ImageUrl = newProduct.ImageUrl;
+
+                    if (existingProduct is Tool existingTool && newProduct is Tool updatedTool)
+                    {
+                        existingTool.Material = updatedTool.Material;
+                        existingTool.Size = updatedTool.Size;
+                        existingTool.Purpose = updatedTool.Purpose;
+                        existingTool.WeightGramm = updatedTool.WeightGramm;
+                    }
+                    else if (existingProduct is Accessory existingAccessory && newProduct is Accessory updatedAccessory)
+                    {
+                        existingAccessory.Material = updatedAccessory.Material;
+                        existingAccessory.Size = updatedAccessory.Size;
+                        existingAccessory.Type = updatedAccessory.Type;
+                        existingAccessory.WeightGramm = updatedAccessory.WeightGramm;
+                    }
+                    else if (existingProduct is Clothing existingClothing && newProduct is Clothing updatedClothing)
+                    {
+                        existingClothing.Size = updatedClothing.Size;
+                        existingClothing.Fabric = updatedClothing.Fabric;
+                        existingClothing.Season = updatedClothing.Season;
+                        existingClothing.Color = updatedClothing.Color;
+                        existingClothing.WeightGramm = updatedClothing.WeightGramm;
+                    }
+                    else if (existingProduct is MasterClass existingMasterClass &&
+                             newProduct is MasterClass updatedMasterClass)
+                    {
+                        existingMasterClass.EventDate = updatedMasterClass.EventDate;
+                        existingMasterClass.DurationHours = updatedMasterClass.DurationHours;
+                        existingMasterClass.DifficultyLevel = updatedMasterClass.DifficultyLevel;
+                        existingMasterClass.Format = updatedMasterClass.Format;
+                    }
+                    else if (existingProduct is YarnBobbin existingYarnBobbin &&
+                             newProduct is YarnBobbin updatedYarnBobbin) // Добавляем YarnBobbin
+                    {
+                        ((Yarn)existingYarnBobbin).Type = updatedYarnBobbin.Type;
+                        ((Yarn)existingYarnBobbin).Color = updatedYarnBobbin.Color;
+                        ((Yarn)existingYarnBobbin).WeightGramm = updatedYarnBobbin.WeightGramm;
+                        ((Yarn)existingYarnBobbin).ToolsSize = updatedYarnBobbin.ToolsSize;
+                        ((Yarn)existingYarnBobbin).Length = updatedYarnBobbin.Length;
+                    }
+                    else if (existingProduct is Yarn existingYarn && newProduct is Yarn updatedYarn)
+                    {
+                        existingYarn.Type = updatedYarn.Type;
+                        existingYarn.Color = updatedYarn.Color;
+                        existingYarn.WeightGramm = updatedYarn.WeightGramm;
+                        existingYarn.ToolsSize = updatedYarn.ToolsSize;
+                        existingYarn.Length = updatedYarn.Length;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
                     _context.Products.Update(existingProduct);
                 }
                 else
                 {
-                    Single.TryParse(weight, out float parsedWeight);
-                    // Добавляем новый продукт
-                    Product newProduct = new Product
+                    if (newProduct is Tool tool)
                     {
-                        Name = name,
-                        Category = category,
-                        Description = description,
-                        Price = price.Value,
-                        Count = count.Value,
-                        Country = country,
-                        Brand = brand,
-                        WeightGramm = parsedWeight,
-                        Color = color,
-                    };
-                    _context.Products.Add(newProduct);
+                        _context.Tools.Add(tool);
+                    }
+                    else if (newProduct is Accessory accessory)
+                    {
+                        _context.Accessories.Add(accessory);
+                    }
+                    else if (newProduct is Clothing clothing)
+                    {
+                        _context.Clothing.Add(clothing);
+                    }
+                    else if (newProduct is MasterClass masterClass)
+                    {
+                        _context.MasterClasses.Add(masterClass);
+                    }
+                    else if (newProduct is YarnBobbin yarnBobbin) // Добавляем YarnBobbin
+                    {
+                        _context.YarnBobbins.Add(yarnBobbin);
+                    }
+                    else if (newProduct is Yarn yarn)
+                    {
+                        _context.Yarns.Add(yarn);
+                    }
                 }
             }
 
@@ -233,45 +453,88 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            IEnumerable<Product> products = _context.Products.ToList();
-            // Генерация Excel-файла с использованием EPPlus
-            byte[]? fileBytes = null;
-            // Генерация Excel-файла с использованием EPPlus
-            // using var package = new ExcelPackage();
-            // var sheet = package.Workbook.Worksheets.Add("Products");
-            //sheet.Cells["A1"].LoadFromCollection(products, true);
+            var products = _context.Products
+                .Include(p => p is Tool ? ((Tool)p).Id : 0)
+                .Include(p => p is Accessory ? ((Accessory)p).Id : 0)
+                .Include(p => p is Clothing ? ((Clothing)p).Id : 0)
+                .Include(p => p is MasterClass ? ((MasterClass)p).Id : 0)
+                .Include(p => p is Yarn ? ((Yarn)p).Id : 0)
+                .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0) // Добавляем Include для YarnBobbin
+                .ToList();
 
-            using (var pck = new ExcelPackage())
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Products");
+
+            worksheet.Cells[1, 1].Value = "Id";
+            worksheet.Cells[1, 2].Value = "Name";
+            worksheet.Cells[1, 3].Value = "Description";
+            worksheet.Cells[1, 4].Value = "Price";
+            worksheet.Cells[1, 5].Value = "Type";
+            worksheet.Cells[1, 6].Value = "Brand";
+            worksheet.Cells[1, 7].Value = "Country";
+            worksheet.Cells[1, 8].Value = "WeightGramm";
+            worksheet.Cells[1, 9].Value = "Count";
+            worksheet.Cells[1, 10].Value = "ImageUrl";
+            worksheet.Cells[1, 11].Value = "Color";
+
+            int row = 2;
+            foreach (var product in products)
             {
+                worksheet.Cells[row, 1].Value = product.Id;
+                worksheet.Cells[row, 2].Value = product.Name;
+                worksheet.Cells[row, 3].Value = product.Description;
+                worksheet.Cells[row, 4].Value = product.Price;
+                worksheet.Cells[row, 5].Value = product switch
+                {
+                    Tool _ => "tool",
+                    Accessory _ => "accessory",
+                    Clothing _ => "clothing",
+                    MasterClass _ => "masterclass",
+                    YarnBobbin _ => "yarnbobbin", // Добавляем YarnBobbin
+                    Yarn _ => "yarn",
+                    _ => "unknown"
+                };
+                worksheet.Cells[row, 6].Value = product.Brand;
+                worksheet.Cells[row, 7].Value = product.Country;
+                if (product is YarnBobbin yarnBobbins)
+                {
+                    worksheet.Cells[row, 8].Value = yarnBobbins.WeightGramm;
+                }
+                else
+                {
+                    worksheet.Cells[row, 8].Value = product switch
+                    {
+                        Tool tool => tool.WeightGramm,
+                        Accessory accessory => accessory.WeightGramm,
+                        Clothing clothing => clothing.WeightGramm,
+                        Yarn yarn => yarn.WeightGramm,
+                        _ => (float?)null
+                    };
+                }
+                
+                worksheet.Cells[row, 9].Value = product.Count;
+                worksheet.Cells[row, 10].Value = product.ImageUrl;
+                if (product is YarnBobbin yarnBobbin)
+                {
+                    worksheet.Cells[row, 11].Value = yarnBobbin.Color;
+                }
+                else
+                {
+                    worksheet.Cells[row, 11].Value = product switch
+                    {
+                        Clothing clothing => clothing.Color,
+                        Yarn yarn => yarn.Color, 
+                        _ => null
+                    };
+                }
+                
 
-                //Add a worksheet
-                var sheet = pck.Workbook.Worksheets.Add("Products");
-                //Load the datatable into the worksheet...
-                sheet.Cells["A1"].LoadFromCollection(products, PrintHeaders: true, TableStyles.Medium9);
-                fileBytes = pck.GetAsByteArray();
+                row++;
             }
-            
 
-            // for (int i = 0; i < products.Count(); i++)
-            // {
-            //     sheet.Cells[i + 2, 1].Value = products[i].Id;
-            //     sheet.Cells[i + 2, 2].Value = products[i].Name;
-            //     sheet.Cells[i + 2, 3].Value = products[i].Description;
-            //     sheet.Cells[i + 2, 4].Value = products[i].Price;
-            //     sheet.Cells[i + 2, 5].Value = products[i].Category;
-            //     sheet.Cells[i + 2, 6].Value = products[i].Brand;
-            //     sheet.Cells[i + 2, 7].Value = products[i].Country;
-            //     sheet.Cells[i + 2, 8].Value = products[i].Weight;
-            //     sheet.Cells[i + 2, 9].Value = products[i].Count;
-            //     sheet.Cells[i + 2, 10].Value = products[i].ImageUrl;
-            // }
-
-            //fileBytes = package.GetAsByteArray();
-
-
+            var fileBytes = package.GetAsByteArray();
             var fileName = "Products.xlsx";
 
-            // Возврат файла
             return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
         catch (Exception ex)

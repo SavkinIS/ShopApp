@@ -51,7 +51,6 @@ public class ProductService
         }
     }
 
-    
     public async Task AddProductAsync(Product product)
     {
         await AddAuthorizationHeader();
@@ -79,87 +78,176 @@ public class ProductService
         var response = await _httpClient.PostAsync("api/products/upload", content);
         response.EnsureSuccessStatusCode();
 
-        var result =response.Content.ReadAsStringAsync();
-        Console.WriteLine(result.Result);
-        return result.Result;
+        var result = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(result);
+        return result;
     }
-    
-    public async Task<Result<List<Product>>> UploadProductsFromExcelAsync(Stream excelStream)
+
+  
+
+public async Task<Result<List<Product>>> UploadProductsFromExcelAsync(Stream excelStream)
+{
+    try
     {
-        try
+        var products = new List<Product>();
+        using var package = new ExcelPackage(excelStream);
+        var worksheet = package.Workbook.Worksheets[0];
+
+        for (int row = 2; row <= worksheet.Dimension.Rows; row++)
         {
-            var products = new List<Product>();
-            using var package = new ExcelPackage(excelStream);
-            var worksheet = package.Workbook.Worksheets[0];
+            string? name = worksheet.Cells[row, 1].Text;
+            string? type = worksheet.Cells[row, 2].Text;
+            decimal price = decimal.Parse(worksheet.Cells[row, 3].Text);
+            int count = int.Parse(worksheet.Cells[row, 4].Text);
+            string? brand = worksheet.Cells[row, 5].Text;
+            string? imageUrl = worksheet.Cells[row, 6].Text;
+            string? weight = worksheet.Cells[row, 7].Text;
+            string? color = worksheet.Cells[row, 8].Text;
 
-            for (int row = 2; row <= worksheet.Dimension.Rows; row++)
+            Product product = type.ToLower() switch
             {
-                var product = new Product
+                "tool" => new Tool
                 {
-                    Name = worksheet.Cells[row, 1].Text,
-                    Category = worksheet.Cells[row, 2].Text,
-                    Price = decimal.Parse(worksheet.Cells[row, 3].Text),
-                    Count = int.Parse(worksheet.Cells[row, 4].Text),
-                    Brand = worksheet.Cells[row, 5].Text,
-                    ImageUrl = worksheet.Cells[row, 6].Text
-                };
+                    Material = "",
+                    Size = "",
+                    Purpose = "",
+                    WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0
+                },
+                "accessory" => new Accessory
+                {
+                    Material = "",
+                    Size = "",
+                    Type = "",
+                    WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0
+                },
+                "clothing" => new Clothing
+                {
+                    Size = "",
+                    Fabric = "",
+                    Season = "",
+                    Color = color ?? "",
+                    WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0
+                },
+                "masterclass" => new MasterClass
+                {
+                    EventDate = DateTime.Now,
+                    DurationHours = 0,
+                    DifficultyLevel = "",
+                    Format = ""
+                },
+                "yarnbobbin" => new YarnBobbin // Добавляем YarnBobbin
+                {
+                    Type = "",
+                    Color = color ?? "",
+                    WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0,
+                    ToolsSize = "",
+                    Length = 0
+                },
+                "yarn" => new Yarn
+                {
+                    Type = "",
+                    Color = color ?? "",
+                    WeightGramm = float.TryParse(weight, out float parsedWeight) ? parsedWeight : 0,
+                    ToolsSize = "",
+                    Length = 0
+                },
+                _ => null
+            };
 
-                products.Add(product);
-                await AddProductAsync(product);
+            if (product == null)
+            {
+                continue;
             }
 
-            return new Result<List<Product>> { IsSuccess = true, Data = products };
-        }
-        catch (Exception ex)
-        {
-            return new Result<List<Product>> { IsSuccess = false, ErrorMessage = "Failed to process Excel file." };
-        }
-    }
+            product.Name = name;
+            product.Price = price;
+            product.Count = count;
+            product.Brand = brand;
+            product.ImageUrl = imageUrl;
 
-    
-    public async Task<Stream> DownloadProductsAsExcelAsync()
+            products.Add(product);
+            await AddProductAsync(product);
+        }
+
+        return new Result<List<Product>> { IsSuccess = true, Data = products };
+    }
+    catch (Exception ex)
     {
-        var products = await GetProductsAsync();
+        return new Result<List<Product>> { IsSuccess = false, ErrorMessage = "Failed to process Excel file." };
+    }
+}
 
-        var stream = new MemoryStream();
-        using var package = new ExcelPackage(stream);
+public async Task<Stream> DownloadProductsAsExcelAsync()
+{
+    var products = await GetProductsAsync();
 
-        var worksheet = package.Workbook.Worksheets.Add("Products");
-        worksheet.Cells[1, 1].Value = "Name";
-        worksheet.Cells[1, 2].Value = "Category";
-        worksheet.Cells[1, 3].Value = "Price";
-        worksheet.Cells[1, 4].Value = "Count";
-        worksheet.Cells[1, 5].Value = "Brand";
-        worksheet.Cells[1, 6].Value = "ImageUrl";
+    var stream = new MemoryStream();
+    using var package = new ExcelPackage(stream);
 
-        int row = 2;
-        foreach (var product in products)
+    var worksheet = package.Workbook.Worksheets.Add("Products");
+    worksheet.Cells[1, 1].Value = "Name";
+    worksheet.Cells[1, 2].Value = "Type";
+    worksheet.Cells[1, 3].Value = "Price";
+    worksheet.Cells[1, 4].Value = "Count";
+    worksheet.Cells[1, 5].Value = "Brand";
+    worksheet.Cells[1, 6].Value = "ImageUrl";
+    worksheet.Cells[1, 7].Value = "WeightGramm";
+    worksheet.Cells[1, 8].Value = "Color";
+
+    int row = 2;
+    foreach (var product in products)
+    {
+        worksheet.Cells[row, 1].Value = product.Name;
+        worksheet.Cells[row, 2].Value = product switch
         {
-            worksheet.Cells[row, 1].Value = product.Name;
-            worksheet.Cells[row, 2].Value = product.Category;
-            worksheet.Cells[row, 3].Value = product.Price;
-            worksheet.Cells[row, 4].Value = product.Count;
-            worksheet.Cells[row, 5].Value = product.Brand;
-            worksheet.Cells[row, 6].Value = product.ImageUrl;
-
-            row++;
+            Tool _ => "tool",
+            Accessory _ => "accessory",
+            Clothing _ => "clothing",
+            MasterClass _ => "masterclass",
+            YarnBobbin _ => "yarnbobbin", // Добавляем YarnBobbin
+            Yarn _ => "yarn",
+            _ => "unknown"
+        };
+        worksheet.Cells[row, 3].Value = product.Price;
+        worksheet.Cells[row, 4].Value = product.Count;
+        worksheet.Cells[row, 5].Value = product.Brand;
+        worksheet.Cells[row, 6].Value = product.ImageUrl;
+        if (product is YarnBobbin yarnBobbin)
+        {
+            worksheet.Cells[row, 7].Value = yarnBobbin.WeightGramm;
+        }
+        else
+        {
+            worksheet.Cells[row, 7].Value = product switch
+            {
+                Tool tool => tool.WeightGramm,
+                Accessory accessory => accessory.WeightGramm,
+                Clothing clothing => clothing.WeightGramm,
+                Yarn yarn => yarn.WeightGramm,
+                _ => (float?)null
+            };
         }
 
-        package.Save();
-        stream.Position = 0;
+        if (product is YarnBobbin yarnBobbins)
+        {
+            worksheet.Cells[row, 8].Value = yarnBobbins.Color;
+        }
+        worksheet.Cells[row, 8].Value = product switch
+        {
+            Clothing clothing => clothing.Color,
+            Yarn yarn => yarn.Color,
+            _ => null
+        };
 
-        return stream;
+        row++;
     }
-    
-    // public async Task DownloadProductsAsExcel(List<Product> products)
-    // {
-    //     var jsonProducts = JsonSerializer.Serialize(products);
-    //     
-    //     // Вызов JavaScript функции для скачивания Excel файла
-    //     await _jsRuntime.InvokeVoidAsync("downloadExcelFile", jsonProducts);
-    // }
-    
-    
+
+    package.Save();
+    stream.Position = 0;
+
+    return stream;
+}
+
     public async Task DownloadExcelFile()
     {
         try
@@ -171,7 +259,6 @@ public class ProductService
                 var fileName = "Products.xlsx";
                 var fileBytes = await response.Content.ReadAsByteArrayAsync();
                 
-                // Вызов JS для скачивания файла
                 await _jsRuntime.InvokeVoidAsync("downloadFile", fileBytes, fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             }
             else
@@ -209,12 +296,12 @@ public class ProductService
 
     public async Task SetProductID(int id)
     {
-         await _localStorage.SetItemAsync<string>("productID",id.ToString());
+        await _localStorage.SetItemAsync("productID", id.ToString());
     }
-    
+
     public async Task<int> GetProductID()
     {
-        var res = await  _localStorage.GetItemAsync<string>("productID");
+        var res = await _localStorage.GetItemAsync<string>("productID");
         Debug.WriteLine($"ERORR ID ERORR ID  {res}");
         if (!string.IsNullOrEmpty(res))
         {
@@ -236,7 +323,7 @@ public class ProductService
         var sortOrder = await _localStorage.GetItemAsync<string>("SortOrder") ?? "Ascending";
         return (sortField, sortOrder);
     }
-    
+
     public async Task DeleteImageAsync(string imageUrl)
     {
         await _httpClient.DeleteAsync($"api/upload?imageUrl={Uri.EscapeDataString(imageUrl)}");
