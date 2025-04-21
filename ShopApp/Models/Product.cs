@@ -5,9 +5,9 @@ namespace ShopApp.Models;
 [JsonDerivedType(typeof(Tool), typeDiscriminator: "tool")]
 [JsonDerivedType(typeof(Accessory), typeDiscriminator: "accessory")]
 [JsonDerivedType(typeof(Clothing), typeDiscriminator: "clothing")]
-[JsonDerivedType(typeof(MasterClass), typeDiscriminator: "masterClass")]
+[JsonDerivedType(typeof(MasterClass), typeDiscriminator: "masterclass")]
 [JsonDerivedType(typeof(Yarn), typeDiscriminator: "yarn")]
-[JsonDerivedType(typeof(YarnBobbin), typeDiscriminator: "yarnBobbin")]
+[JsonDerivedType(typeof(YarnBobbin), typeDiscriminator: "yarnbobbin")]
 public abstract class Product
 {
     public int Id { get; set; }
@@ -17,10 +17,10 @@ public abstract class Product
     public string Brand { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public int Count { get; set; }
-    public string? ImageUrl { get; set; } = string.Empty;
-    public string? ImageUrl2 { get; set; } = string.Empty;
-    public string? ImageUrl3 { get; set; } = string.Empty;
-    public string? ImageUrl4 { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
+    public string? ImageUrl2 { get; set; }
+    public string? ImageUrl3 { get; set; }
+    public string? ImageUrl4 { get; set; }
 }
 
 public class Tool : Product

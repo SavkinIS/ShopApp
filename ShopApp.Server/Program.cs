@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,14 @@ using ShopApp.Models;
 
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
+
 
 // Подключение к базе данных
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -62,6 +71,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {

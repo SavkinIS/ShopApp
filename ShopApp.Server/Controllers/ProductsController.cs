@@ -19,23 +19,13 @@ public class ProductsController : ControllerBase
         _context = context;
     }
 
-    // GET: api/products
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
     {
-        var products = await _context.Products
-            .Include(p => p is Tool ? ((Tool)p).Id : 0) // Загружаем данные для Tools
-            .Include(p => p is Accessory ? ((Accessory)p).Id : 0) // Загружаем данные для Accessories
-            .Include(p => p is Clothing ? ((Clothing)p).Id : 0) // Загружаем данные для Clothing
-            .Include(p => p is MasterClass ? ((MasterClass)p).Id : 0) // Загружаем данные для MasterClasses
-            .Include(p => p is Yarn ? ((Yarn)p).Id : 0) // Загружаем данные для Yarns
-            .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0)
-            .ToListAsync();
-
+        var products = await _context.Products.ToListAsync();
         return Ok(products);
     }
 
-    // GET: api/products/{id}
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProductById(int id)
     {
@@ -56,51 +46,185 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    // POST: api/products
     [HttpPost]
-    public async Task<ActionResult<Product>> AddProduct([FromBody] Product newProduct)
+public async Task<ActionResult<Product>> AddProduct([FromBody] Product newProduct)
+{
+    if (newProduct == null)
     {
-        if (newProduct == null || string.IsNullOrWhiteSpace(newProduct.Name))
-        {
-            return BadRequest("Invalid product data.");
-        }
+        return BadRequest("Product data is null.");
+    }
 
-        // Проверяем, что newProduct — это конкретный тип, а не абстрактный Product
-        if (newProduct is Tool tool)
+    if (string.IsNullOrWhiteSpace(newProduct.Name))
+    {
+        return BadRequest("Product name cannot be empty.");
+    }
+
+    try
+    {
+        // Получаем тип объекта
+        string type = newProduct.GetType().Name;
+        Console.WriteLine($"Received type: {type}");
+
+        Product createdProduct;
+
+        switch (type)
         {
-            _context.Tools.Add(tool);
-        }
-        else if (newProduct is Accessory accessory)
-        {
-            _context.Accessories.Add(accessory);
-        }
-        else if (newProduct is Clothing clothing)
-        {
-            _context.Clothing.Add(clothing);
-        }
-        else if (newProduct is MasterClass masterClass)
-        {
-            _context.MasterClasses.Add(masterClass);
-        }
-        else if (newProduct is YarnBobbin yarnBobbin) // Добавляем YarnBobbin
-        {
-            _context.YarnBobbins.Add(yarnBobbin);
-        }
-        else if (newProduct is Yarn yarn)
-        {
-            _context.Yarns.Add(yarn);
-        }
-        else
-        {
-            return BadRequest("Product type is not supported.");
+            case "Tool":
+                var tool = new Tool
+                {
+                    Name = newProduct.Name,
+                    Description = newProduct.Description,
+                    Price = newProduct.Price,
+                    Brand = newProduct.Brand,
+                    Country = newProduct.Country,
+                    Count = newProduct.Count,
+                    ImageUrl = newProduct.ImageUrl,
+                    ImageUrl2 = newProduct.ImageUrl2,
+                    ImageUrl3 = newProduct.ImageUrl3,
+                    ImageUrl4 = newProduct.ImageUrl4,
+                    Material = newProduct is Tool t ? t.Material : string.Empty,
+                    Size = newProduct is Tool t2 ? t2.Size : string.Empty,
+                    Purpose = newProduct is Tool t3 ? t3.Purpose : string.Empty,
+                    WeightGramm = newProduct is Tool t4 ? t4.WeightGramm : 0
+                };
+                _context.Tools.Add(tool);
+                createdProduct = tool;
+                break;
+
+            case "Accessory":
+                var accessory = new Accessory
+                {
+                    Name = newProduct.Name,
+                    Description = newProduct.Description,
+                    Price = newProduct.Price,
+                    Brand = newProduct.Brand,
+                    Country = newProduct.Country,
+                    Count = newProduct.Count,
+                    ImageUrl = newProduct.ImageUrl,
+                    ImageUrl2 = newProduct.ImageUrl2,
+                    ImageUrl3 = newProduct.ImageUrl3,
+                    ImageUrl4 = newProduct.ImageUrl4,
+                    Material = newProduct is Accessory a ? a.Material : string.Empty,
+                    Size = newProduct is Accessory a2 ? a2.Size : string.Empty,
+                    Type = newProduct is Accessory a3 ? a3.Type : string.Empty,
+                    WeightGramm = newProduct is Accessory a4 ? a4.WeightGramm : 0
+                };
+                _context.Accessories.Add(accessory);
+                createdProduct = accessory;
+                break;
+
+            case "Clothing":
+                var clothing = new Clothing
+                {
+                    Name = newProduct.Name,
+                    Description = newProduct.Description,
+                    Price = newProduct.Price,
+                    Brand = newProduct.Brand,
+                    Country = newProduct.Country,
+                    Count = newProduct.Count,
+                    ImageUrl = newProduct.ImageUrl,
+                    ImageUrl2 = newProduct.ImageUrl2,
+                    ImageUrl3 = newProduct.ImageUrl3,
+                    ImageUrl4 = newProduct.ImageUrl4,
+                    Size = newProduct is Clothing c ? c.Size : string.Empty,
+                    Fabric = newProduct is Clothing c2 ? c2.Fabric : string.Empty,
+                    Season = newProduct is Clothing c3 ? c3.Season : string.Empty,
+                    Color = newProduct is Clothing c4 ? c4.Color : string.Empty,
+                    WeightGramm = newProduct is Clothing c5 ? c5.WeightGramm : 0
+                };
+                _context.Clothing.Add(clothing);
+                createdProduct = clothing;
+                break;
+
+            case "MasterClass":
+                var masterClass = new MasterClass
+                {
+                    Name = newProduct.Name,
+                    Description = newProduct.Description,
+                    Price = newProduct.Price,
+                    Brand = newProduct.Brand,
+                    Country = newProduct.Country,
+                    Count = newProduct.Count,
+                    ImageUrl = newProduct.ImageUrl,
+                    ImageUrl2 = newProduct.ImageUrl2,
+                    ImageUrl3 = newProduct.ImageUrl3,
+                    ImageUrl4 = newProduct.ImageUrl4,
+                    EventDate = newProduct is MasterClass mc ? mc.EventDate : DateTime.Now,
+                    DurationHours = newProduct is MasterClass mc2 ? mc2.DurationHours : 0,
+                    DifficultyLevel = newProduct is MasterClass mc3 ? mc3.DifficultyLevel : string.Empty,
+                    Format = newProduct is MasterClass mc4 ? mc4.Format : string.Empty
+                };
+                _context.MasterClasses.Add(masterClass);
+                createdProduct = masterClass;
+                break;
+
+            case "Yarn":
+                var yarn = new Yarn
+                {
+                    Name = newProduct.Name,
+                    Description = newProduct.Description,
+                    Price = newProduct.Price,
+                    Brand = newProduct.Brand,
+                    Country = newProduct.Country,
+                    Count = newProduct.Count,
+                    ImageUrl = newProduct.ImageUrl,
+                    ImageUrl2 = newProduct.ImageUrl2,
+                    ImageUrl3 = newProduct.ImageUrl3,
+                    ImageUrl4 = newProduct.ImageUrl4,
+                    Type = newProduct is Yarn y ? y.Type : string.Empty,
+                    Color = newProduct is Yarn y2 ? y2.Color : string.Empty,
+                    WeightGramm = newProduct is Yarn y3 ? y3.WeightGramm : 0,
+                    ToolsSize = newProduct is Yarn y4 ? y4.ToolsSize : string.Empty,
+                    Length = newProduct is Yarn y5 ? y5.Length : 0
+                };
+                _context.Yarns.Add(yarn);
+                createdProduct = yarn;
+                break;
+
+            case "YarnBobbin":
+                var yarnBobbin = new YarnBobbin
+                {
+                    Name = newProduct.Name,
+                    Description = newProduct.Description,
+                    Price = newProduct.Price,
+                    Brand = newProduct.Brand,
+                    Country = newProduct.Country,
+                    Count = newProduct.Count,
+                    ImageUrl = newProduct.ImageUrl,
+                    ImageUrl2 = newProduct.ImageUrl2,
+                    ImageUrl3 = newProduct.ImageUrl3,
+                    ImageUrl4 = newProduct.ImageUrl4,
+                    Type = newProduct is YarnBobbin yb ? yb.Type : string.Empty,
+                    Color = newProduct is YarnBobbin yb2 ? yb2.Color : string.Empty,
+                    WeightGramm = newProduct is YarnBobbin yb3 ? yb3.WeightGramm : 0,
+                    ToolsSize = newProduct is YarnBobbin yb4 ? yb4.ToolsSize : string.Empty,
+                    Length = newProduct is YarnBobbin yb5 ? yb5.Length : 0
+                };
+                _context.YarnBobbins.Add(yarnBobbin);
+                createdProduct = yarnBobbin;
+                break;
+
+            default:
+                return BadRequest($"Product type is not supported. Received type: {type}");
         }
 
         await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
-    }
 
-    // PUT: api/products/{id}
-    [HttpPut("{id}")]
+        // Логируем тип после сохранения
+        Console.WriteLine($"Type after SaveChanges: {createdProduct.GetType().FullName}");
+
+        return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
+    }
+    catch (DbUpdateException ex)
+    {
+        return StatusCode(500, $"Database error: {ex.InnerException?.Message ?? ex.Message}");
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"An error occurred: {ex.Message}");
+    }
+}
+
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product updatedProduct)
     {
@@ -115,7 +239,7 @@ public class ProductsController : ControllerBase
             .Include(p => p is Clothing ? ((Clothing)p).Id : 0)
             .Include(p => p is MasterClass ? ((MasterClass)p).Id : 0)
             .Include(p => p is Yarn ? ((Yarn)p).Id : 0)
-            .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0) // Добавляем Include для YarnBobbin
+            .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (existingProduct == null)
@@ -123,7 +247,6 @@ public class ProductsController : ControllerBase
             return NotFound();
         }
 
-        // Обновляем общие свойства
         existingProduct.Name = updatedProduct.Name;
         existingProduct.Description = updatedProduct.Description;
         existingProduct.Price = updatedProduct.Price;
@@ -135,7 +258,6 @@ public class ProductsController : ControllerBase
         existingProduct.ImageUrl3 = updatedProduct.ImageUrl3;
         existingProduct.ImageUrl4 = updatedProduct.ImageUrl4;
 
-        // Обновляем специфичные свойства
         if (existingProduct is Tool existingTool && updatedProduct is Tool updatedTool)
         {
             existingTool.Material = updatedTool.Material;
@@ -165,10 +287,8 @@ public class ProductsController : ControllerBase
             existingMasterClass.DifficultyLevel = updatedMasterClass.DifficultyLevel;
             existingMasterClass.Format = updatedMasterClass.Format;
         }
-        else if (existingProduct is YarnBobbin existingYarnBobbin &&
-                 updatedProduct is YarnBobbin updatedYarnBobbin) // Добавляем YarnBobbin
+        else if (existingProduct is YarnBobbin existingYarnBobbin && updatedProduct is YarnBobbin updatedYarnBobbin)
         {
-            // У YarnBobbin пока нет специфичных свойств, но обновляем свойства Yarn
             ((Yarn)existingYarnBobbin).Type = updatedYarnBobbin.Type;
             ((Yarn)existingYarnBobbin).Color = updatedYarnBobbin.Color;
             ((Yarn)existingYarnBobbin).WeightGramm = updatedYarnBobbin.WeightGramm;
@@ -193,7 +313,6 @@ public class ProductsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/products/{id}
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteProduct(int id)
     {
@@ -308,7 +427,7 @@ public class ProductsController : ControllerBase
                         DifficultyLevel = "",
                         Format = ""
                     },
-                    "yarnbobbin" => new YarnBobbin // Добавляем YarnBobbin
+                    "yarnbobbin" => new YarnBobbin
                     {
                         Type = "",
                         Color = color ?? "",
@@ -387,7 +506,7 @@ public class ProductsController : ControllerBase
                         existingMasterClass.Format = updatedMasterClass.Format;
                     }
                     else if (existingProduct is YarnBobbin existingYarnBobbin &&
-                             newProduct is YarnBobbin updatedYarnBobbin) // Добавляем YarnBobbin
+                             newProduct is YarnBobbin updatedYarnBobbin)
                     {
                         ((Yarn)existingYarnBobbin).Type = updatedYarnBobbin.Type;
                         ((Yarn)existingYarnBobbin).Color = updatedYarnBobbin.Color;
@@ -428,7 +547,7 @@ public class ProductsController : ControllerBase
                     {
                         _context.MasterClasses.Add(masterClass);
                     }
-                    else if (newProduct is YarnBobbin yarnBobbin) // Добавляем YarnBobbin
+                    else if (newProduct is YarnBobbin yarnBobbin)
                     {
                         _context.YarnBobbins.Add(yarnBobbin);
                     }
@@ -459,7 +578,7 @@ public class ProductsController : ControllerBase
                 .Include(p => p is Clothing ? ((Clothing)p).Id : 0)
                 .Include(p => p is MasterClass ? ((MasterClass)p).Id : 0)
                 .Include(p => p is Yarn ? ((Yarn)p).Id : 0)
-                .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0) // Добавляем Include для YarnBobbin
+                .Include(p => p is YarnBobbin ? ((YarnBobbin)p).Id : 0)
                 .ToList();
 
             using var package = new ExcelPackage();
@@ -490,7 +609,7 @@ public class ProductsController : ControllerBase
                     Accessory _ => "accessory",
                     Clothing _ => "clothing",
                     MasterClass _ => "masterclass",
-                    YarnBobbin _ => "yarnbobbin", // Добавляем YarnBobbin
+                    YarnBobbin _ => "yarnbobbin",
                     Yarn _ => "yarn",
                     _ => "unknown"
                 };
@@ -539,7 +658,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Не удалось создать Excel файл.");
+            return StatusCode(500, $"Failed to create Excel file: {ex.Message}");
         }
     }
 }
